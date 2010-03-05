@@ -1,5 +1,5 @@
-Apache JUnitEvents
-Copyright 2010 The Apache Software Foundation
+D-Haven JUnitEvents
+Copyright 2010 D-Haven
 
 This product includes software developed at
-The Apache Software Foundation (http://www.apache.org/).
+D-Haven (http://d-haven.org/).

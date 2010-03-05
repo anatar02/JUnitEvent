@@ -17,8 +17,12 @@
   ~ under the License.
   -->
 
-<component name="CopyrightManager">
-  <settings default="Apache 2">
-    <module2copyright />
-  </settings>
+<component name="ProjectDictionaryState">
+  <dictionary name="berin">
+    <words>
+      <w>licensable</w>
+      <w>licensor</w>
+      <w>sublicense</w>
+    </words>
+  </dictionary>
 </component>
