@@ -1,0 +1,5 @@
+This project is more a proof of concept, and less about trying to supplant venerable projects like JUnit and TestNG.
+However, there are quite a few things that the projects could clean up.
+
+You may not need parallel testing, but this is more a question of whether we can take apart a class and run it in
+parallel.  Unit testing is just a small enough problem to make this a feasible project.
