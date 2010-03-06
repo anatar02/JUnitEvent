@@ -43,7 +43,7 @@ public class TestPlan {
      * @param request the request object
      * @return the initialized test plan
      */
-    public static TestPlan from(Request request) {
+    public static TestPlan from(Request request) throws Exception {
         TestPlan plan = new TestPlan();
 
         for (Class<?> testCase : request.getTestClasses()) {
