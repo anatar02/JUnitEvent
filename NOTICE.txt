@@ -1,5 +1,8 @@
-D-Haven JUnitEvents
-Copyright 2010 D-Haven
+   =========================================================================
+   ==  NOTICE file corresponding to the section 4 d of                    ==
+   ==  the Apache License, Version 2.0,                                   ==
+   ==  in this case for the D-Haven JUnit Events distribution.            ==
+   =========================================================================
 
-This product includes software developed at
-D-Haven (http://d-haven.org/).
+This product includes software developed by
+Google Hamcrest (http://code.google.com/p/hamcrest).
