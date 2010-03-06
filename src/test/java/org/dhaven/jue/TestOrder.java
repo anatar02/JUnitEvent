@@ -21,6 +21,7 @@ package org.dhaven.jue;
 
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.Results;
+import org.dhaven.jue.core.Engine;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -32,36 +33,42 @@ public class TestOrder {
     @Test
     public void checkOrder() {
         Request testRequest = new Request(InternalTest.class);
-        Results results = testRequest.execute();
-        assertThat(results.passed(), equalTo(true));
+        Engine engine = new Engine();
+        Results results = engine.process(testRequest);
+        assertThat(results.failuresToString(), results.passed(), equalTo(true));
     }
 
-    class InternalTest {
+    @Test
+    public void sanityCheck() {
+        assertThat(true, equalTo(true));
+    }
+
+    public static class InternalTest {
         boolean callFirstCalled = false;
         boolean actualTestCalled = false;
         boolean callLastCalled = false;
 
         @Before
         public void callFirst() {
-            assertThat(callFirstCalled, equalTo(false));
-            assertThat(actualTestCalled, equalTo(false));
-            assertThat(callLastCalled, equalTo(false));
+            assertThat("@Before already called in @Before", callFirstCalled, equalTo(false));
+            assertThat("@Test already called in @Before", actualTestCalled, equalTo(false));
+            assertThat("@After already called in @Before", callLastCalled, equalTo(false));
             callFirstCalled = true;
         }
 
         @Test
         public void actualTest() {
-            assertThat(callFirstCalled, equalTo(true));
-            assertThat(actualTestCalled, equalTo(false));
-            assertThat(callLastCalled, equalTo(false));
+            assertThat("@Before not called yet in @Test", callFirstCalled, equalTo(true));
+            assertThat("@Test already called in @Test", actualTestCalled, equalTo(false));
+            assertThat("@After already called in @Test", callLastCalled, equalTo(false));
             actualTestCalled = true;
         }
 
         @After
         public void callLast() {
-            assertThat(callFirstCalled, equalTo(true));
-            assertThat(actualTestCalled, equalTo(true));
-            assertThat(callLastCalled, equalTo(false));
+            assertThat("@Before not called yet in @Test", callFirstCalled, equalTo(true));
+            assertThat("@Test not called yet in @After", actualTestCalled, equalTo(true));
+            assertThat("@After already called in @After", callLastCalled, equalTo(false));
             callLastCalled = true;
         }
     }

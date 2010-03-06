@@ -19,32 +19,52 @@
 
 package org.dhaven.jue.core;
 
-import org.dhaven.jue.api.Request;
-import org.dhaven.jue.api.Results;
-import org.dhaven.jue.api.TestEventListener;
+import org.dhaven.jue.api.*;
+import org.dhaven.jue.core.internal.TestPlan;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin.loritsch
- * Date: Mar 5, 2010
- * Time: 12:34:40 PM
- * To change this template use File | Settings | File Templates.
+ * Central class for JUnit Events.  This runs the tests as they are.
  */
 public class Engine {
+    private TestEventListenerSupport listenerSupport = new TestEventListenerSupport();
+
+    /**
+     * Command line entry point for the test engine.
+     *
+     * @param arguments the command arguments to pass to the request.
+     */
     public static void main(String... arguments) {
+        // Set up the test engine
         Engine engine = new Engine();
         engine.addTestListener(new CommandLineListener());
+
+        // Initialize the test environment
         Request request = new Request(arguments);
+
+        // Get the results
         Results results = engine.process(request);
 
-        System.exit(results.passed() ? 0 : -1);
+        System.out.println(results.passed() ? "All tests passed." : "Tests did not pass");
     }
 
-    private Results process(Request request) {
-        return new Results();
+    public Results process(Request request) {
+        Results results = new Results();
+        addTestListener(results);
+
+        TestPlan plan = TestPlan.from(request);
+        listenerSupport.fireTestEvent("JUnit Events", EventType.StartRun, TestStatus.Running);
+        plan.execute(listenerSupport);
+        listenerSupport.fireTestEvent("JUnit Events", EventType.EndRun, TestStatus.Terminated);
+
+        removeTestListener(results);
+        return results;
     }
 
-    private void addTestListener(TestEventListener testListener) {
-        //To change body of created methods use File | Settings | File Templates.
+    public void removeTestListener(TestEventListener testListener) {
+        listenerSupport.removeTestListener(testListener);
+    }
+
+    public void addTestListener(TestEventListener testListener) {
+        listenerSupport.addTestListener(testListener);
     }
 }

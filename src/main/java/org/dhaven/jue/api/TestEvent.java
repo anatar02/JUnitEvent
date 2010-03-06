@@ -20,21 +20,25 @@
 package org.dhaven.jue.api;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin.loritsch
- * Date: Mar 5, 2010
- * Time: 1:43:02 PM
- * To change this template use File | Settings | File Templates.
+ * Event thrown by the test harness
  */
 public class TestEvent {
     private final String name;
     private final EventType type;
     private final TestStatus status;
+    private final Throwable failure;
 
     public TestEvent(String testName, EventType eventType, TestStatus testStatus) {
+        this(testName, eventType, testStatus, null);
+    }
+
+    public TestEvent(String testName, EventType eventType, TestStatus testStatus, Throwable exception) {
         name = testName;
         type = eventType;
         status = testStatus;
+
+        // TODO: extract root cause if we have a reflection exception
+        failure = exception;
     }
 
     public String getName() {
@@ -47,5 +51,9 @@ public class TestEvent {
 
     public TestStatus getStatus() {
         return status;
+    }
+
+    public Throwable getFailure() {
+        return failure;
     }
 }

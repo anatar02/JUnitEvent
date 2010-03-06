@@ -19,6 +19,11 @@
 
 package org.dhaven.jue.api;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by IntelliJ IDEA.
  * User: berin.loritsch
@@ -27,12 +32,49 @@ package org.dhaven.jue.api;
  * To change this template use File | Settings | File Templates.
  */
 public class Results implements TestEventListener {
+    Map<String, TestEvent> collectedResults = new HashMap<String, TestEvent>();
+
+    public boolean complete() {
+        boolean completed = true;
+
+        for (TestEvent event : collectedResults.values()) {
+            completed = completed && (event.getStatus() != TestStatus.Running);
+        }
+
+        return completed;
+    }
+
     public boolean passed() {
-        return false;  //To change body of created methods use File | Settings | File Templates.
+        boolean passed = true;
+
+        for (TestEvent event : collectedResults.values()) {
+            passed = passed && (event.getStatus() == TestStatus.Passed);
+        }
+
+        return passed;
+    }
+
+    public String failuresToString() {
+        StringBuilder builder = new StringBuilder();
+
+        for (TestEvent event : collectedResults.values()) {
+            if (event.getStatus() == TestStatus.Failed) {
+                builder.append(event.getName());
+                builder.append("... Failed\n");
+
+                StringWriter writer = new StringWriter();
+                event.getFailure().printStackTrace(new PrintWriter(writer));
+                builder.append(writer.toString());
+            }
+        }
+
+        return builder.toString();
     }
 
     @Override
     public void handleEvent(TestEvent event) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        if (event.getType() == EventType.EndTest) {
+            collectedResults.put(event.getName(), event);
+        }
     }
 }

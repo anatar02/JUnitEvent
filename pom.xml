@@ -87,8 +87,9 @@
                 </executions>
                 <configuration>
                     <mainClass>org.dhaven.jue.core.Engine</mainClass>
+                    <classpathScope>test</classpathScope>
                     <arguments>
-                        <argument>org.dhaven.jue.*</argument>
+                        <argument>org.dhaven.jue.TestOrder</argument>
                     </arguments>
                 </configuration>
             </plugin>

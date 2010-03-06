@@ -17,15 +17,17 @@
  * under the License.
  */
 
-package org.dhaven.jue.api;
+package org.dhaven.jue.core.internal;
+
+import java.util.Collection;
 
 /**
  * Created by IntelliJ IDEA.
- * User: berin.loritsch
+ * User: berin
  * Date: Mar 5, 2010
- * Time: 2:03:21 PM
+ * Time: 8:09:48 PM
  * To change this template use File | Settings | File Templates.
  */
-public enum TestStatus {
-    Running, Terminated, Ignored, Passed, Failed
+public interface Runner {
+    Collection<Testlet> defineTests(Class<?> testCase) throws InstantiationException, IllegalAccessException;
 }

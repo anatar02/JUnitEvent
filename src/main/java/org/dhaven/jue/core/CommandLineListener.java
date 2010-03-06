@@ -23,24 +23,25 @@ import org.dhaven.jue.api.TestEvent;
 import org.dhaven.jue.api.TestEventListener;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin.loritsch
- * Date: Mar 5, 2010
- * Time: 3:06:46 PM
- * To change this template use File | Settings | File Templates.
+ * Default listener for the command line access to the tool.
  */
 public class CommandLineListener implements TestEventListener {
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     @Override
     public void handleEvent(TestEvent event) {
         switch (event.getStatus()) {
             case Passed:
-            case Failed:
             case Ignored:
                 System.out.format("%s... %s\n", event.getName(), event.getStatus());
                 break;
 
+            case Failed:
+                System.out.format("%s... %s\n", event.getName(), event.getStatus());
+                event.getFailure().printStackTrace(System.out);
+                break;
+
             default:
-                System.out.format("%s (%s)", event.getName(), event.getType());
+                System.out.format("%s (%s)\n", event.getName(), event.getType());
         }
     }
 }

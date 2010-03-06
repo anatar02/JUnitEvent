@@ -19,17 +19,34 @@
 
 package org.dhaven.jue.api;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * Created by IntelliJ IDEA.
- * User: berin.loritsch
- * Date: Mar 5, 2010
- * Time: 1:33:45 PM
- * To change this template use File | Settings | File Templates.
+ * Collect, filter and prepare the test classes.
  */
 public class Request {
+    private Set<Class<?>> testClasses = new HashSet<Class<?>>();
+
     public Request(String... arguments) {
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+        for (String className : arguments) {
+            try {
+                testClasses.add(loader.loadClass(className));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
     }
 
-    public Request(Class<?>... testClasses) {
+    public Request(Class<?>... classes) {
+        testClasses.addAll(Arrays.asList(classes));
+    }
+
+    public Collection<Class<?>> getTestClasses() {
+        return testClasses;
     }
 }
