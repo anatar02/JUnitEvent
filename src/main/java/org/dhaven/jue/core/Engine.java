@@ -19,7 +19,11 @@
 
 package org.dhaven.jue.core;
 
-import org.dhaven.jue.api.*;
+import org.dhaven.jue.api.Request;
+import org.dhaven.jue.api.Results;
+import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.api.event.TestEventListener;
 import org.dhaven.jue.core.internal.TestPlan;
 
 /**
@@ -33,7 +37,7 @@ public class Engine {
      *
      * @param arguments the command arguments to pass to the request.
      */
-    public static void main(String... arguments) {
+    public static void main(String... arguments) throws Exception {
         // Set up the test engine
         Engine engine = new Engine();
         engine.addTestListener(new CommandLineListener());
@@ -47,14 +51,14 @@ public class Engine {
         System.out.println(results.passed() ? "All tests passed." : "Tests did not pass");
     }
 
-    public Results process(Request request) {
+    public Results process(Request request) throws Exception {
         Results results = new Results();
         addTestListener(results);
 
         TestPlan plan = TestPlan.from(request);
-        listenerSupport.fireTestEvent("JUnit Events", EventType.StartRun, TestStatus.Running);
+        listenerSupport.fireTestEvent("JUnit Events", EventType.StartRun, Status.Running);
         plan.execute(listenerSupport);
-        listenerSupport.fireTestEvent("JUnit Events", EventType.EndRun, TestStatus.Terminated);
+        listenerSupport.fireTestEvent("JUnit Events", EventType.EndRun, Status.Terminated);
 
         removeTestListener(results);
         return results;

@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.equalTo;
  */
 public class TestOrder {
     @Test
-    public void checkOrder() {
+    public void checkOrder() throws Exception {
         Request testRequest = new Request(InternalTest.class);
         Engine engine = new Engine();
         Results results = engine.process(testRequest);

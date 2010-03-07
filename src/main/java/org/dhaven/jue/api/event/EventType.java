@@ -17,15 +17,37 @@
  * under the License.
  */
 
-package org.dhaven.jue.api;
+package org.dhaven.jue.api.event;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin.loritsch
- * Date: Mar 5, 2010
- * Time: 1:42:38 PM
- * To change this template use File | Settings | File Templates.
+ * The EventType identifies where an event is in the test cycle.  The event
+ * types are listed in the logical order of how they are sent.
  */
 public enum EventType {
-    StartRun, StartTestCase, StartTest, EndTest, EndTestCase, EndRun
+    /**
+     * Event is sent at the beginning of all testing.
+     */
+    StartRun,
+    /**
+     * Event is sent at the beginning of a test case.  A test case is a class
+     * that contains several tests within it.
+     */
+    StartTestCase,
+    /**
+     * Event is sent as the beginning of an individual test.
+     */
+    StartTest,
+    /**
+     * Event is sent at the end of an individual test.
+     */
+    EndTest,
+    /**
+     * Event is sent at the end of a test case.  A test case is a class that
+     * contains several tests within it.
+     */
+    EndTestCase,
+    /**
+     * Event is sent at the end of all testing.
+     */
+    EndRun
 }

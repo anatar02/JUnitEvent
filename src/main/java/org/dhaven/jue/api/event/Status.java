@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.dhaven.jue.api;
+package org.dhaven.jue.api.event;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,6 +26,6 @@ package org.dhaven.jue.api;
  * Time: 2:03:21 PM
  * To change this template use File | Settings | File Templates.
  */
-public enum TestStatus {
+public enum Status {
     Running, Terminated, Ignored, Passed, Failed
 }

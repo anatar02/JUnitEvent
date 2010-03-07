@@ -17,15 +17,19 @@
  * under the License.
  */
 
-package org.dhaven.jue.api;
+package org.dhaven.jue.api.event;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin.loritsch
- * Date: Mar 5, 2010
- * Time: 2:01:28 PM
- * To change this template use File | Settings | File Templates.
+ * Implement this class if you want to consume test events.  Register your
+ * custom listener with the test engine.
+ *
+ * @see org.dhaven.jue.core.Engine#addTestListener(TestEventListener)
  */
 public interface TestEventListener {
+    /**
+     * Consume a test event.  Events are sent one at a time.
+     *
+     * @param event the test event
+     */
     void handleEvent(TestEvent event);
 }

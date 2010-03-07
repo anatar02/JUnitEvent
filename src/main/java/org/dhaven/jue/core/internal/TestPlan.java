@@ -19,9 +19,9 @@
 
 package org.dhaven.jue.core.internal;
 
-import org.dhaven.jue.api.EventType;
 import org.dhaven.jue.api.Request;
-import org.dhaven.jue.api.TestStatus;
+import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.core.TestEventListenerSupport;
 
 import java.util.Collection;
@@ -64,15 +64,15 @@ public class TestPlan {
 
     public void execute(TestEventListenerSupport listenerSupport) {
         for (Testlet testlet : testQueue) {
-            listenerSupport.fireTestEvent(testlet.getName(), EventType.StartTest, TestStatus.Running);
+            listenerSupport.fireTestEvent(testlet.getName(), EventType.StartTest, Status.Running);
             if (testlet.isIgnored()) {
-                listenerSupport.fireTestEvent(testlet.getName(), EventType.EndTest, TestStatus.Ignored);
+                listenerSupport.fireTestEvent(testlet.getName(), EventType.EndTest, Status.Ignored);
             } else {
                 try {
                     testlet.call();
-                    listenerSupport.fireTestEvent(testlet.getName(), EventType.EndTest, TestStatus.Passed);
+                    listenerSupport.fireTestEvent(testlet.getName(), EventType.EndTest, Status.Passed);
                 } catch (InterruptedException ie) {
-                    listenerSupport.fireTestEvent(testlet.getName(), EventType.EndTest, TestStatus.Terminated);
+                    listenerSupport.fireTestEvent(testlet.getName(), EventType.EndTest, Status.Terminated);
                 } catch (Throwable e) {
                     listenerSupport.fireTestEvent(testlet.getName(), e);
                 }

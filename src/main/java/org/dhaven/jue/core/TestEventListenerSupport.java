@@ -19,10 +19,10 @@
 
 package org.dhaven.jue.core;
 
-import org.dhaven.jue.api.EventType;
-import org.dhaven.jue.api.TestEvent;
-import org.dhaven.jue.api.TestEventListener;
-import org.dhaven.jue.api.TestStatus;
+import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.api.event.TestEvent;
+import org.dhaven.jue.api.event.TestEventListener;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -71,7 +71,7 @@ public class TestEventListenerSupport {
      * @param type   the event type
      * @param status the test status
      */
-    public void fireTestEvent(String name, EventType type, TestStatus status) {
+    public void fireTestEvent(String name, EventType type, Status status) {
         fireTestEvent(new TestEvent(name, type, status));
     }
 
@@ -87,6 +87,6 @@ public class TestEventListenerSupport {
     }
 
     public void fireTestEvent(String name, Throwable failure) {
-        fireTestEvent(new TestEvent(name, EventType.EndTest, TestStatus.Failed, failure));
+        fireTestEvent(new TestEvent(name, EventType.EndTest, Status.Failed, failure));
     }
 }

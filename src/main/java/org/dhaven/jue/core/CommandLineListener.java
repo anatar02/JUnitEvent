@@ -19,8 +19,8 @@
 
 package org.dhaven.jue.core;
 
-import org.dhaven.jue.api.TestEvent;
-import org.dhaven.jue.api.TestEventListener;
+import org.dhaven.jue.api.event.TestEvent;
+import org.dhaven.jue.api.event.TestEventListener;
 
 /**
  * Default listener for the command line access to the tool.

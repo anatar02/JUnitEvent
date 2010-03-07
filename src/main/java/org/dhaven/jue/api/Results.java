@@ -19,6 +19,11 @@
 
 package org.dhaven.jue.api;
 
+import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.api.event.TestEvent;
+import org.dhaven.jue.api.event.TestEventListener;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -38,7 +43,7 @@ public class Results implements TestEventListener {
         boolean completed = true;
 
         for (TestEvent event : collectedResults.values()) {
-            completed = completed && (event.getStatus() != TestStatus.Running);
+            completed = completed && (event.getStatus() != Status.Running);
         }
 
         return completed;
@@ -48,7 +53,7 @@ public class Results implements TestEventListener {
         boolean passed = true;
 
         for (TestEvent event : collectedResults.values()) {
-            passed = passed && (event.getStatus() == TestStatus.Passed);
+            passed = passed && (event.getStatus() == Status.Passed);
         }
 
         return passed;
@@ -58,7 +63,7 @@ public class Results implements TestEventListener {
         StringBuilder builder = new StringBuilder();
 
         for (TestEvent event : collectedResults.values()) {
-            if (event.getStatus() == TestStatus.Failed) {
+            if (event.getStatus() == Status.Failed) {
                 builder.append(event.getName());
                 builder.append("... Failed\n");
 
