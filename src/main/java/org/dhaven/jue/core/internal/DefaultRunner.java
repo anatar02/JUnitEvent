@@ -19,9 +19,7 @@
 
 package org.dhaven.jue.core.internal;
 
-import org.dhaven.jue.After;
-import org.dhaven.jue.Before;
-import org.dhaven.jue.Test;
+import org.dhaven.jue.Annotations;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -46,16 +44,16 @@ public class DefaultRunner implements Runner {
         Object instance = testCase.newInstance();
 
         for (Method method : testCase.getDeclaredMethods()) {
-            if (hasAnnotation(method, Test.class)) {
+            if (hasAnnotation(method, Annotations.Test.class)) {
                 Testlet testlet = new Testlet(instance, method);
                 tests.add(testlet);
             }
 
-            if (hasAnnotation(method, Before.class)) {
+            if (hasAnnotation(method, Annotations.Before.class)) {
                 befores.add(method);
             }
 
-            if (hasAnnotation(method, After.class)) {
+            if (hasAnnotation(method, Annotations.After.class)) {
                 afters.add(method);
             }
         }

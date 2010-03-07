@@ -41,19 +41,19 @@ public class TestOrder {
     private Engine engine;
     private Request testsToRun;
 
-    @Before
+    @Annotations.Before
     public void setUpEngine() {
         testsToRun = new Request(InternalTest.class);
         engine = new Engine();
     }
 
-    @Test
+    @Annotations.Test
     public void checkMethodOrder() throws Exception {
         Results results = engine.process(testsToRun);
         assertThat(results.failuresToString(), results.passed(), equalTo(true));
     }
 
-    @Test
+    @Annotations.Test
     public void checkEventOrder() throws Exception {
         ListenerTester listenerTester = new ListenerTester();
         engine.addTestListener(listenerTester);
@@ -71,7 +71,7 @@ public class TestOrder {
         boolean actualTestCalled = false;
         boolean callLastCalled = false;
 
-        @Before
+        @Annotations.Before
         public void callFirst() {
             assertThat("@Before already called in @Before", callFirstCalled, equalTo(false));
             assertThat("@Test already called in @Before", actualTestCalled, equalTo(false));
@@ -79,7 +79,7 @@ public class TestOrder {
             callFirstCalled = true;
         }
 
-        @Test
+        @Annotations.Test
         public void actualTest() {
             assertThat("@Before not called yet in @Test", callFirstCalled, equalTo(true));
             assertThat("@Test already called in @Test", actualTestCalled, equalTo(false));
@@ -87,7 +87,7 @@ public class TestOrder {
             actualTestCalled = true;
         }
 
-        @After
+        @Annotations.After
         public void callLast() {
             assertThat("@Before not called yet in @Test", callFirstCalled, equalTo(true));
             assertThat("@Test not called yet in @After", actualTestCalled, equalTo(true));

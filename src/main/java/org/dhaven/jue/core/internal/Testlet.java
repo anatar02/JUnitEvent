@@ -19,7 +19,7 @@
 
 package org.dhaven.jue.core.internal;
 
-import org.dhaven.jue.Ignore;
+import org.dhaven.jue.Annotations;
 import org.dhaven.jue.core.TestEventListenerSupport;
 
 import java.lang.reflect.InvocationTargetException;
@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Codifies a discrete test.
  */
-public class Testlet implements TestNode, Comparable<Testlet> {
+public class Testlet implements TestNode {
     private String name;
     private boolean ignored;
     private Method method;
@@ -48,7 +48,7 @@ public class Testlet implements TestNode, Comparable<Testlet> {
         testCase = instance;
         name = testName;
         method = testMethod;
-        ignored = method.getAnnotation(Ignore.class) != null;
+        ignored = method.getAnnotation(Annotations.Ignore.class) != null;
     }
 
     public String getName() {
@@ -94,7 +94,7 @@ public class Testlet implements TestNode, Comparable<Testlet> {
     }
 
     @Override
-    public int compareTo(Testlet other) {
+    public int compareTo(TestNode other) {
         return 0;
     }
 

@@ -19,6 +19,8 @@
 
 package org.dhaven.jue.api;
 
+import org.dhaven.jue.Annotations;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -30,16 +32,14 @@ import java.util.Set;
 public class Request {
     private Set<Class<?>> testClasses = new HashSet<Class<?>>();
 
-    public Request(String... arguments) {
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    public Request(String... arguments) throws Exception {
+        ClassCollector collector = new ClassCollector();
+        collector.setBasePackage(arguments[0]);
+        collector.methodsHaveAnnotation(Annotations.get());
+        collector.noInternalClasses();
+        collector.recursiveSearch();
 
-        for (String className : arguments) {
-            try {
-                testClasses.add(loader.loadClass(className));
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-        }
+        testClasses.addAll(Arrays.asList(collector.collect()));
     }
 
     public Request(Class<?>... classes) {

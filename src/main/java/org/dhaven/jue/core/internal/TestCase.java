@@ -55,4 +55,9 @@ public class TestCase implements TestNode {
     public String getName() {
         return testCase.getName();
     }
+
+    @Override
+    public int compareTo(TestNode other) {
+        return 0;
+    }
 }

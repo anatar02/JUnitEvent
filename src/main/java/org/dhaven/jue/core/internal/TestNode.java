@@ -28,6 +28,6 @@ import org.dhaven.jue.core.TestEventListenerSupport;
  * Time: 9:57:37 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface TestNode extends Identifiable {
+public interface TestNode extends Identifiable, Comparable<TestNode> {
     void run(TestEventListenerSupport support) throws Exception;
 }

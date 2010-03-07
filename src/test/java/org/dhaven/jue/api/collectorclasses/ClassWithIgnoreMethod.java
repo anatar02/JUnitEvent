@@ -17,22 +17,12 @@
  * under the License.
  */
 
-package org.dhaven.jue;
+package org.dhaven.jue.api.collectorclasses;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.dhaven.jue.Annotations;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-/**
- * Mark a test as ignored.
- */
-@Retention(RUNTIME)
-@Target(METHOD)
-@Documented
-@Inherited
-public @interface Ignore {
+public class ClassWithIgnoreMethod {
+    @Annotations.Ignore
+    public void ignore() {
+    }
 }

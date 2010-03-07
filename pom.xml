@@ -89,7 +89,7 @@
                     <mainClass>org.dhaven.jue.core.Engine</mainClass>
                     <classpathScope>test</classpathScope>
                     <arguments>
-                        <argument>org.dhaven.jue.TestOrder</argument>
+                        <argument>org.dhaven.jue</argument>
                     </arguments>
                 </configuration>
             </plugin>
