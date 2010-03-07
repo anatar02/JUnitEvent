@@ -63,6 +63,9 @@ public class TestOrder {
         assertThat(listenerTester.getEventOrder(), equalTo(EventType.values()));
     }
 
+    /**
+     * Internal test to ensure the order of @Before, @Test, and @After work OK.
+     */
     public static class InternalTest {
         boolean callFirstCalled = false;
         boolean actualTestCalled = false;
@@ -93,6 +96,9 @@ public class TestOrder {
         }
     }
 
+    /**
+     * Helper listener to extract the order of events.
+     */
     private class ListenerTester implements TestEventListener {
         private List<TestEvent> events = new ArrayList<TestEvent>(
                 EventType.values().length);
