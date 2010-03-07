@@ -1,5 +1,10 @@
-This project is more a proof of concept, and less about trying to supplant venerable projects like JUnit and TestNG.
-However, there are quite a few things that the projects could clean up.
+JUnit Events is designed for Quality of Service (QOS) testing.  This project
+defines QOS as correctness under duress.  The idea is to provide a stable and
+scalable architecture to be able to create concurrent testing harnesses.
 
-You may not need parallel testing, but this is more a question of whether we can take apart a class and run it in
-parallel.  Unit testing is just a small enough problem to make this a feasible project.
+While you can use this project for your normal, every day correctness testing;
+it is designed to put some serious load on your project.  The tests will be
+run in separate threads, but the number of threads are not infinite.  The test
+harness will allow you to specify a multiplier for the number of physical
+processors that your system has.  Based on your machine's architecture and the
+multiplier the test harness will create that many threads.
