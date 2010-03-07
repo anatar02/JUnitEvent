@@ -21,7 +21,15 @@ package org.dhaven.jue;
 
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.Results;
+import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.event.TestEvent;
+import org.dhaven.jue.api.event.TestEventListener;
 import org.dhaven.jue.core.Engine;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -30,17 +38,29 @@ import static org.hamcrest.Matchers.equalTo;
  * Make sure the tests are run in order
  */
 public class TestOrder {
+    private Engine engine;
+    private Request testsToRun;
+
+    @Before
+    public void setUpEngine() {
+        testsToRun = new Request(InternalTest.class);
+        engine = new Engine();
+    }
+
     @Test
-    public void checkOrder() throws Exception {
-        Request testRequest = new Request(InternalTest.class);
-        Engine engine = new Engine();
-        Results results = engine.process(testRequest);
+    public void checkMethodOrder() throws Exception {
+        Results results = engine.process(testsToRun);
         assertThat(results.failuresToString(), results.passed(), equalTo(true));
     }
 
     @Test
-    public void sanityCheck() {
-        assertThat(true, equalTo(true));
+    public void checkEventOrder() throws Exception {
+        ListenerTester listenerTester = new ListenerTester();
+        engine.addTestListener(listenerTester);
+
+        engine.process(testsToRun);
+
+        assertThat(listenerTester.getEventOrder(), equalTo(EventType.values()));
     }
 
     public static class InternalTest {
@@ -70,6 +90,33 @@ public class TestOrder {
             assertThat("@Test not called yet in @After", actualTestCalled, equalTo(true));
             assertThat("@After already called in @After", callLastCalled, equalTo(false));
             callLastCalled = true;
+        }
+    }
+
+    private class ListenerTester implements TestEventListener {
+        private List<TestEvent> events = new ArrayList<TestEvent>(
+                EventType.values().length);
+
+        @Override
+        public void handleEvent(TestEvent event) {
+            events.add(event);
+        }
+
+        public EventType[] getEventOrder() {
+            Collections.sort(events, new Comparator<TestEvent>() {
+                @Override
+                public int compare(TestEvent o1, TestEvent o2) {
+                    return (int) (o1.getNanoseconds()
+                            - o2.getNanoseconds());
+                }
+            });
+
+            EventType[] eventOrder = new EventType[events.size()];
+            for (int i = 0; i < eventOrder.length; i++) {
+                eventOrder[i] = events.get(i).getType();
+            }
+
+            return eventOrder;
         }
     }
 }

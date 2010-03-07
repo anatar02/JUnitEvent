@@ -125,7 +125,18 @@ public class TestEvent {
      *
      * @return the time stamp in nanoseconds
      */
-    public long getNanosecondsTimeStamp() {
+    public long getNanoseconds() {
         return timeStamp;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append('{').append(getName());
+        builder.append(" [").append(getType().name()).append("] ");
+        builder.append('[').append(getStatus().name()).append("]: ");
+        builder.append(getNanoseconds()).append('}');
+
+        return builder.toString();
     }
 }

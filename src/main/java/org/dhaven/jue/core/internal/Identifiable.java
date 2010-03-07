@@ -19,15 +19,13 @@
 
 package org.dhaven.jue.core.internal;
 
-import java.util.Collection;
-
 /**
  * Created by IntelliJ IDEA.
  * User: berin
- * Date: Mar 5, 2010
- * Time: 8:09:48 PM
+ * Date: Mar 6, 2010
+ * Time: 10:05:09 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface Runner {
-    Collection<TestNode> defineTests(Class<?> testCase) throws Exception;
+public interface Identifiable {
+    String getName();
 }

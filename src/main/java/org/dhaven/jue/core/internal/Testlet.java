@@ -20,17 +20,19 @@
 package org.dhaven.jue.core.internal;
 
 import org.dhaven.jue.Ignore;
+import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.core.TestEventListenerSupport;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Codifies a discrete test.
  */
-public class Testlet implements Callable, Comparable<Testlet> {
+public class Testlet implements TestNode, Comparable<Testlet> {
     private String name;
     private boolean ignored;
     private Method method;
@@ -56,12 +58,19 @@ public class Testlet implements Callable, Comparable<Testlet> {
     }
 
     @Override
-    public Object call() throws Exception {
-        if (ignored) return null;
+    public void run(TestEventListenerSupport support) throws Exception {
+        if (ignored) {
+            support.fireTestEvent(getName(), EventType.EndTest, Status.Ignored);
+            return;
+        }
 
         try {
+            support.fireTestEvent(getName(), EventType.StartTest, Status.Running);
             setup();
-            return method.invoke(testCase);
+            method.invoke(testCase);
+            support.fireTestEvent(getName(), EventType.EndTest, Status.Passed);
+        } catch (Throwable throwable) {
+            support.fireTestEvent(getName(), throwable);
         } finally {
             tearDown();
         }

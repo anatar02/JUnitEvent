@@ -25,6 +25,7 @@ import org.dhaven.jue.Test;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +39,7 @@ import java.util.List;
  */
 public class DefaultRunner implements Runner {
     @Override
-    public Collection<Testlet> defineTests(Class<?> testCase) throws InstantiationException, IllegalAccessException {
+    public Collection<TestNode> defineTests(Class<?> testCase) throws Exception {
         List<Testlet> tests = new LinkedList<Testlet>();
         List<Method> befores = new LinkedList<Method>();
         List<Method> afters = new LinkedList<Method>();
@@ -59,12 +60,16 @@ public class DefaultRunner implements Runner {
             }
         }
 
+        TestCase testList = new TestCase(testCase);
+
         for (Testlet testlet : tests) {
             testlet.addSetup(befores);
             testlet.addTearDown(afters);
+
+            testList.addChild(testlet);
         }
 
-        return tests;
+        return Arrays.asList(new TestNode[]{testList});
     }
 
     private static boolean hasAnnotation(Method method, Class<? extends Annotation> annotation) {

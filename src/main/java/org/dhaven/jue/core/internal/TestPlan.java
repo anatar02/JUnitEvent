@@ -20,8 +20,6 @@
 package org.dhaven.jue.core.internal;
 
 import org.dhaven.jue.api.Request;
-import org.dhaven.jue.api.event.EventType;
-import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.core.TestEventListenerSupport;
 
 import java.util.Collection;
@@ -31,7 +29,7 @@ import java.util.PriorityQueue;
  * Represents the test plan.
  */
 public class TestPlan {
-    PriorityQueue<Testlet> testQueue = new PriorityQueue<Testlet>();
+    PriorityQueue<TestNode> testQueue = new PriorityQueue<TestNode>();
     // should only be created locally;
 
     private TestPlan() {
@@ -58,24 +56,16 @@ public class TestPlan {
         testQueue.add(test);
     }
 
-    public void addTests(Collection<Testlet> tests) {
+    public void addTests(Collection<TestNode> tests) {
         testQueue.addAll(tests);
     }
 
     public void execute(TestEventListenerSupport listenerSupport) {
-        for (Testlet testlet : testQueue) {
-            listenerSupport.fireTestEvent(testlet.getName(), EventType.StartTest, Status.Running);
-            if (testlet.isIgnored()) {
-                listenerSupport.fireTestEvent(testlet.getName(), EventType.EndTest, Status.Ignored);
-            } else {
-                try {
-                    testlet.call();
-                    listenerSupport.fireTestEvent(testlet.getName(), EventType.EndTest, Status.Passed);
-                } catch (InterruptedException ie) {
-                    listenerSupport.fireTestEvent(testlet.getName(), EventType.EndTest, Status.Terminated);
-                } catch (Throwable e) {
-                    listenerSupport.fireTestEvent(testlet.getName(), e);
-                }
+        for (TestNode node : testQueue) {
+            try {
+                node.run(listenerSupport);
+            } catch (Exception e) {
+                listenerSupport.fireTestEvent(node.getName(), e);
             }
         }
     }
