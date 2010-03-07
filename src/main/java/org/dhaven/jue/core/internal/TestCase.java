@@ -19,19 +19,13 @@
 
 package org.dhaven.jue.core.internal;
 
-import org.dhaven.jue.api.event.EventType;
-import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.core.TestEventListenerSupport;
 
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin
- * Date: Mar 6, 2010
- * Time: 10:05:45 PM
- * To change this template use File | Settings | File Templates.
+ * Represents a test case.
  */
 public class TestCase implements TestNode {
     private final Class<?> testCase;
@@ -47,13 +41,13 @@ public class TestCase implements TestNode {
 
     @Override
     public void run(TestEventListenerSupport support) throws Exception {
-        support.fireTestEvent(getName(), EventType.StartTestCase, Status.Running);
+        support.fireStartTestCase(this);
         try {
             for (TestNode node : children) {
                 node.run(support);
             }
         } finally {
-            support.fireTestEvent(getName(), EventType.EndTestCase, Status.Terminated);
+            support.fireEndTestCase(this);
         }
     }
 

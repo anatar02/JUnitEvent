@@ -21,8 +21,6 @@ package org.dhaven.jue.core;
 
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.Results;
-import org.dhaven.jue.api.event.EventType;
-import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEventListener;
 import org.dhaven.jue.core.internal.TestPlan;
 
@@ -36,6 +34,7 @@ public class Engine {
      * Command line entry point for the test engine.
      *
      * @param arguments the command arguments to pass to the request.
+     * @throws Exception if there was a problem in the engine
      */
     public static void main(String... arguments) throws Exception {
         // Set up the test engine
@@ -56,9 +55,9 @@ public class Engine {
         addTestListener(results);
 
         TestPlan plan = TestPlan.from(request);
-        listenerSupport.fireTestEvent("JUnit Events", EventType.StartRun, Status.Running);
+        listenerSupport.fireStartTestRun();
         plan.execute(listenerSupport);
-        listenerSupport.fireTestEvent("JUnit Events", EventType.EndRun, Status.Terminated);
+        listenerSupport.fireEndTestRun();
 
         removeTestListener(results);
         return results;

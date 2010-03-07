@@ -23,8 +23,8 @@ import org.dhaven.jue.api.event.EventType;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
+import org.dhaven.jue.core.internal.Identifiable;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,6 +34,7 @@ import java.util.List;
  */
 public class TestEventListenerSupport {
     private List<TestEventListener> listeners = new LinkedList<TestEventListener>();
+    private static final String FRAMEWORK_NAME = "JUnit Events";
 
     /**
      * Add a test event listener.
@@ -54,39 +55,84 @@ public class TestEventListenerSupport {
     }
 
     /**
-     * Remove all the listeners at once.
-     */
-    void clearAllListeners() {
-        Iterator<TestEventListener> it = listeners.iterator();
-        while (it.hasNext()) {
-            it.next();
-            it.remove();
-        }
-    }
-
-    /**
-     * Creates a test event and fires the event to all listeners.
-     *
-     * @param name   the test name
-     * @param type   the event type
-     * @param status the test status
-     */
-    public void fireTestEvent(String name, EventType type, Status status) {
-        fireTestEvent(new TestEvent(name, type, status));
-    }
-
-    /**
      * Send the test event to all the listeners.
+     * TODO: Just add these to an event queue, and fire them off from the
+     * TODO: event thread queue.
      *
      * @param testEvent the test event to send
      */
-    public void fireTestEvent(TestEvent testEvent) {
+    private void fireTestEvent(TestEvent testEvent) {
         for (TestEventListener listener : listeners) {
             listener.handleEvent(testEvent);
         }
     }
 
-    public void fireTestEvent(String name, Throwable failure) {
-        fireTestEvent(new TestEvent(name, EventType.EndTest, Status.Failed, failure));
+    /**
+     * Signal the start of a test run.
+     */
+    public void fireStartTestRun() {
+        fireTestEvent(new TestEvent(FRAMEWORK_NAME, EventType.StartRun, Status.Running));
+    }
+
+    /**
+     * Signal the end of a test run.
+     */
+    public void fireEndTestRun() {
+        fireTestEvent(new TestEvent(FRAMEWORK_NAME, EventType.EndRun, Status.Terminated));
+    }
+
+    /**
+     * Signal the start of a test case.
+     *
+     * @param testCase the test case that started
+     */
+    public void fireStartTestCase(Identifiable testCase) {
+        fireTestEvent(new TestEvent(testCase.getName(), EventType.StartTestCase, Status.Running));
+    }
+
+    /**
+     * Signal the end of a test case.
+     *
+     * @param testCase the test case that ended
+     */
+    public void fireEndTestCase(Identifiable testCase) {
+        fireTestEvent(new TestEvent(testCase.getName(), EventType.EndTestCase, Status.Terminated));
+    }
+
+    /**
+     * Signal the start of an individual test.
+     *
+     * @param test the test that started
+     */
+    public void fireTestStarted(Identifiable test) {
+        fireTestEvent(new TestEvent(test.getName(), EventType.StartTest, Status.Running));
+    }
+
+    /**
+     * Signal that a test was ignored.
+     *
+     * @param test the test that was ignored
+     */
+    public void fireTestIgnored(Identifiable test) {
+        fireTestEvent(new TestEvent(test.getName(), EventType.EndTest, Status.Ignored));
+    }
+
+    /**
+     * Signal that a test passed.
+     *
+     * @param test the test that passed.
+     */
+    public void fireTestPassed(Identifiable test) {
+        fireTestEvent(new TestEvent(test.getName(), EventType.EndTest, Status.Passed));
+    }
+
+    /**
+     * Signal that a test failed.
+     *
+     * @param test    the test that failed
+     * @param failure the cause of the failure
+     */
+    public void fireTestFailed(Identifiable test, Throwable failure) {
+        fireTestEvent(new TestEvent(test.getName(), EventType.EndTest, Status.Failed, failure));
     }
 }

@@ -20,8 +20,6 @@
 package org.dhaven.jue.core.internal;
 
 import org.dhaven.jue.Ignore;
-import org.dhaven.jue.api.event.EventType;
-import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.core.TestEventListenerSupport;
 
 import java.lang.reflect.InvocationTargetException;
@@ -59,18 +57,19 @@ public class Testlet implements TestNode, Comparable<Testlet> {
 
     @Override
     public void run(TestEventListenerSupport support) throws Exception {
-        if (ignored) {
-            support.fireTestEvent(getName(), EventType.EndTest, Status.Ignored);
+        support.fireTestStarted(this);
+
+        if (isIgnored()) {
+            support.fireTestIgnored(this);
             return;
         }
 
         try {
-            support.fireTestEvent(getName(), EventType.StartTest, Status.Running);
             setup();
             method.invoke(testCase);
-            support.fireTestEvent(getName(), EventType.EndTest, Status.Passed);
+            support.fireTestPassed(this);
         } catch (Throwable throwable) {
-            support.fireTestEvent(getName(), throwable);
+            support.fireTestFailed(this, throwable);
         } finally {
             tearDown();
         }

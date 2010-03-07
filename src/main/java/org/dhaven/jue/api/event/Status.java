@@ -20,12 +20,29 @@
 package org.dhaven.jue.api.event;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin.loritsch
- * Date: Mar 5, 2010
- * Time: 2:03:21 PM
- * To change this template use File | Settings | File Templates.
+ * The status tells you the results of the test events as they are run.
  */
 public enum Status {
-    Running, Terminated, Ignored, Passed, Failed
+    /**
+     * The status at any start event, the event type is currently running.
+     */
+    Running,
+    /**
+     * The status when a non-test event ends or when a test ends early due
+     * to being terminated by the user.
+     */
+    Terminated,
+    /**
+     * The test has been ignored, either through using the {@link @Ignore}
+     * annotation or through a failed assumption.
+     */
+    Ignored,
+    /**
+     * The test passed its tests.
+     */
+    Passed,
+    /**
+     * The test failed.
+     */
+    Failed
 }

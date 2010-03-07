@@ -40,6 +40,7 @@ public class TestPlan {
      *
      * @param request the request object
      * @return the initialized test plan
+     * @throws Exception when there was a problem constructing the plan.
      */
     public static TestPlan from(Request request) throws Exception {
         TestPlan plan = new TestPlan();
@@ -52,10 +53,6 @@ public class TestPlan {
         return plan;
     }
 
-    public void addTest(Testlet test) {
-        testQueue.add(test);
-    }
-
     public void addTests(Collection<TestNode> tests) {
         testQueue.addAll(tests);
     }
@@ -65,7 +62,7 @@ public class TestPlan {
             try {
                 node.run(listenerSupport);
             } catch (Exception e) {
-                listenerSupport.fireTestEvent(node.getName(), e);
+                listenerSupport.fireTestFailed(node, e);
             }
         }
     }
