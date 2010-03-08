@@ -58,9 +58,9 @@ public class Engine {
         listenerSupport.fireStartTestRun();
         plan.execute(listenerSupport);
         listenerSupport.fireEndTestRun();
+        listenerSupport.flush();
 
         removeTestListener(results);
-        listenerSupport.flush();
         return results;
     }
 

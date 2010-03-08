@@ -30,17 +30,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin.loritsch
- * Date: Mar 5, 2010
- * Time: 12:59:35 PM
- * To change this template use File | Settings | File Templates.
+ * Collects the results from the tests as they are run.  The results object
+ * provides summary and simple analysis features such as providing the
+ * difference between processor time and clock time.  Considering that the tests
+ * are designed to be run in parallel, this is useful information.  If any
+ * test was run multiple times, you will be able to find the average processor
+ * times for those tests.
+ * <p/>
+ * TODO: test case/test summary as well
  */
 public class Results implements TestEventListener {
     Map<String, TestEvent> collectedResults = new HashMap<String, TestEvent>();
 
+    /**
+     * Check to see if all the results we were expecting came in.
+     *
+     * @return <code>true</code> if any pending results have {@link Status#Running}
+     */
     public boolean complete() {
-        boolean completed = true;
+        boolean completed = !collectedResults.isEmpty();
 
         for (TestEvent event : collectedResults.values()) {
             completed = completed && (event.getStatus() != Status.Running);
@@ -49,8 +57,13 @@ public class Results implements TestEventListener {
         return completed;
     }
 
+    /**
+     * Check to see if all the tests returned passing results.
+     *
+     * @return <code>true</code> if all tests have {@link Status#Passed}
+     */
     public boolean passed() {
-        boolean passed = true;
+        boolean passed = !collectedResults.isEmpty();
 
         for (TestEvent event : collectedResults.values()) {
             passed = passed && (event.getStatus() == Status.Passed);
@@ -59,6 +72,12 @@ public class Results implements TestEventListener {
         return passed;
     }
 
+    /**
+     * List all failures as one big string.  Provides easy summary of what
+     * needs to be fixed.
+     *
+     * @return The string of every failure, and its cause
+     */
     public String failuresToString() {
         StringBuilder builder = new StringBuilder();
 
@@ -78,6 +97,7 @@ public class Results implements TestEventListener {
 
     @Override
     public void handleEvent(TestEvent event) {
+        // only recording tests...
         if (event.getType() == EventType.EndTest) {
             collectedResults.put(event.getName(), event);
         }
