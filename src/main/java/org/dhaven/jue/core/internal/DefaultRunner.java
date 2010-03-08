@@ -20,6 +20,9 @@
 package org.dhaven.jue.core.internal;
 
 import org.dhaven.jue.Annotations;
+import org.dhaven.jue.core.internal.node.TestCase;
+import org.dhaven.jue.core.internal.node.TestNode;
+import org.dhaven.jue.core.internal.node.Testlet;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -29,21 +32,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin
- * Date: Mar 5, 2010
- * Time: 8:09:37 PM
- * To change this template use File | Settings | File Templates.
+ * The Default Runner enables the core annotations found in {@link Annotations}.
  */
 public class DefaultRunner implements Runner {
     @Override
-    public Collection<TestNode> defineTests(Class<?> testCase) throws Exception {
+    public Collection<? extends TestNode> defineTests(Class<?> testCase) throws Exception {
         List<Testlet> tests = new LinkedList<Testlet>();
         List<Method> befores = new LinkedList<Method>();
         List<Method> afters = new LinkedList<Method>();
-        Object instance = testCase.newInstance();
 
         for (Method method : testCase.getDeclaredMethods()) {
+            // Ensure new object instance with each testlet
+            Object instance = testCase.newInstance();
+
             if (hasAnnotation(method, Annotations.Test.class)) {
                 Testlet testlet = new Testlet(instance, method);
                 tests.add(testlet);
@@ -67,7 +68,7 @@ public class DefaultRunner implements Runner {
             testList.addChild(testlet);
         }
 
-        return Arrays.asList(new TestNode[]{testList});
+        return Arrays.asList(testList);
     }
 
     private static boolean hasAnnotation(Method method, Class<? extends Annotation> annotation) {

@@ -23,7 +23,8 @@ import org.dhaven.jue.api.event.EventType;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
-import org.dhaven.jue.core.internal.Identifiable;
+import org.dhaven.jue.core.internal.Describable;
+import org.dhaven.jue.core.internal.Description;
 
 import java.util.*;
 
@@ -35,7 +36,7 @@ public class TestEventListenerSupport {
     private List<TestEventListener> listeners = new LinkedList<TestEventListener>();
     private Queue<TestEvent> queue = new LinkedList<TestEvent>();
     private Notifier notifier = new Notifier();
-    private static final String FRAMEWORK_NAME = "JUnit Events";
+    private static final Description FRAMEWORK_NAME = new Description("JUE:Test Run");
     private static final Timer timer = new Timer("JUnit Events Notifier", true);
 
     public TestEventListenerSupport() {
@@ -88,8 +89,8 @@ public class TestEventListenerSupport {
      *
      * @param testCase the test case that started
      */
-    public void fireStartTestCase(Identifiable testCase) {
-        fireTestEvent(new TestEvent(testCase.getName(), EventType.StartTestCase, Status.Running));
+    public void fireStartTestCase(Describable testCase) {
+        fireTestEvent(new TestEvent(testCase.getDescription(), EventType.StartTestCase, Status.Running));
     }
 
     /**
@@ -97,8 +98,8 @@ public class TestEventListenerSupport {
      *
      * @param testCase the test case that ended
      */
-    public void fireEndTestCase(Identifiable testCase) {
-        fireTestEvent(new TestEvent(testCase.getName(), EventType.EndTestCase, Status.Terminated));
+    public void fireEndTestCase(Describable testCase) {
+        fireTestEvent(new TestEvent(testCase.getDescription(), EventType.EndTestCase, Status.Terminated));
     }
 
     /**
@@ -106,8 +107,8 @@ public class TestEventListenerSupport {
      *
      * @param test the test that started
      */
-    public void fireTestStarted(Identifiable test) {
-        fireTestEvent(new TestEvent(test.getName(), EventType.StartTest, Status.Running));
+    public void fireTestStarted(Describable test) {
+        fireTestEvent(new TestEvent(test.getDescription(), EventType.StartTest, Status.Running));
     }
 
     /**
@@ -115,8 +116,8 @@ public class TestEventListenerSupport {
      *
      * @param test the test that was ignored
      */
-    public void fireTestIgnored(Identifiable test) {
-        fireTestEvent(new TestEvent(test.getName(), EventType.EndTest, Status.Ignored));
+    public void fireTestIgnored(Describable test) {
+        fireTestEvent(new TestEvent(test.getDescription(), EventType.EndTest, Status.Ignored));
     }
 
     /**
@@ -124,8 +125,8 @@ public class TestEventListenerSupport {
      *
      * @param test the test that passed.
      */
-    public void fireTestPassed(Identifiable test) {
-        fireTestEvent(new TestEvent(test.getName(), EventType.EndTest, Status.Passed));
+    public void fireTestPassed(Describable test) {
+        fireTestEvent(new TestEvent(test.getDescription(), EventType.EndTest, Status.Passed));
     }
 
     /**
@@ -134,8 +135,8 @@ public class TestEventListenerSupport {
      * @param test    the test that failed
      * @param failure the cause of the failure
      */
-    public void fireTestFailed(Identifiable test, Throwable failure) {
-        fireTestEvent(new TestEvent(test.getName(), EventType.EndTest, Status.Failed, failure));
+    public void fireTestFailed(Describable test, Throwable failure) {
+        fireTestEvent(new TestEvent(test.getDescription(), EventType.EndTest, Status.Failed, failure));
     }
 
     public void flush() {

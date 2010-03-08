@@ -19,6 +19,9 @@
 
 package org.dhaven.jue.api.event;
 
+import org.dhaven.jue.core.internal.Describable;
+import org.dhaven.jue.core.internal.Description;
+
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -27,8 +30,8 @@ import java.lang.reflect.InvocationTargetException;
  * received, only for when they are created.  Each event is given a time stamp
  * in nanoseconds for when it was created.
  */
-public class TestEvent {
-    private final String name;
+public class TestEvent implements Describable {
+    private final Description description;
     private final EventType type;
     private final Status status;
     private final Throwable failure;
@@ -41,7 +44,7 @@ public class TestEvent {
      * @param eventType  the {@link EventType}
      * @param testStatus the {@link Status}
      */
-    public TestEvent(String testName, EventType eventType,
+    public TestEvent(Description testName, EventType eventType,
                      Status testStatus) {
         this(testName, eventType, testStatus, null);
     }
@@ -59,10 +62,10 @@ public class TestEvent {
      * @param exception  the failure cause, if any
      */
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-    public TestEvent(String testName, EventType eventType,
+    public TestEvent(Description testName, EventType eventType,
                      Status testStatus, Throwable exception) {
         timeStamp = System.nanoTime();
-        name = testName;
+        description = testName;
         type = eventType;
         status = testStatus;
 
@@ -78,12 +81,11 @@ public class TestEvent {
 
     /**
      * Get the test name.
-     * TODO: make this a description object or something to relate name and run
      *
      * @return the test name
      */
-    public String getName() {
-        return name;
+    public Description getDescription() {
+        return description;
     }
 
     /**
@@ -132,7 +134,7 @@ public class TestEvent {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append('{').append(getName());
+        builder.append('{').append(getDescription());
         builder.append(" [").append(getType().name()).append("] ");
         builder.append('[').append(getStatus().name()).append("]: ");
         builder.append(getNanoseconds()).append('}');

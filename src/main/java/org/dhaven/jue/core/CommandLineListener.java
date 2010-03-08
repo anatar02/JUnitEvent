@@ -21,6 +21,7 @@ package org.dhaven.jue.core;
 
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
+import org.dhaven.jue.core.internal.Description;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ import java.util.Map;
  * Default listener for the command line access to the tool.
  */
 public class CommandLineListener implements TestEventListener {
-    private Map<String, TestEvent> history = new HashMap<String, TestEvent>();
+    private Map<Description, TestEvent> history = new HashMap<Description, TestEvent>();
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     @Override
@@ -37,29 +38,29 @@ public class CommandLineListener implements TestEventListener {
         switch (event.getStatus()) {
             case Passed:
             case Ignored:
-                System.out.format("%s... %s\n", event.getName(), event.getStatus());
+                System.out.format("%s... %s\n", event.getDescription(), event.getStatus());
                 printDuration(event);
                 break;
 
             case Failed:
-                System.out.format("%s... %s\n", event.getName(), event.getStatus());
+                System.out.format("%s... %s\n", event.getDescription(), event.getStatus());
                 event.getFailure().printStackTrace(System.out);
                 printDuration(event);
                 break;
 
             case Running:
-                history.put(event.getName(), event);
+                history.put(event.getDescription(), event);
                 break;
 
             default:
-                System.out.format("%s (%s)\n", event.getName(), event.getType());
+                System.out.format("%s (%s)\n", event.getDescription(), event.getType());
                 printDuration(event);
                 break;
         }
     }
 
     private void printDuration(TestEvent event) {
-        TestEvent start = history.remove(event.getName());
+        TestEvent start = history.remove(event.getDescription());
         long duration = event.getNanoseconds() - start.getNanoseconds();
         System.out.format("Test took %.3f ms\n", (duration / 1000000f));
     }

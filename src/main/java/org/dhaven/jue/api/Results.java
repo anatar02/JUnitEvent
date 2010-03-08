@@ -23,6 +23,7 @@ import org.dhaven.jue.api.event.EventType;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
+import org.dhaven.jue.core.internal.Description;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -40,7 +41,7 @@ import java.util.Map;
  * TODO: test case/test summary as well
  */
 public class Results implements TestEventListener {
-    Map<String, TestEvent> collectedResults = new HashMap<String, TestEvent>();
+    Map<Description, TestEvent> collectedResults = new HashMap<Description, TestEvent>();
 
     /**
      * Check to see if all the results we were expecting came in.
@@ -78,12 +79,13 @@ public class Results implements TestEventListener {
      *
      * @return The string of every failure, and its cause
      */
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public String failuresToString() {
         StringBuilder builder = new StringBuilder();
 
         for (TestEvent event : collectedResults.values()) {
             if (event.getStatus() == Status.Failed) {
-                builder.append(event.getName());
+                builder.append(event.getDescription());
                 builder.append("... Failed\n");
 
                 StringWriter writer = new StringWriter();
@@ -99,7 +101,7 @@ public class Results implements TestEventListener {
     public void handleEvent(TestEvent event) {
         // only recording tests...
         if (event.getType() == EventType.EndTest) {
-            collectedResults.put(event.getName(), event);
+            collectedResults.put(event.getDescription(), event);
         }
     }
 }

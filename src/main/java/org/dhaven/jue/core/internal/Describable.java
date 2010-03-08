@@ -19,15 +19,9 @@
 
 package org.dhaven.jue.core.internal;
 
-import org.dhaven.jue.core.TestEventListenerSupport;
-
 /**
- * Created by IntelliJ IDEA.
- * User: berin
- * Date: Mar 6, 2010
- * Time: 9:57:37 PM
- * To change this template use File | Settings | File Templates.
+ * An object that can be described.
  */
-public interface TestNode extends Identifiable, Comparable<TestNode> {
-    void run(TestEventListenerSupport support) throws Exception;
+public interface Describable {
+    Description getDescription();
 }

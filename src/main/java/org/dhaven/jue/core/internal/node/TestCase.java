@@ -17,9 +17,10 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal;
+package org.dhaven.jue.core.internal.node;
 
 import org.dhaven.jue.core.TestEventListenerSupport;
+import org.dhaven.jue.core.internal.Description;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -28,14 +29,14 @@ import java.util.List;
  * Represents a test case.
  */
 public class TestCase implements TestNode {
-    private final Class<?> testCase;
     private final List<TestNode> children = new LinkedList<TestNode>();
+    private final Description description;
 
     public TestCase(Class<?> test) {
-        testCase = test;
+        description = new Description(test.getName());
     }
 
-    void addChild(TestNode child) {
+    public void addChild(TestNode child) {
         children.add(child);
     }
 
@@ -52,8 +53,8 @@ public class TestCase implements TestNode {
     }
 
     @Override
-    public String getName() {
-        return testCase.getName();
+    public Description getDescription() {
+        return description;
     }
 
     @Override

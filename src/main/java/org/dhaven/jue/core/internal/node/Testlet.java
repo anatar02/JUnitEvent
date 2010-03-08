@@ -17,10 +17,11 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal;
+package org.dhaven.jue.core.internal.node;
 
 import org.dhaven.jue.Annotations;
 import org.dhaven.jue.core.TestEventListenerSupport;
+import org.dhaven.jue.core.internal.Description;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,7 +32,7 @@ import java.util.List;
  * Codifies a discrete test.
  */
 public class Testlet implements TestNode {
-    private String name;
+    private Description description;
     private boolean ignored;
     private Method method;
     private Object testCase;
@@ -46,13 +47,13 @@ public class Testlet implements TestNode {
 
     public Testlet(Object instance, Method testMethod, String testName) {
         testCase = instance;
-        name = testName;
+        description = new Description(testName);
         method = testMethod;
         ignored = method.getAnnotation(Annotations.Ignore.class) != null;
     }
 
-    public String getName() {
-        return name;
+    public Description getDescription() {
+        return description;
     }
 
     @Override

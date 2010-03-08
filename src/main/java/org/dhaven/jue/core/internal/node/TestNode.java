@@ -17,15 +17,22 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal;
+package org.dhaven.jue.core.internal.node;
+
+import org.dhaven.jue.core.TestEventListenerSupport;
+import org.dhaven.jue.core.internal.Describable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin
- * Date: Mar 6, 2010
- * Time: 10:05:09 PM
- * To change this template use File | Settings | File Templates.
+ * The TestNode represents the smallest executable unit of a test.  Essentially,
+ * test nodes can be prioritized and run concurrently.
  */
-public interface Identifiable {
-    String getName();
+public interface TestNode extends Describable, Comparable<TestNode> {
+    /**
+     * Run the test code, passing in the listener support so that all the
+     * listeners can be notified of the progress of the test as it is executed.
+     *
+     * @param support the {@link TestEventListenerSupport}
+     * @throws Exception if there is a problem running the test
+     */
+    void run(TestEventListenerSupport support) throws Exception;
 }

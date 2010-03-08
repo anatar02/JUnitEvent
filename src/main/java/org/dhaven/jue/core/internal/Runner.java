@@ -19,15 +19,23 @@
 
 package org.dhaven.jue.core.internal;
 
+import org.dhaven.jue.core.internal.node.TestNode;
+
 import java.util.Collection;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin
- * Date: Mar 5, 2010
- * Time: 8:09:48 PM
- * To change this template use File | Settings | File Templates.
+ * A runner controls the behavior of a test class.  A runner can enable new
+ * annotations, as well as change the number of times your tests are called.
  */
 public interface Runner {
-    Collection<TestNode> defineTests(Class<?> testCase) throws Exception;
+    /**
+     * Define the set of tests for a test case.  This method generates a set
+     * of test nodes from the test case, all of which will be popped on to the
+     * test queue and run by the test threads.
+     *
+     * @param testCase the test class to read
+     * @return a set of test nodes read from that class
+     * @throws Exception if there is a problem defining the tests
+     */
+    Collection<? extends TestNode> defineTests(Class<?> testCase) throws Exception;
 }
