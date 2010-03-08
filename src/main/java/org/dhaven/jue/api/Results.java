@@ -23,7 +23,6 @@ import org.dhaven.jue.api.event.EventType;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
-import org.dhaven.jue.core.internal.Description;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

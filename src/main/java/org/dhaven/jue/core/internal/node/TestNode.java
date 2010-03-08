@@ -19,8 +19,8 @@
 
 package org.dhaven.jue.core.internal.node;
 
+import org.dhaven.jue.api.Describable;
 import org.dhaven.jue.core.TestEventListenerSupport;
-import org.dhaven.jue.core.internal.Describable;
 
 /**
  * The TestNode represents the smallest executable unit of a test.  Essentially,

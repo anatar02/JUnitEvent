@@ -19,12 +19,12 @@
 
 package org.dhaven.jue.core;
 
+import org.dhaven.jue.api.Describable;
+import org.dhaven.jue.api.Description;
 import org.dhaven.jue.api.event.EventType;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
-import org.dhaven.jue.core.internal.Describable;
-import org.dhaven.jue.core.internal.Description;
 
 import java.util.*;
 

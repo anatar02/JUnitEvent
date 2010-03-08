@@ -20,8 +20,8 @@
 package org.dhaven.jue.core.internal.node;
 
 import org.dhaven.jue.Annotations;
+import org.dhaven.jue.api.Description;
 import org.dhaven.jue.core.TestEventListenerSupport;
-import org.dhaven.jue.core.internal.Description;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

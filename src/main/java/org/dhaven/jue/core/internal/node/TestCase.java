@@ -19,8 +19,8 @@
 
 package org.dhaven.jue.core.internal.node;
 
+import org.dhaven.jue.api.Description;
 import org.dhaven.jue.core.TestEventListenerSupport;
-import org.dhaven.jue.core.internal.Description;
 
 import java.util.LinkedList;
 import java.util.List;

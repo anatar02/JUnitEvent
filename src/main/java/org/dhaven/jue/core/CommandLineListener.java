@@ -19,9 +19,9 @@
 
 package org.dhaven.jue.core;
 
+import org.dhaven.jue.api.Description;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
-import org.dhaven.jue.core.internal.Description;
 
 import java.util.HashMap;
 import java.util.Map;

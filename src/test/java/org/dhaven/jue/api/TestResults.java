@@ -23,7 +23,6 @@ import org.dhaven.jue.Annotations.Test;
 import org.dhaven.jue.api.event.EventType;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
-import org.dhaven.jue.core.internal.Description;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;

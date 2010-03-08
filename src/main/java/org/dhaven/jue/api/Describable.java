@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal;
+package org.dhaven.jue.api;
 
 /**
  * An object that can be described.

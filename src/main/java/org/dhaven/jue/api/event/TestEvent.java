@@ -19,8 +19,8 @@
 
 package org.dhaven.jue.api.event;
 
-import org.dhaven.jue.core.internal.Describable;
-import org.dhaven.jue.core.internal.Description;
+import org.dhaven.jue.api.Describable;
+import org.dhaven.jue.api.Description;
 
 import java.lang.reflect.InvocationTargetException;
 

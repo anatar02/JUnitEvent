@@ -17,14 +17,14 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal;
+package org.dhaven.jue.api;
 
 /**
  * Describes a specific instance of a test.  If the test was run multiple times,
  * it includes the run number.  If the test takes parameters, the parameters
  * are provided.
  */
-public class Description {
+public class Description implements Comparable<Description> {
     private final String name;
     private final int run;
     private final int ofRuns;
@@ -62,6 +62,24 @@ public class Description {
     }
 
     @Override
+    public boolean equals(Object foreign) {
+        boolean isEqual = foreign instanceof Description;
+
+        if (isEqual) {
+            Description other = Description.class.cast(foreign);
+            isEqual = name.equals(other.name);
+            isEqual &= this.run == other.run;
+        }
+
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode() << 3 + run;
+    }
+
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder(name);
 
@@ -82,5 +100,16 @@ public class Description {
         }
 
         return builder.toString();
+    }
+
+    @Override
+    public int compareTo(Description other) {
+        int direction = name.compareTo(other.name);
+
+        if (direction == 0) {
+            direction = run - other.run;
+        }
+
+        return direction;
     }
 }
