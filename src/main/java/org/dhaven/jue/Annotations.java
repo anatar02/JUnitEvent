@@ -29,6 +29,12 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * enumeration of what get are in use.
  */
 public class Annotations {
+    /**
+     * Get the list of core annotations.
+     *
+     * @return The list of annotations.
+     */
+    @SuppressWarnings("unchecked")
     public static Class<? extends Annotation>[] get() {
         Class<?>[] innerClasses = Annotations.class.getDeclaredClasses();
         return (Class<? extends Annotation>[]) innerClasses;
