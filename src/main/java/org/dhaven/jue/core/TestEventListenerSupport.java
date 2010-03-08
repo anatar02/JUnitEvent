@@ -25,8 +25,7 @@ import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
 import org.dhaven.jue.core.internal.Identifiable;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Provide support for the Engine class to fire events as necessary.  Other
@@ -34,7 +33,14 @@ import java.util.List;
  */
 public class TestEventListenerSupport {
     private List<TestEventListener> listeners = new LinkedList<TestEventListener>();
+    private Queue<TestEvent> queue = new LinkedList<TestEvent>();
+    private Notifier notifier = new Notifier();
     private static final String FRAMEWORK_NAME = "JUnit Events";
+    private static final Timer timer = new Timer("JUnit Events Notifier", true);
+
+    public TestEventListenerSupport() {
+        timer.scheduleAtFixedRate(notifier, 10, 10);
+    }
 
     /**
      * Add a test event listener.
@@ -56,15 +62,11 @@ public class TestEventListenerSupport {
 
     /**
      * Send the test event to all the listeners.
-     * TODO: Just add these to an event queue, and fire them off from the
-     * TODO: event thread queue.
      *
      * @param testEvent the test event to send
      */
     private void fireTestEvent(TestEvent testEvent) {
-        for (TestEventListener listener : listeners) {
-            listener.handleEvent(testEvent);
-        }
+        queue.add(testEvent);
     }
 
     /**
@@ -134,5 +136,21 @@ public class TestEventListenerSupport {
      */
     public void fireTestFailed(Identifiable test, Throwable failure) {
         fireTestEvent(new TestEvent(test.getName(), EventType.EndTest, Status.Failed, failure));
+    }
+
+    public void flush() {
+        notifier.run();
+    }
+
+    private final class Notifier extends TimerTask {
+        @Override
+        public void run() {
+            TestEvent testEvent;
+            while ((testEvent = queue.poll()) != null) {
+                for (TestEventListener listener : listeners) {
+                    listener.handleEvent(testEvent);
+                }
+            }
+        }
     }
 }

@@ -60,6 +60,7 @@ public class Engine {
         listenerSupport.fireEndTestRun();
 
         removeTestListener(results);
+        listenerSupport.flush();
         return results;
     }
 

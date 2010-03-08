@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,11 +31,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin.loritsch
- * Date: Mar 5, 2010
- * Time: 12:39:41 PM
- * To change this template use File | Settings | File Templates.
+ * TODO: make it work reliably and test.  Assumes too much.
  */
 public class ClassCollector {
     private Class<? extends Annotation>[] methodAnnotations;
@@ -69,36 +64,29 @@ public class ClassCollector {
 
     private void addClassesFromPath(ArrayList<Class<?>> classes, URL url) throws Exception {
         if ("file".equals(url.getProtocol())) {
-            handleFileURL(classes, url);
+            handleFile(classes, new File(url.getFile()));
         } else if ("jar".equals(url.getProtocol())) {
-            handleJarURL(classes, url);
+            String jarName = url.getFile().substring(0, url.getFile().indexOf("!"));
+            handleJar(classes, new JarFile(jarName));
         }
     }
 
-    private void handleFileURL(ArrayList<Class<?>> classes, URL url) {
-        File base = new File(url.getFile());
-
+    private void handleFile(ArrayList<Class<?>> classes, File base) {
         for (File file : base.listFiles()) {
             if (file.getName().endsWith(".class")) {
                 String className = file.getPath();
-                className = className.substring(className.indexOf("test-classes/") + "test-classes/".length());
+                className = className.substring(className.indexOf("test-classes") + "test-classes".length() + 1);
                 className = className.substring(0, className.length() - ".class".length());
                 className = className.replace(File.separatorChar, '.');
 
                 addClassIfMatches(classes, className);
             } else if (recurse && file.isDirectory()) {
-                try {
-                    handleFileURL(classes, file.toURI().toURL());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
+                handleFile(classes, file);
             }
         }
     }
 
-    private void handleJarURL(ArrayList<Class<?>> classes, URL url) throws IOException {
-        String jarName = url.getFile().substring(0, url.getFile().indexOf("!"));
-        JarFile file = new JarFile(jarName);
+    private void handleJar(ArrayList<Class<?>> classes, JarFile file) throws IOException {
         for (JarEntry entry : Collections.list(file.entries())) {
             String className = entry.getName();
             className = className.substring(0, className.length() - ".class".length());
@@ -115,7 +103,7 @@ public class ClassCollector {
     }
 
     private void addClassIfMatches(ArrayList<Class<?>> classes, String className) {
-        Class<?> classToCheck = null;
+        Class<?> classToCheck;
 
         try {
             classToCheck = getClassLoader().loadClass(className);
@@ -126,11 +114,11 @@ public class ClassCollector {
         boolean matches = false;
 
         if (null != methodAnnotations) {
-            matches = matches || checkMethodAnnotations(classToCheck);
+            matches = checkMethodAnnotations(classToCheck);
         }
 
         if (matches && excludeInnerClasses) {
-            matches = matches && (classToCheck.getEnclosingClass() == null);
+            matches = classToCheck.getEnclosingClass() == null;
         }
 
         if (matches) {
@@ -143,7 +131,7 @@ public class ClassCollector {
 
         for (Method method : classToCheck.getMethods()) {
             for (Class<? extends Annotation> annotation : methodAnnotations) {
-                matches = matches || method.getAnnotation(annotation) != null;
+                matches = method.getAnnotation(annotation) != null;
                 if (matches) break;
             }
             if (matches) break;
