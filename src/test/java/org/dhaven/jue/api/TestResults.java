@@ -46,6 +46,7 @@ public class TestResults {
 
     @Test
     public void completeWithPassedEvent() {
+        results.handleEvent(new TestEvent(new Description("test"), EventType.StartTest, Status.Running));
         results.handleEvent(new TestEvent(new Description("test"), EventType.EndTest, Status.Passed));
 
         assertThat(results.complete(), is(true));
@@ -58,6 +59,7 @@ public class TestResults {
 
     @Test
     public void passedWithPassedEvent() {
+        results.handleEvent(new TestEvent(new Description("test"), EventType.StartTest, Status.Running));
         results.handleEvent(new TestEvent(new Description("test"), EventType.EndTest, Status.Passed));
 
         assertThat(results.passed(), is(true));
@@ -65,6 +67,7 @@ public class TestResults {
 
     @Test
     public void passedWithFailedEvent() {
+        results.handleEvent(new TestEvent(new Description("test"), EventType.StartTest, Status.Running));
         results.handleEvent(new TestEvent(new Description("test"), EventType.EndTest, Status.Failed, new IllegalArgumentException("just kidding")));
 
         assertThat(results.passed(), is(false));
@@ -77,6 +80,7 @@ public class TestResults {
 
     @Test
     public void failuresToStringWithOneFailure() {
+        results.handleEvent(new TestEvent(new Description("test"), EventType.StartTest, Status.Running));
         results.handleEvent(new TestEvent(new Description("test"), EventType.EndTest, Status.Failed, new IllegalArgumentException("just kidding")));
 
         assertThat(results.failuresToString(), startsWith("test... Failed\njava.lang.IllegalArgumentException: just kidding"));

@@ -123,4 +123,43 @@ public class TestDescription {
                 new Description("Test Foo", 2, 2),
                 new Description("Zed")}));
     }
+
+    @Test
+    public void descriptionsAreRelatedWhenNamesAreSame() {
+        Description one = new Description("Test Name", 1, 2);
+        Description two = new Description("Test Name", 2, 2);
+        Description three = new Description("Test Name");
+
+        assertThat(one.relatedTo(two), equalTo(true));
+        assertThat(two.relatedTo(three), equalTo(true));
+        assertThat(one, not(equalTo(two)));
+        assertThat(two, not(equalTo(three)));
+    }
+
+    @Test
+    public void descriptionsAreNotRelatedWhenNamesAreDifferent() {
+        Description one = new Description("Test Foo");
+        Description two = new Description("Test Bar");
+
+        assertThat(one.relatedTo(two), equalTo(false));
+        assertThat(one, not(equalTo(two)));
+    }
+
+    @Test
+    public void descriptionsAreRelatedWhenDotNotationIsUsed() {
+        Description one = new Description("Test");
+        Description two = new Description("Test.foo");
+
+        assertThat(one.relatedTo(two), equalTo(true));
+        assertThat(two.relatedTo(one), equalTo(true));
+    }
+
+    @Test
+    public void descriptionsAreNotRelatedWhenDotNotationDiffers() {
+        Description one = new Description("Test.bar");
+        Description two = new Description("Test.foo");
+
+        assertThat(one.relatedTo(two), equalTo(false));
+        assertThat(two.relatedTo(one), equalTo(false));
+    }
 }

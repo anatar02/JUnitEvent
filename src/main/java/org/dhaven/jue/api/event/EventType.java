@@ -27,27 +27,37 @@ public enum EventType {
     /**
      * Event is sent at the beginning of all testing.
      */
-    StartRun,
+    StartRun(EventClass.System),
     /**
      * Event is sent at the beginning of a test case.  A test case is a class
      * that contains several tests within it.
      */
-    StartTestCase,
+    StartTestCase(EventClass.TestCase),
     /**
      * Event is sent as the beginning of an individual test.
      */
-    StartTest,
+    StartTest(EventClass.Test),
     /**
      * Event is sent at the end of an individual test.
      */
-    EndTest,
+    EndTest(EventClass.Test),
     /**
      * Event is sent at the end of a test case.  A test case is a class that
      * contains several tests within it.
      */
-    EndTestCase,
+    EndTestCase(EventClass.TestCase),
     /**
      * Event is sent at the end of all testing.
      */
-    EndRun
+    EndRun(EventClass.System);
+
+    private final EventClass type;
+
+    private EventType(EventClass eventClass) {
+        type = eventClass;
+    }
+
+    public EventClass getType() {
+        return type;
+    }
 }

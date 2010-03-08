@@ -19,13 +19,15 @@
 
 package org.dhaven.jue.api;
 
-import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.event.EventClass;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,7 +42,7 @@ import java.util.Map;
  * TODO: test case/test summary as well
  */
 public class Results implements TestEventListener {
-    Map<Description, TestEvent> collectedResults = new HashMap<Description, TestEvent>();
+    private Map<Description, TestSummary> collectedResults = new HashMap<Description, TestSummary>();
 
     /**
      * Check to see if all the results we were expecting came in.
@@ -50,8 +52,8 @@ public class Results implements TestEventListener {
     public boolean complete() {
         boolean completed = !collectedResults.isEmpty();
 
-        for (TestEvent event : collectedResults.values()) {
-            completed = completed && (event.getStatus() != Status.Running);
+        for (TestSummary summary : collectedResults.values()) {
+            completed = completed && summary.isComplete();
         }
 
         return completed;
@@ -65,8 +67,10 @@ public class Results implements TestEventListener {
     public boolean passed() {
         boolean passed = !collectedResults.isEmpty();
 
-        for (TestEvent event : collectedResults.values()) {
-            passed = passed && (event.getStatus() == Status.Passed);
+        for (TestSummary summary : collectedResults.values()) {
+            if (summary.getEventClass() == EventClass.Test) {
+                passed = passed && summary.passed();
+            }
         }
 
         return passed;
@@ -82,13 +86,13 @@ public class Results implements TestEventListener {
     public String failuresToString() {
         StringBuilder builder = new StringBuilder();
 
-        for (TestEvent event : collectedResults.values()) {
-            if (event.getStatus() == Status.Failed) {
-                builder.append(event.getDescription());
+        for (TestSummary summary : collectedResults.values()) {
+            if (summary.failed()) {
+                builder.append(summary.getDescription());
                 builder.append("... Failed\n");
 
                 StringWriter writer = new StringWriter();
-                event.getFailure().printStackTrace(new PrintWriter(writer));
+                summary.getFailure().printStackTrace(new PrintWriter(writer));
                 builder.append(writer.toString());
             }
         }
@@ -98,9 +102,92 @@ public class Results implements TestEventListener {
 
     @Override
     public void handleEvent(TestEvent event) {
-        // only recording tests...
-        if (event.getType() == EventType.EndTest) {
-            collectedResults.put(event.getDescription(), event);
+        TestSummary summary = collectedResults.get(event.getDescription());
+
+        if (null == summary) {
+            summary = new TestSummary(event);
+        } else {
+            summary.setEvent(event);
+        }
+
+        collectedResults.put(event.getDescription(), summary);
+    }
+
+    public long getProcessorTime(EventClass type) {
+        return totalTime(filterResults(type));
+    }
+
+    private Collection<TestSummary> filterResults(EventClass type) {
+        ArrayList<TestSummary> summaries = new ArrayList<TestSummary>(collectedResults.size());
+
+        for (TestSummary summary : collectedResults.values()) {
+            if (summary.getEventClass() == type) {
+                summaries.add(summary);
+            }
+        }
+
+        return summaries;
+    }
+
+    private static long totalTime(Collection<TestSummary> summaries) {
+        int runningTime = 0;
+
+        for (TestSummary summary : summaries) {
+            runningTime += summary.elapsedTime();
+        }
+
+        return runningTime;
+    }
+
+    private static final class TestSummary implements Describable {
+        private static final int START = 0;
+        private static final int END = 1;
+        private TestEvent[] events = new TestEvent[2];
+        private Description description;
+
+        public TestSummary(TestEvent event) {
+            description = event.getDescription();
+            setEvent(event);
+        }
+
+        public void setEvent(TestEvent event) {
+            events[Status.Running == event.getStatus() ? START : END] = event;
+        }
+
+        public EventClass getEventClass() {
+            int index = events[START] == null ? END : START;
+
+            return events[index].getType().getType();
+        }
+
+        public boolean isComplete() {
+            return events[START] != null && events[END] != null;
+        }
+
+        public boolean passed() {
+            return isComplete() && events[END].getStatus() == Status.Passed;
+        }
+
+        public boolean failed() {
+            return isComplete() && events[END].getStatus() == Status.Failed;
+        }
+
+        public boolean terminated() {
+            return isComplete() && events[END].getStatus() == Status.Terminated;
+        }
+
+        @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+        public Throwable getFailure() {
+            return isComplete() ? events[END].getFailure() : null;
+        }
+
+        public long elapsedTime() {
+            return isComplete() ? events[END].getNanoseconds() - events[START].getNanoseconds() : 0;
+        }
+
+        @Override
+        public Description getDescription() {
+            return description;
         }
     }
 }
