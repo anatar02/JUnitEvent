@@ -66,7 +66,7 @@ public class TestEventListenerSupport {
      * @param testEvent the test event to send
      */
     private void fireTestEvent(TestEvent testEvent) {
-        queue.add(testEvent);
+        queue.offer(testEvent);
     }
 
     /**

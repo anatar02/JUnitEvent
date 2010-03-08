@@ -22,10 +22,15 @@ package org.dhaven.jue.core;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Default listener for the command line access to the tool.
  */
 public class CommandLineListener implements TestEventListener {
+    private Map<String, TestEvent> history = new HashMap<String, TestEvent>();
+
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     @Override
     public void handleEvent(TestEvent event) {
@@ -33,15 +38,29 @@ public class CommandLineListener implements TestEventListener {
             case Passed:
             case Ignored:
                 System.out.format("%s... %s\n", event.getName(), event.getStatus());
+                printDuration(event);
                 break;
 
             case Failed:
                 System.out.format("%s... %s\n", event.getName(), event.getStatus());
                 event.getFailure().printStackTrace(System.out);
+                printDuration(event);
+                break;
+
+            case Running:
+                history.put(event.getName(), event);
                 break;
 
             default:
                 System.out.format("%s (%s)\n", event.getName(), event.getType());
+                printDuration(event);
+                break;
         }
+    }
+
+    private void printDuration(TestEvent event) {
+        TestEvent start = history.remove(event.getName());
+        long duration = event.getNanoseconds() - start.getNanoseconds();
+        System.out.format("Test took %.3f ms\n", (duration / 1000000f));
     }
 }
