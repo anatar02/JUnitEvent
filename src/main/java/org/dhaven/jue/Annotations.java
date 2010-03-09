@@ -68,6 +68,17 @@ public class Annotations {
     @Documented
     @Inherited
     public static @interface Test {
+        /**
+         * Default empty exception
+         */
+        static class None extends Throwable {
+            private static final long serialVersionUID = 1L;
+
+            private None() {
+            }
+        }
+
+        Class<? extends Throwable> expected() default None.class;
     }
 
     /**

@@ -24,9 +24,11 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dhaven.jue.Annotations;
 import org.dhaven.jue.api.Description;
 import org.dhaven.jue.core.TestEventListenerSupport;
+
+import static org.dhaven.jue.Annotations.Ignore;
+import static org.dhaven.jue.Annotations.Test;
 
 /**
  * Codifies a discrete test.
@@ -38,6 +40,7 @@ public class Testlet extends DependencyTestNode {
     private Object testCase;
     private List<Method> setup = new LinkedList<Method>();
     private List<Method> tearDown = new LinkedList<Method>();
+    private Class<? extends Throwable> expected;
 
     public Testlet(Object instance, Method testMethod) {
         this(instance, testMethod, String.format("%s.%s",
@@ -49,13 +52,20 @@ public class Testlet extends DependencyTestNode {
         testCase = instance;
         description = new Description(testName);
         method = testMethod;
-        ignored = method.getAnnotation(Annotations.Ignore.class) != null;
+        ignored = method.getAnnotation(Ignore.class) != null;
+
+        Test annotation = method.getAnnotation(Test.class);
+        expected = annotation.expected();
+        if (Test.None.class.equals(expected)) {
+            expected = null;
+        }
     }
 
     public Description getDescription() {
         return description;
     }
 
+    @SuppressWarnings({"ThrowableInstanceNeverThrown", "ThrowableResultOfMethodCallIgnored"})
     @Override
     public void run(TestEventListenerSupport support) {
         support.fireTestStarted(this);
@@ -67,9 +77,28 @@ public class Testlet extends DependencyTestNode {
         try {
             setup();
             method.invoke(testCase);
-            support.fireTestPassed(this);
+            if (null == expected) {
+                support.fireTestPassed(this);
+            } else {
+                AssertionError failure = new AssertionError("Expected " + expected.getName() + " to be thrown.");
+                support.fireTestFailed(this, failure);
+            }
         } catch (Throwable throwable) {
-            support.fireTestFailed(this, throwable);
+            if (null != expected) {
+                Throwable check = throwable;
+
+                if (check instanceof InvocationTargetException) {
+                    check = InvocationTargetException.class.cast(check).getCause();
+                }
+
+                if (check.getClass().isAssignableFrom(expected)) {
+                    support.fireTestPassed(this);
+                } else {
+                    support.fireTestFailed(this, check);
+                }
+            } else {
+                support.fireTestFailed(this, throwable);
+            }
         } finally {
             try {
                 tearDown();

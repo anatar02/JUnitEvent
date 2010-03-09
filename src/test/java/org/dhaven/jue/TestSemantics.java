@@ -19,6 +19,11 @@
 
 package org.dhaven.jue;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.Results;
 import org.dhaven.jue.api.event.EventType;
@@ -26,34 +31,30 @@ import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
 import org.dhaven.jue.core.Engine;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
+import static org.dhaven.jue.Annotations.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 /**
  * Make sure the tests are run in order
  */
-public class TestOrder {
+public class TestSemantics {
     private Engine engine;
     private Request testsToRun;
 
-    @Annotations.Before
+    @Before
     public void setUpEngine() {
         testsToRun = new Request(InternalTest.class);
         engine = new Engine();
     }
 
-    @Annotations.Test
+    @Test
     public void checkMethodOrder() throws Exception {
         Results results = engine.process(testsToRun);
         assertThat(results.failuresToString(), results.passed(), equalTo(true));
     }
 
-    @Annotations.Test
+    @Test
     public void checkEventOrder() throws Exception {
         ListenerTester listenerTester = new ListenerTester();
         engine.addTestListener(listenerTester);
@@ -61,6 +62,33 @@ public class TestOrder {
         engine.process(testsToRun);
 
         assertThat(listenerTester.getEventOrder(), equalTo(EventType.values()));
+    }
+
+    @Test
+    public void expectedExceptionIsPassing() throws Exception {
+        testsToRun = new Request(ExceptionTest.class);
+
+        Results results = engine.process(testsToRun);
+
+        assertThat(results.failuresToString(), results.passed(), equalTo(true));
+    }
+
+    @Test
+    public void wrongExceptionIsFailing() throws Exception {
+        testsToRun = new Request(WrongExceptionTest.class);
+
+        Results results = engine.process(testsToRun);
+
+        assertThat("Did not fail test as expected", results.passed(), equalTo(false));
+    }
+
+    @Test
+    public void noExceptionWhenExpectedIsFailing() throws Exception {
+        testsToRun = new Request(NoExceptionTest.class);
+
+        Results results = engine.process(testsToRun);
+
+        assertThat("Did not fail test as expected", results.passed(), equalTo(false));
     }
 
     /**
@@ -71,7 +99,7 @@ public class TestOrder {
         boolean actualTestCalled = false;
         boolean callLastCalled = false;
 
-        @Annotations.Before
+        @Before
         public void callFirst() {
             assertThat("@Before already called in @Before", callFirstCalled, equalTo(false));
             assertThat("@Test already called in @Before", actualTestCalled, equalTo(false));
@@ -79,7 +107,7 @@ public class TestOrder {
             callFirstCalled = true;
         }
 
-        @Annotations.Test
+        @Test
         public void actualTest() {
             assertThat("@Before not called yet in @Test", callFirstCalled, equalTo(true));
             assertThat("@Test already called in @Test", actualTestCalled, equalTo(false));
@@ -87,12 +115,32 @@ public class TestOrder {
             actualTestCalled = true;
         }
 
-        @Annotations.After
+        @After
         public void callLast() {
             assertThat("@Before not called yet in @Test", callFirstCalled, equalTo(true));
             assertThat("@Test not called yet in @After", actualTestCalled, equalTo(true));
             assertThat("@After already called in @After", callLastCalled, equalTo(false));
             callLastCalled = true;
+        }
+    }
+
+    public static class ExceptionTest {
+        @Test(expected = IllegalArgumentException.class)
+        public void throwsExceptionOnPurpose() {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public static class WrongExceptionTest {
+        @Test(expected = IllegalArgumentException.class)
+        public void throwsWrongException() {
+            throw new NullPointerException();
+        }
+    }
+
+    public static class NoExceptionTest {
+        @Test(expected = IllegalArgumentException.class)
+        public void doesNotThrowException() {
         }
     }
 
