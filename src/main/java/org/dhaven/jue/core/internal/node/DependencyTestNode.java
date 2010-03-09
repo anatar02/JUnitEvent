@@ -37,6 +37,9 @@ public abstract class DependencyTestNode implements TestNode {
     }
 
     public void addPredecessor(TestNode predecessor) {
+        if (this.equals(predecessor))
+            throw new IllegalArgumentException("Cannot add self to predecessor");
+
         if (!predecessors.contains(predecessor)) {
             predecessors.add(predecessor);
             predecessor.addSuccessor(this);
@@ -44,6 +47,9 @@ public abstract class DependencyTestNode implements TestNode {
     }
 
     public void addSuccessor(TestNode successor) {
+        if (this.equals(successor))
+            throw new IllegalArgumentException("Cannot add self to predecessor");
+
         if (!successors.contains(successor)) {
             successors.add(successor);
             successor.addPredecessor(this);

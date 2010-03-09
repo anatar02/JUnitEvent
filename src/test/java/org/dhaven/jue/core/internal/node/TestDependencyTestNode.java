@@ -71,6 +71,20 @@ public class TestDependencyTestNode {
         assertThat(list.get(2), equalTo(three));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void cannotAddSelfToPredecessor() {
+        DependencyTestNode node = new TestNode(1);
+
+        node.addPredecessor(node);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void cannotAddSelfToSuccessor() {
+        DependencyTestNode node = new TestNode(1);
+
+        node.addSuccessor(node);
+    }
+
     private final static class TestNode extends DependencyTestNode {
         int num;
 
