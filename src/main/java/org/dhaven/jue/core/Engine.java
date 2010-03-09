@@ -53,7 +53,7 @@ public class Engine {
 
     public Results process(Request request) throws Exception {
         TestThreadPool pool = new TestThreadPool();
-        pool.setMultiplier(4);
+        pool.setMultiplier(1);
         pool.startup(listenerSupport);
 
         Results results = new Results();
@@ -62,10 +62,9 @@ public class Engine {
         TestPlan plan = TestPlan.from(request);
 
         pool.execute(plan);
-        pool.await();
         pool.shutdown();
 
-        listenerSupport.flush();
+        listenerSupport.await();
         removeTestListener(results);
         return results;
     }

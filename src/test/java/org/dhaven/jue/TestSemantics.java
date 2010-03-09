@@ -19,6 +19,7 @@
 
 package org.dhaven.jue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -133,8 +134,8 @@ public class TestSemantics {
 
     public static class WrongExceptionTest {
         @Test(expected = IllegalArgumentException.class)
-        public void throwsWrongException() {
-            throw new NullPointerException();
+        public void throwsWrongException() throws IOException {
+            throw new IOException();
         }
     }
 
