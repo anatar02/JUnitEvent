@@ -20,11 +20,12 @@
 package org.dhaven.jue.core.internal;
 
 /**
- * Created by IntelliJ IDEA.
- * User: berin.loritsch
- * Date: Mar 5, 2010
- * Time: 12:51:57 PM
- * To change this template use File | Settings | File Templates.
+ * This class stores the static variables in a test class.  The ThreadContext
+ * will be associated with the TestNode, and the static variables will be
+ * restored during the test.  After the test is executed, the static variables
+ * will be archived in this class.
+ * <p/>
+ * TODO: implement this
  */
 public class ThreadContext {
 }

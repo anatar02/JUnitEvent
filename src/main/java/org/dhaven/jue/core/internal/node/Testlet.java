@@ -57,12 +57,12 @@ public class Testlet implements TestNode {
     }
 
     @Override
-    public void run(TestEventListenerSupport support) throws Exception {
+    public boolean attemptRun(TestEventListenerSupport support) throws Exception {
         support.fireTestStarted(this);
 
         if (isIgnored()) {
             support.fireTestIgnored(this);
-            return;
+            return true;
         }
 
         try {
@@ -74,6 +74,8 @@ public class Testlet implements TestNode {
         } finally {
             tearDown();
         }
+
+        return true;
     }
 
     private void tearDown() throws InvocationTargetException, IllegalAccessException {

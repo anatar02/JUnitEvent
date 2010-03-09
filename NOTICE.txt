@@ -6,3 +6,4 @@
 
 This product includes software developed by
 Google Hamcrest (http://code.google.com/p/hamcrest).
+

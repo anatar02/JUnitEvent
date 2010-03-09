@@ -38,12 +38,12 @@ public class CommandLineListener implements TestEventListener {
         switch (event.getStatus()) {
             case Passed:
             case Ignored:
-                System.out.format("%s... %s\n", event.getDescription(), event.getStatus());
+                System.out.format("%s... %s ", event.getDescription(), event.getStatus());
                 printDuration(event);
                 break;
 
             case Failed:
-                System.out.format("%s... %s\n", event.getDescription(), event.getStatus());
+                System.out.format("%s... %s ", event.getDescription(), event.getStatus());
                 event.getFailure().printStackTrace(System.out);
                 printDuration(event);
                 break;
@@ -53,7 +53,7 @@ public class CommandLineListener implements TestEventListener {
                 break;
 
             default:
-                System.out.format("%s (%s)\n", event.getDescription(), event.getType());
+                System.out.format("%s (%s) ", event.getDescription(), event.getType());
                 printDuration(event);
                 break;
         }
