@@ -19,16 +19,17 @@
 
 package org.dhaven.jue.core.internal;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.dhaven.jue.core.TestEventListenerSupport;
 import org.dhaven.jue.core.internal.node.TestNode;
-
-import java.util.PriorityQueue;
 
 /**
  * Provides the execution model for running the tests.
  */
 public class TestThreadPool {
-    private PriorityQueue<TestNode> workQueue = new PriorityQueue<TestNode>();
+    private Queue<TestNode> workQueue = new ConcurrentLinkedQueue<TestNode>();
     private ThreadGroup group = new ThreadGroup("JUE:ThreadPool");
     private Thread[] threadList;
     private int multiplier = 1;
@@ -103,8 +104,6 @@ public class TestThreadPool {
                 if (!node.attemptRun(support)) {
                     workQueue.offer(node);
                 }
-            } catch (InterruptedException ie) {
-                support.fireTestTerminated(node);
             } catch (Exception e) {
                 support.fireTestFailed(node, e);
             }

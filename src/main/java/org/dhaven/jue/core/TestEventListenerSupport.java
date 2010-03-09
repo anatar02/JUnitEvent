@@ -19,14 +19,13 @@
 
 package org.dhaven.jue.core;
 
+import java.util.*;
+
 import org.dhaven.jue.api.Describable;
-import org.dhaven.jue.api.Description;
 import org.dhaven.jue.api.event.EventType;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
-
-import java.util.*;
 
 /**
  * Provide support for the Engine class to fire events as necessary.  Other
@@ -36,7 +35,6 @@ public class TestEventListenerSupport {
     private List<TestEventListener> listeners = new LinkedList<TestEventListener>();
     private Queue<TestEvent> queue = new LinkedList<TestEvent>();
     private Notifier notifier = new Notifier();
-    private static final Description FRAMEWORK_NAME = new Description("JUE:Test Run");
     private static final Timer timer = new Timer("JUnit Events Notifier", true);
 
     public TestEventListenerSupport() {
@@ -66,40 +64,8 @@ public class TestEventListenerSupport {
      *
      * @param testEvent the test event to send
      */
-    private void fireTestEvent(TestEvent testEvent) {
+    public void fireTestEvent(TestEvent testEvent) {
         queue.offer(testEvent);
-    }
-
-    /**
-     * Signal the start of a test run.
-     */
-    public void fireStartTestRun() {
-        fireTestEvent(new TestEvent(FRAMEWORK_NAME, EventType.StartRun, Status.Running));
-    }
-
-    /**
-     * Signal the end of a test run.
-     */
-    public void fireEndTestRun() {
-        fireTestEvent(new TestEvent(FRAMEWORK_NAME, EventType.EndRun, Status.Terminated));
-    }
-
-    /**
-     * Signal the start of a test case.
-     *
-     * @param testCase the test case that started
-     */
-    public void fireStartTestCase(Describable testCase) {
-        fireTestEvent(new TestEvent(testCase.getDescription(), EventType.StartTestCase, Status.Running));
-    }
-
-    /**
-     * Signal the end of a test case.
-     *
-     * @param testCase the test case that ended
-     */
-    public void fireEndTestCase(Describable testCase) {
-        fireTestEvent(new TestEvent(testCase.getDescription(), EventType.EndTestCase, Status.Terminated));
     }
 
     /**
@@ -144,6 +110,7 @@ public class TestEventListenerSupport {
     }
 
     public void flush() {
+        notifier.cancel();
         notifier.run();
     }
 

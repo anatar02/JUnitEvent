@@ -19,17 +19,20 @@
 
 package org.dhaven.jue.core.internal;
 
-import org.dhaven.jue.Annotations;
-import org.dhaven.jue.core.internal.node.TestCase;
-import org.dhaven.jue.core.internal.node.TestNode;
-import org.dhaven.jue.core.internal.node.Testlet;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.dhaven.jue.Annotations;
+import org.dhaven.jue.api.Description;
+import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.core.internal.node.EventNode;
+import org.dhaven.jue.core.internal.node.TestNode;
+import org.dhaven.jue.core.internal.node.Testlet;
 
 /**
  * The Default Runner enables the core annotations found in {@link Annotations}.
@@ -37,6 +40,11 @@ import java.util.List;
 public class DefaultRunner implements Runner {
     @Override
     public Collection<? extends TestNode> defineTests(Class<?> testCase) throws Exception {
+        Description caseDescription = new Description(testCase.getName());
+        EventNode start = new EventNode(caseDescription, EventType.StartTestCase, Status.Running);
+        EventNode end = new EventNode(caseDescription, EventType.EndTestCase, Status.Terminated);
+        start.addSuccessor(end);
+
         List<Testlet> tests = new LinkedList<Testlet>();
         List<Method> befores = new LinkedList<Method>();
         List<Method> afters = new LinkedList<Method>();
@@ -47,6 +55,8 @@ public class DefaultRunner implements Runner {
 
             if (hasAnnotation(method, Annotations.Test.class)) {
                 Testlet testlet = new Testlet(instance, method);
+                testlet.addPredecessor(start);
+                testlet.addSuccessor(end);
                 tests.add(testlet);
             }
 
@@ -59,16 +69,18 @@ public class DefaultRunner implements Runner {
             }
         }
 
-        TestCase testList = new TestCase(testCase);
+        List<TestNode> nodeList = new ArrayList<TestNode>(tests.size() + 2);
+        nodeList.add(start);
 
         for (Testlet testlet : tests) {
             testlet.addSetup(befores);
             testlet.addTearDown(afters);
-
-            testList.addChild(testlet);
+            nodeList.add(testlet);
         }
 
-        return Arrays.asList(testList);
+        nodeList.add(end);
+
+        return nodeList;
     }
 
     private static boolean hasAnnotation(Method method, Class<? extends Annotation> annotation) {

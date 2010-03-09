@@ -19,26 +19,33 @@
 
 package org.dhaven.jue.core.internal.node;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.dhaven.jue.api.Description;
+import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.api.event.TestEvent;
+import org.dhaven.jue.core.TestEventListenerSupport;
 
 /**
- * Contains the logic necessary for blocking/ordering the test nodes.  Will also
- * handle archiving and restoring the ThreadContext.
+ * An EventNode simply sends an event when it is time.
  */
-public abstract class AbstractTestNode implements TestNode {
-    private List<AbstractTestNode> before = new LinkedList<AbstractTestNode>();
-    private AbstractTestNode after;
+public class EventNode extends DependencyTestNode {
+    private Description description;
+    private EventType type;
+    private Status status;
 
-    public AbstractTestNode(List<AbstractTestNode> befores, AbstractTestNode after) {
-        before.addAll(befores);
-        this.after = after;
+    public EventNode(Description description, EventType type, Status status) {
+        this.description = description;
+        this.type = type;
+        this.status = status;
     }
 
     @Override
-    public int compareTo(TestNode node) {
-        if (before.contains(node)) return -1;
-        if (node.equals(after)) return 1;
-        return 0;
+    protected void run(TestEventListenerSupport support) {
+        support.fireTestEvent(new TestEvent(getDescription(), type, status));
+    }
+
+    @Override
+    public Description getDescription() {
+        return this.description;
     }
 }

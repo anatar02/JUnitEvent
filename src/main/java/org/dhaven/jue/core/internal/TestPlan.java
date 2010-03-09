@@ -19,21 +19,31 @@
 
 package org.dhaven.jue.core.internal;
 
-import org.dhaven.jue.api.Request;
-import org.dhaven.jue.core.internal.node.TestNode;
-
 import java.util.Collection;
 import java.util.PriorityQueue;
+
+import org.dhaven.jue.api.Description;
+import org.dhaven.jue.api.Request;
+import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.core.internal.node.EventNode;
+import org.dhaven.jue.core.internal.node.TestNode;
 
 /**
  * Represents the test plan.
  */
 public class TestPlan {
     private PriorityQueue<TestNode> testQueue = new PriorityQueue<TestNode>();
+    private static final Description FRAMEWORK_NAME = new Description("JUE:Test Run");
+    private EventNode start = new EventNode(FRAMEWORK_NAME, EventType.StartRun, Status.Running);
+    private EventNode end = new EventNode(FRAMEWORK_NAME, EventType.EndRun, Status.Terminated);
 
     // should only be created locally;
 
     private TestPlan() {
+        start.addSuccessor(end);
+        testQueue.add(start);
+        testQueue.add(end);
     }
 
     /**
@@ -55,7 +65,11 @@ public class TestPlan {
     }
 
     public void addTests(Collection<? extends TestNode> tests) {
-        testQueue.addAll(tests);
+        for (TestNode node : tests) {
+            node.addPredecessor(start);
+            node.addSuccessor(end);
+            testQueue.add(node);
+        }
     }
 
     public Collection<? extends TestNode> export() {

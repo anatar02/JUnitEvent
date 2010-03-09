@@ -61,13 +61,11 @@ public class Engine {
 
         TestPlan plan = TestPlan.from(request);
 
-        listenerSupport.fireStartTestRun();
         pool.execute(plan);
         pool.await();
-        listenerSupport.fireEndTestRun();
+        pool.shutdown();
 
         listenerSupport.flush();
-        pool.shutdown();
         removeTestListener(results);
         return results;
     }

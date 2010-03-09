@@ -34,7 +34,12 @@ public interface TestNode extends Describable, Comparable<TestNode> {
      *
      * @param support the {@link TestEventListenerSupport}
      * @return <code>true</code> if the node was run.
-     * @throws Exception if there is a problem running the test
      */
-    boolean attemptRun(TestEventListenerSupport support) throws Exception;
+    boolean attemptRun(TestEventListenerSupport support);
+
+    void addSuccessor(TestNode dependencyTestNode);
+
+    void addPredecessor(TestNode dependencyTestNode);
+
+    void signalComplete(TestNode dependencyTestNode);
 }

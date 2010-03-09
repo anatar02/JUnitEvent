@@ -19,19 +19,19 @@
 
 package org.dhaven.jue.core.internal.node;
 
-import org.dhaven.jue.Annotations;
-import org.dhaven.jue.api.Description;
-import org.dhaven.jue.core.TestEventListenerSupport;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dhaven.jue.Annotations;
+import org.dhaven.jue.api.Description;
+import org.dhaven.jue.core.TestEventListenerSupport;
+
 /**
  * Codifies a discrete test.
  */
-public class Testlet implements TestNode {
+public class Testlet extends DependencyTestNode {
     private Description description;
     private boolean ignored;
     private Method method;
@@ -57,12 +57,11 @@ public class Testlet implements TestNode {
     }
 
     @Override
-    public boolean attemptRun(TestEventListenerSupport support) throws Exception {
+    public void run(TestEventListenerSupport support) {
         support.fireTestStarted(this);
 
         if (isIgnored()) {
             support.fireTestIgnored(this);
-            return true;
         }
 
         try {
@@ -72,10 +71,13 @@ public class Testlet implements TestNode {
         } catch (Throwable throwable) {
             support.fireTestFailed(this, throwable);
         } finally {
-            tearDown();
+            try {
+                tearDown();
+            }
+            catch (Exception e) {
+                support.fireTestFailed(this, e);
+            }
         }
-
-        return true;
     }
 
     private void tearDown() throws InvocationTargetException, IllegalAccessException {
@@ -96,9 +98,12 @@ public class Testlet implements TestNode {
         return ignored;
     }
 
-    @Override
-    public int compareTo(TestNode other) {
-        return 0;
+    public void ignore() {
+        ignored = true;
+    }
+
+    public void execute() {
+        ignored = false;
     }
 
     public void addSetup(List<Method> setupMethods) {
