@@ -20,7 +20,6 @@
 package org.dhaven.jue.core.internal;
 
 import org.dhaven.jue.api.Request;
-import org.dhaven.jue.core.TestEventListenerSupport;
 import org.dhaven.jue.core.internal.node.TestNode;
 
 import java.util.Collection;
@@ -30,7 +29,7 @@ import java.util.PriorityQueue;
  * Represents the test plan.
  */
 public class TestPlan {
-    PriorityQueue<TestNode> testQueue = new PriorityQueue<TestNode>();
+    private PriorityQueue<TestNode> testQueue = new PriorityQueue<TestNode>();
 
     // should only be created locally;
 
@@ -56,17 +55,10 @@ public class TestPlan {
     }
 
     public void addTests(Collection<? extends TestNode> tests) {
-
         testQueue.addAll(tests);
     }
 
-    public void execute(TestEventListenerSupport listenerSupport) {
-        for (TestNode node : testQueue) {
-            try {
-                node.run(listenerSupport);
-            } catch (Exception e) {
-                listenerSupport.fireTestFailed(node, e);
-            }
-        }
+    public Collection<? extends TestNode> export() {
+        return testQueue;
     }
 }

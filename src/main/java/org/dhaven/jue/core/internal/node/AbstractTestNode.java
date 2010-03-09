@@ -19,22 +19,26 @@
 
 package org.dhaven.jue.core.internal.node;
 
-import org.dhaven.jue.api.Describable;
-import org.dhaven.jue.core.TestEventListenerSupport;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * The TestNode represents the smallest executable unit of a test.  Essentially,
- * test nodes can be prioritized and run concurrently.
+ * Contains the logic necessary for blocking/ordering the test nodes.  Will also
+ * handle archiving and restoring the ThreadContext.
  */
-public interface TestNode extends Describable, Comparable<TestNode> {
-    /**
-     * Run the test code, passing in the listener support so that all the
-     * listeners can be notified of the progress of the test as it is executed.
-     * Returns false if the node could not be run yet, so it can be re-queued.
-     *
-     * @param support the {@link TestEventListenerSupport}
-     * @return <code>true</code> if the node was run.
-     * @throws Exception if there is a problem running the test
-     */
-    boolean attemptRun(TestEventListenerSupport support) throws Exception;
+public abstract class AbstractTestNode implements TestNode {
+    private List<AbstractTestNode> before = new LinkedList<AbstractTestNode>();
+    private AbstractTestNode after;
+
+    public AbstractTestNode(List<AbstractTestNode> befores, AbstractTestNode after) {
+        before.addAll(befores);
+        this.after = after;
+    }
+
+    @Override
+    public int compareTo(TestNode node) {
+        if (before.contains(node)) return -1;
+        if (node.equals(after)) return 1;
+        return 0;
+    }
 }

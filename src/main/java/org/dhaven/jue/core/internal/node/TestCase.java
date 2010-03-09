@@ -41,15 +41,17 @@ public class TestCase implements TestNode {
     }
 
     @Override
-    public void run(TestEventListenerSupport support) throws Exception {
+    public boolean attemptRun(TestEventListenerSupport support) throws Exception {
         support.fireStartTestCase(this);
         try {
             for (TestNode node : children) {
-                node.run(support);
+                node.attemptRun(support);
             }
         } finally {
             support.fireEndTestCase(this);
         }
+
+        return true;
     }
 
     @Override

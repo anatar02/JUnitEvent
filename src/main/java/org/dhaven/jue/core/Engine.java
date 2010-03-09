@@ -23,6 +23,7 @@ import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.Results;
 import org.dhaven.jue.api.event.TestEventListener;
 import org.dhaven.jue.core.internal.TestPlan;
+import org.dhaven.jue.core.internal.TestThreadPool;
 
 /**
  * Central class for JUnit Events.  This runs the tests as they are.
@@ -51,15 +52,22 @@ public class Engine {
     }
 
     public Results process(Request request) throws Exception {
+        TestThreadPool pool = new TestThreadPool();
+        pool.setMultiplier(4);
+        pool.startup(listenerSupport);
+
         Results results = new Results();
         addTestListener(results);
 
         TestPlan plan = TestPlan.from(request);
-        listenerSupport.fireStartTestRun();
-        plan.execute(listenerSupport);
-        listenerSupport.fireEndTestRun();
-        listenerSupport.flush();
 
+        listenerSupport.fireStartTestRun();
+        pool.execute(plan);
+        pool.await();
+        listenerSupport.fireEndTestRun();
+
+        listenerSupport.flush();
+        pool.shutdown();
         removeTestListener(results);
         return results;
     }

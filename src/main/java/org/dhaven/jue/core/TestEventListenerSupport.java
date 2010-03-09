@@ -139,6 +139,10 @@ public class TestEventListenerSupport {
         fireTestEvent(new TestEvent(test.getDescription(), EventType.EndTest, Status.Failed, failure));
     }
 
+    public void fireTestTerminated(Describable test) {
+        fireTestEvent(new TestEvent(test.getDescription(), EventType.EndTest, Status.Terminated));
+    }
+
     public void flush() {
         notifier.run();
     }
