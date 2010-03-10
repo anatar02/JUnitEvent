@@ -19,9 +19,8 @@
 
 package org.dhaven.jue.core.internal;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.concurrent.CyclicBarrier;
+import java.util.Collection;
+import java.util.concurrent.*;
 
 import org.dhaven.jue.core.TestEventListenerSupport;
 import org.dhaven.jue.core.internal.node.TestNode;
@@ -31,10 +30,10 @@ import org.dhaven.jue.core.internal.node.TestNode;
  */
 public class TestThreadPool {
     private ThreadGroup group = new ThreadGroup("JUE:ThreadPool");
-    private TestPlanThread[] threadList;
-    private int currThread = 0;
+    private ThreadPoolExecutor service;
+    private TestEventListenerSupport support;
+    private CountDownLatch barrier;
     private int multiplier = 1;
-    private CyclicBarrier barrier;
 
     public void setMultiplier(int value) {
         multiplier = value;
@@ -49,121 +48,63 @@ public class TestThreadPool {
     }
 
     public void execute(TestPlan plan) {
-        for (TestNode node : plan.export()) {
-            threadList[currThread].offer(node);
-            currThread++;
-            currThread = currThread % threadList.length;
-        }
+        Collection<? extends TestNode> testPlan = plan.export();
+        barrier = new CountDownLatch(testPlan.size());
 
-        for (TestPlanThread thread : threadList) {
-            thread.planSubmitted();
-        }
-    }
-
-    public void await() {
-        try {
-            barrier.await();
-        } catch (Exception e) {
-            // do nothing
+        for (TestNode node : testPlan) {
+            service.execute(new NodeRunner(node, barrier, support));
         }
     }
 
     public void startup(TestEventListenerSupport support) {
-        final int numThreads = getNumberOfThreads();
-        barrier = new CyclicBarrier(numThreads + 1);
-        threadList = new TestPlanThread[numThreads];
+        this.support = support;
+        service = ThreadPoolExecutor.class.cast(
+                Executors.newFixedThreadPool(getNumberOfThreads(),
+                        new TestThreadFactory()));
 
-        for (int i = 0; i < numThreads; i++) {
-            threadList[i] = new TestPlanThread(group, barrier, support);
-            threadList[i].start();
-        }
+        service.setKeepAliveTime(5, TimeUnit.SECONDS);
+        service.prestartAllCoreThreads();
     }
 
     public void shutdown() {
-        await();
+        try {
+            barrier.await();
+        } catch (InterruptedException e) {
+            // do nothing
+        }
 
-        group.interrupt();
-        for (Thread thread : threadList) {
-            thread.interrupt();
+        service.shutdown();
+    }
+
+    private class TestThreadFactory implements ThreadFactory {
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(group, r);
+            thread.setDaemon(true);
+            thread.setPriority(Thread.NORM_PRIORITY);
+
+            return thread;
         }
     }
 
-    private static class TestPlanThread extends Thread {
-        private Queue<TestNode> workQueue = new LinkedList<TestNode>();
-        private static int threadNum = 1;
+    private class NodeRunner implements Runnable {
+        private final TestNode node;
         private final TestEventListenerSupport support;
-        private final CyclicBarrier barrier;
-        private boolean countdown = false;
+        private final CountDownLatch barrier;
 
-        public TestPlanThread(ThreadGroup group, CyclicBarrier barrier,
-                              TestEventListenerSupport support) {
-            super(group, group.getName() + "-" + nextThreadNum());
+        public NodeRunner(TestNode node, CountDownLatch barrier, TestEventListenerSupport support) {
+            this.node = node;
             this.support = support;
             this.barrier = barrier;
-            setDaemon(true);
-            setPriority(Thread.NORM_PRIORITY);
-        }
-
-        private static int nextThreadNum() {
-            return threadNum++;
-        }
-
-        public boolean offer(TestNode node) {
-            return workQueue.offer(node);
         }
 
         @Override
         public void run() {
-            boolean process = true;
-            while (process) {
-                TestNode node = workQueue.poll();
-
-                // if there is no node, sleep
-                if (!sleepOnNull(node)) {
-                    // otherwise process the node
-                    processNode(node);
-                }
-
-                process = !Thread.interrupted();
-
-                if (process && countdown) {
-                    process = workQueue.size() > 0;
-                }
+            if (node.attemptRun(support)) {
+                barrier.countDown();
+            } else {
+                service.execute(this);
             }
-
-            try {
-                barrier.await();
-            } catch (Exception e) {
-                // ignore
-            }
-        }
-
-        private void processNode(TestNode node) {
-            try {
-                if (!node.attemptRun(support)) {
-                    workQueue.offer(node);
-                }
-            } catch (Exception e) {
-                support.fireTestFailed(node, e);
-            }
-        }
-
-        private boolean sleepOnNull(TestNode node) {
-            boolean sleep = node == null;
-
-            if (sleep) {
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    // silently ignore
-                }
-            }
-
-            return sleep;
-        }
-
-        public void planSubmitted() {
-            countdown = true;
         }
     }
 }

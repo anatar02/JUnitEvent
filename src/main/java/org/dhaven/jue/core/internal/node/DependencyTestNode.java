@@ -19,8 +19,8 @@
 
 package org.dhaven.jue.core.internal.node;
 
+import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.dhaven.jue.core.TestEventListenerSupport;
 
@@ -29,8 +29,8 @@ import org.dhaven.jue.core.TestEventListenerSupport;
  * handle archiving and restoring the ThreadContext.
  */
 public abstract class DependencyTestNode implements TestNode {
-    private final Set<TestNode> predecessors = new CopyOnWriteArraySet<TestNode>();
-    private final Set<TestNode> successors = new CopyOnWriteArraySet<TestNode>();
+    private final Set<TestNode> predecessors = new HashSet<TestNode>();
+    private final Set<TestNode> successors = new HashSet<TestNode>();
 
     public void signalComplete(TestNode node) {
         predecessors.remove(node);

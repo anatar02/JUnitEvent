@@ -21,8 +21,8 @@ package org.dhaven.jue.core;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.dhaven.jue.api.Describable;
 import org.dhaven.jue.api.event.EventType;
@@ -35,13 +35,13 @@ import org.dhaven.jue.api.event.TestEventListener;
  * classes that need to fire tests will have a copy of this class.
  */
 public class TestEventListenerSupport {
+    ExecutorService service;
     private Queue<TestEventListener> listeners = new LinkedList<TestEventListener>();
-    private Queue<TestEvent> queue = new ConcurrentLinkedQueue<TestEvent>();
-    private CyclicBarrier barrier = new CyclicBarrier(2);
+    int numToProcess = 0;
+    int numProcessed = 0;
 
     TestEventListenerSupport() {
-        ListenerThread listenerThread = new ListenerThread();
-        listenerThread.start();
+        service = Executors.newSingleThreadExecutor();
     }
 
     /**
@@ -67,8 +67,18 @@ public class TestEventListenerSupport {
      *
      * @param testEvent the test event to send
      */
-    public void fireTestEvent(TestEvent testEvent) {
-        queue.offer(testEvent);
+    public void fireTestEvent(final TestEvent testEvent) {
+        numToProcess++;
+        service.execute(new Runnable() {
+            @Override
+            public void run() {
+                for (TestEventListener listener : listeners) {
+                    listener.handleEvent(testEvent);
+                }
+
+                numProcessed++;
+            }
+        });
     }
 
     /**
@@ -112,50 +122,16 @@ public class TestEventListenerSupport {
         fireTestEvent(new TestEvent(test.getDescription(), EventType.EndTest, Status.Terminated));
     }
 
-    public void await() {
-        try {
-            barrier.await();
-        } catch (Exception e) {
-            // ignore
-        }
-    }
-
-    private class ListenerThread extends Thread {
-        boolean endRunSent = false;
-
-        @Override
-        public void run() {
-            boolean collect = true;
-            while (collect) {
-                TestEvent testEvent;
-                while ((testEvent = queue.poll()) != null) {
-                    if (testEvent.getType() == EventType.EndRun) {
-                        endRunSent = true;
-                    }
-
-                    for (TestEventListener listener : listeners) {
-                        listener.handleEvent(testEvent);
-                    }
-                }
-
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-
-                collect = !Thread.interrupted();
-
-                if (collect && endRunSent) {
-                    collect = queue.size() > 0;
-                }
-            }
-
+    public void shutdown() {
+        while (numToProcess != numProcessed) {
             try {
-                barrier.await();
-            } catch (Exception e) {
-                // ignore
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                break;
             }
         }
+
+        service.shutdown();
+        assert numToProcess == numProcessed : String.format("%d != %d", numToProcess, numProcessed);
     }
 }

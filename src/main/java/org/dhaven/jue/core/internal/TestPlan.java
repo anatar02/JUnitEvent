@@ -20,7 +20,9 @@
 package org.dhaven.jue.core.internal;
 
 import java.util.Collection;
-import java.util.PriorityQueue;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.dhaven.jue.api.Description;
 import org.dhaven.jue.api.Request;
@@ -33,7 +35,7 @@ import org.dhaven.jue.core.internal.node.TestNode;
  * Represents the test plan.
  */
 public class TestPlan {
-    private PriorityQueue<TestNode> testQueue = new PriorityQueue<TestNode>();
+    private List<TestNode> testQueue = new LinkedList<TestNode>();
     private static final Description FRAMEWORK_NAME = new Description("JUE:Test Run");
     private EventNode start = new EventNode(FRAMEWORK_NAME, EventType.StartRun, Status.Running);
     private EventNode end = new EventNode(FRAMEWORK_NAME, EventType.EndRun, Status.Terminated);
@@ -73,6 +75,7 @@ public class TestPlan {
     }
 
     public Collection<? extends TestNode> export() {
+        Collections.sort(testQueue);
         return testQueue;
     }
 }
