@@ -19,8 +19,6 @@
 
 package org.dhaven.jue.core.internal;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.concurrent.*;
 
@@ -105,20 +103,11 @@ public class TestThreadPool {
 
         @Override
         public void run() {
-            if (attempt(node)) {
+            if (node.attemptRun(support)) {
                 barrier.countDown();
             } else {
                 service.execute(NodeRunner.this);
             }
-        }
-
-        private boolean attempt(final TestNode node) {
-            return AccessController.doPrivilegedWithCombiner(new PrivilegedAction<Boolean>() {
-                @Override
-                public Boolean run() {
-                    return node.attemptRun(support);
-                }
-            });
         }
     }
 }

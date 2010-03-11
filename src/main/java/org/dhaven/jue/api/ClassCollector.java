@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -79,7 +80,7 @@ public class ClassCollector {
 
     private void addClassesFromPath(ArrayList<Class<?>> classes, URL url) throws Exception {
         if ("file".equals(url.getProtocol())) {
-            handleFile(classes, new File(url.getFile()));
+            handleFile(classes, new File(URLDecoder.decode(url.getFile(), "utf-8")));
         } else if ("jar".equals(url.getProtocol())) {
             String jarName = url.getFile().substring(0, url.getFile().indexOf("!"));
             handleJar(classes, new JarFile(jarName));
@@ -87,7 +88,11 @@ public class ClassCollector {
     }
 
     private void handleFile(ArrayList<Class<?>> classes, File base) {
-        for (File file : base.listFiles()) {
+        File[] files = base.listFiles();
+
+        checkListing(base, files);
+
+        for (File file : files) {
             if (file.getName().endsWith(".class")) {
                 String className = file.getPath();
                 className = className.substring(className.indexOf("test-classes") + "test-classes".length() + 1);
@@ -97,6 +102,21 @@ public class ClassCollector {
                 addClassIfMatches(classes, className);
             } else if (recurse && file.isDirectory()) {
                 handleFile(classes, file);
+            }
+        }
+    }
+
+    private void checkListing(File base, File[] files) {
+        if (null == files) {
+            if (base.exists()) {
+                throw new IllegalStateException(
+                        base.isDirectory() ?
+                                "Dang Java implementers thought it was a good idea " +
+                                        "to return null instead of throw an exception when" +
+                                        " it couldn't list files for a valid directory."
+                                : base.getPath() + " is not a directory");
+            } else {
+                throw new IllegalStateException(base.getPath() + " does not exist");
             }
         }
     }

@@ -44,7 +44,7 @@ public class Request {
         if (arguments.length == 0) {
             throw new IllegalArgumentException("No arguments, no tests.");
         } else if (arguments[0].contains("/") || arguments[0].contains("\\")) {
-            File file = new File(arguments[0]).getAbsoluteFile();
+            File file = new File(arguments[0]).getCanonicalFile();
             URLClassLoader loader =
                     new URLClassLoader(new URL[]{file.toURI().toURL()});
 
