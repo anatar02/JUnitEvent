@@ -19,6 +19,8 @@
 
 package org.dhaven.jue.core.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.concurrent.*;
 
@@ -34,6 +36,7 @@ public class TestThreadPool {
     private TestEventListenerSupport support;
     private CountDownLatch barrier;
     private int multiplier = 1;
+    private ClassLoader classLoader;
 
     public void setMultiplier(int value) {
         multiplier = value;
@@ -57,6 +60,7 @@ public class TestThreadPool {
     }
 
     public void startup(TestEventListenerSupport support) {
+        this.classLoader = Thread.currentThread().getContextClassLoader();
         this.support = support;
         service = ThreadPoolExecutor.class.cast(
                 Executors.newFixedThreadPool(getNumberOfThreads(),
@@ -82,6 +86,7 @@ public class TestThreadPool {
             Thread thread = new Thread(group, r);
             thread.setDaemon(true);
             thread.setPriority(Thread.NORM_PRIORITY);
+            thread.setContextClassLoader(classLoader);
 
             return thread;
         }
@@ -100,11 +105,20 @@ public class TestThreadPool {
 
         @Override
         public void run() {
-            if (node.attemptRun(support)) {
+            if (attempt(node)) {
                 barrier.countDown();
             } else {
-                service.execute(this);
+                service.execute(NodeRunner.this);
             }
+        }
+
+        private boolean attempt(final TestNode node) {
+            return AccessController.doPrivilegedWithCombiner(new PrivilegedAction<Boolean>() {
+                @Override
+                public Boolean run() {
+                    return node.attemptRun(support);
+                }
+            });
         }
     }
 }

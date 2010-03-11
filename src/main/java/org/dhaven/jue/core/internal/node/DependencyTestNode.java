@@ -82,11 +82,11 @@ public abstract class DependencyTestNode implements TestNode {
         return 0;
     }
 
-    boolean isPredecessorOf(DependencyTestNode node) {
+    public boolean isPredecessorOf(DependencyTestNode node) {
         return successors.contains(node);
     }
 
-    boolean isSuccessorOf(DependencyTestNode node) {
+    public boolean isSuccessorOf(DependencyTestNode node) {
         return predecessors.contains(node);
     }
 }

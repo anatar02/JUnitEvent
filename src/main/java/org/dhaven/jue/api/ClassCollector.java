@@ -38,9 +38,19 @@ public class ClassCollector {
     private String basePackage = "";
     private boolean excludeInnerClasses = false;
     private boolean recurse = false;
+    private File basePath;
+    private ClassLoader loader = null;
 
-    private ClassLoader getClassLoader() {
-        return Thread.currentThread().getContextClassLoader();
+    public void setClassLoader(ClassLoader loader) {
+        this.loader = loader;
+    }
+
+    ClassLoader getClassLoader() {
+        if (null == loader) {
+            loader = Thread.currentThread().getContextClassLoader();
+        }
+
+        return loader;
     }
 
     public void methodsHaveAnnotation(Class<? extends Annotation>... annotation) {
@@ -53,10 +63,15 @@ public class ClassCollector {
 
     public Class<?>[] collect() throws Exception {
         ArrayList<Class<?>> classes = new ArrayList<Class<?>>(20);
-        List<URL> paths = Collections.list(getClassLoader().getResources(basePackage.replace('.', '/')));
 
-        for (URL path : paths) {
-            addClassesFromPath(classes, path);
+        if (null == basePath) {
+            List<URL> paths = Collections.list(getClassLoader().getResources(basePackage.replace('.', '/')));
+
+            for (URL path : paths) {
+                addClassesFromPath(classes, path);
+            }
+        } else {
+            handleFile(classes, basePath);
         }
 
         return classes.toArray(new Class<?>[classes.size()]);
@@ -146,5 +161,10 @@ public class ClassCollector {
 
     public void recursiveSearch() {
         recurse = true;
+    }
+
+    public void setBasePath(File path) {
+        assert path.exists() && path.isDirectory();
+        basePath = path;
     }
 }

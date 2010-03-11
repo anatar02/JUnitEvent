@@ -19,27 +19,46 @@
 
 package org.dhaven.jue.api;
 
-import org.dhaven.jue.Annotations;
-
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.dhaven.jue.Annotations;
 
 /**
  * Collect, filter and prepare the test classes.
  */
 public class Request {
     private Set<Class<?>> testClasses = new HashSet<Class<?>>();
+    ClassCollector collector = new ClassCollector();
 
     public Request(String... arguments) throws Exception {
-        ClassCollector collector = new ClassCollector();
-        collector.setBasePackage(arguments[0]);
         collector.methodsHaveAnnotation(Annotations.get());
         collector.noInternalClasses();
         collector.recursiveSearch();
 
+        if (arguments.length == 0) {
+            throw new IllegalArgumentException("No arguments, no tests.");
+        } else if (arguments[0].contains("/") || arguments[0].contains("\\")) {
+            File file = new File(arguments[0]).getAbsoluteFile();
+            URLClassLoader loader =
+                    new URLClassLoader(new URL[]{file.toURI().toURL()});
+
+            collector.setClassLoader(loader);
+            collector.setBasePath(file);
+        } else {
+            collector.setBasePackage(arguments[0]);
+        }
+
         testClasses.addAll(Arrays.asList(collector.collect()));
+    }
+
+    public ClassLoader getRequestClassLoader() {
+        return collector.getClassLoader();
     }
 
     public Request(Class<?>... classes) {

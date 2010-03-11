@@ -54,6 +54,7 @@ public class Engine {
     }
 
     public Results process(Request request) throws Exception {
+        Thread.currentThread().setContextClassLoader(request.getRequestClassLoader());
         TestThreadPool pool = new TestThreadPool();
         pool.setMultiplier(threadsPerProcessor);
         pool.startup(listenerSupport);
