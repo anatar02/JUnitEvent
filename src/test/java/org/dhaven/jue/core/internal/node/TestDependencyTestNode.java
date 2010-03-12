@@ -33,8 +33,8 @@ import static org.hamcrest.Matchers.equalTo;
 public class TestDependencyTestNode {
     @Test
     public void addingPredecessorHasReciprocalEffect() {
-        DependencyTestNode one = new TestNode(1);
-        DependencyTestNode two = new TestNode(2);
+        DependencyTestNode one = createNode(1);
+        DependencyTestNode two = createNode(2);
 
         two.addPredecessor(one);
 
@@ -44,8 +44,8 @@ public class TestDependencyTestNode {
 
     @Test
     public void addingSuccessorHasReciprocalEffect() {
-        DependencyTestNode one = new TestNode(1);
-        DependencyTestNode two = new TestNode(2);
+        DependencyTestNode one = createNode(1);
+        DependencyTestNode two = createNode(2);
 
         one.addSuccessor(two);
 
@@ -55,9 +55,9 @@ public class TestDependencyTestNode {
 
     @Test
     public void EnsureSortOrder() {
-        DependencyTestNode two = new TestNode(2);
-        DependencyTestNode three = new TestNode(3);
-        DependencyTestNode one = new TestNode(1);
+        DependencyTestNode two = createNode(2);
+        DependencyTestNode three = createNode(3);
+        DependencyTestNode one = createNode(1);
 
         one.addSuccessor(two);
         three.addPredecessor(one);
@@ -80,9 +80,13 @@ public class TestDependencyTestNode {
 
     @Test(expected = IllegalArgumentException.class)
     public void cannotAddSelfToSuccessor() {
-        DependencyTestNode node = new TestNode(1);
+        DependencyTestNode node = createNode(1);
 
         node.addSuccessor(node);
+    }
+
+    protected DependencyTestNode createNode(int i) {
+        return new TestNode(i);
     }
 
     private final static class TestNode extends DependencyTestNode {

@@ -19,12 +19,12 @@
 
 package org.dhaven.jue.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.dhaven.jue.api.Description;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Default listener for the command line access to the tool.
@@ -61,6 +61,7 @@ public class CommandLineListener implements TestEventListener {
 
     private void printDuration(TestEvent event) {
         TestEvent start = history.remove(event.getDescription());
+        if (null == start) return;
         long duration = event.getNanoseconds() - start.getNanoseconds();
         System.out.format("Test took %.3f ms\n", (duration / 1000000f));
     }

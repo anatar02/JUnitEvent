@@ -20,21 +20,16 @@
 package org.dhaven.jue;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.Results;
 import org.dhaven.jue.api.event.EventType;
-import org.dhaven.jue.api.event.TestEvent;
-import org.dhaven.jue.api.event.TestEventListener;
 import org.dhaven.jue.core.Engine;
 
 import static org.dhaven.jue.Annotations.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Make sure the tests are run in order
@@ -62,7 +57,7 @@ public class TestSemantics {
 
         engine.process(testsToRun);
 
-        assertThat(listenerTester.getEventOrder(), equalTo(EventType.values()));
+        assertThat(listenerTester.getEventTypeOrder(), equalTo(EventType.values()));
     }
 
     @Test
@@ -80,7 +75,7 @@ public class TestSemantics {
 
         Results results = engine.process(testsToRun);
 
-        assertThat("Did not fail test as expected", results.passed(), equalTo(false));
+        assertThat("Did not fail test as expected", results.passed(), is(false));
     }
 
     @Test
@@ -89,7 +84,19 @@ public class TestSemantics {
 
         Results results = engine.process(testsToRun);
 
-        assertThat("Did not fail test as expected", results.passed(), equalTo(false));
+        assertThat("Did not fail test as expected", results.passed(), is(false));
+    }
+
+    @Test
+    public void testsAreInheritedFromSuperClasses() throws Exception {
+        testsToRun = new Request(InheritanceTest.class);
+
+        Results results = engine.process(testsToRun);
+
+        assertThat(results.passed(), is(true));
+
+        assertThat(results.numberOfTestCases(), is(1));
+        assertThat(results.numberOfTests(), is(2));
     }
 
     /**
@@ -145,33 +152,10 @@ public class TestSemantics {
         }
     }
 
-    /**
-     * Helper listener to extract the order of events.
-     */
-    private class ListenerTester implements TestEventListener {
-        private List<TestEvent> events = new ArrayList<TestEvent>(
-                EventType.values().length);
-
-        @Override
-        public void handleEvent(TestEvent event) {
-            events.add(event);
-        }
-
-        public EventType[] getEventOrder() {
-            Collections.sort(events, new Comparator<TestEvent>() {
-                @Override
-                public int compare(TestEvent o1, TestEvent o2) {
-                    return (int) (o1.getNanoseconds()
-                            - o2.getNanoseconds());
-                }
-            });
-
-            EventType[] eventOrder = new EventType[events.size()];
-            for (int i = 0; i < eventOrder.length; i++) {
-                eventOrder[i] = events.get(i).getType();
-            }
-
-            return eventOrder;
+    public static class InheritanceTest extends ExceptionTest {
+        @Test
+        public void secondTest() {
+            assertThat(true, is(true));
         }
     }
 }

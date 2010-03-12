@@ -49,7 +49,7 @@ public class DefaultRunner implements Runner {
         List<Method> befores = new LinkedList<Method>();
         List<Method> afters = new LinkedList<Method>();
 
-        for (Method method : testCase.getDeclaredMethods()) {
+        for (Method method : testCase.getMethods()) {
             // Ensure new object instance with each testlet
             Object instance = testCase.newInstance();
 

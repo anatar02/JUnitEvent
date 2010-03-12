@@ -40,7 +40,7 @@ public class TestEventListenerSupport {
     int numToProcess = 0;
     int numProcessed = 0;
 
-    TestEventListenerSupport() {
+    public TestEventListenerSupport() {
         service = Executors.newSingleThreadExecutor();
     }
 

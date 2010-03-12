@@ -89,4 +89,9 @@ public abstract class DependencyTestNode implements TestNode {
     public boolean isSuccessorOf(DependencyTestNode node) {
         return predecessors.contains(node);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s: %s", getClass().getSimpleName(), getDescription());
+    }
 }

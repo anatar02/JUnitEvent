@@ -19,17 +19,17 @@
 
 package org.dhaven.jue.api;
 
-import org.dhaven.jue.api.event.EventClass;
-import org.dhaven.jue.api.event.Status;
-import org.dhaven.jue.api.event.TestEvent;
-import org.dhaven.jue.api.event.TestEventListener;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.dhaven.jue.api.event.EventClass;
+import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.api.event.TestEvent;
+import org.dhaven.jue.api.event.TestEventListener;
 
 /**
  * Collects the results from the tests as they are run.  The results object
@@ -137,6 +137,26 @@ public class Results implements TestEventListener {
         }
 
         return runningTime;
+    }
+
+    public int numberOfTestCases() {
+        return countForEventClass(EventClass.TestCase);
+    }
+
+    public int numberOfTests() {
+        return countForEventClass(EventClass.Test);
+    }
+
+    private int countForEventClass(EventClass eventClass) {
+        int numTests = 0;
+
+        for (TestSummary summary : collectedResults.values()) {
+            if (summary.getEventClass() == eventClass) {
+                numTests++;
+            }
+        }
+
+        return numTests;
     }
 
     private static final class TestSummary implements Describable {
