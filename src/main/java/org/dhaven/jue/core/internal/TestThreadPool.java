@@ -20,7 +20,10 @@
 package org.dhaven.jue.core.internal;
 
 import java.util.Collection;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.dhaven.jue.core.TestEventListenerSupport;
 import org.dhaven.jue.core.internal.node.TestNode;
@@ -63,9 +66,6 @@ public class TestThreadPool {
         service = ThreadPoolExecutor.class.cast(
                 Executors.newFixedThreadPool(getNumberOfThreads(),
                         new TestThreadFactory()));
-
-        service.setKeepAliveTime(5, TimeUnit.SECONDS);
-        service.prestartAllCoreThreads();
     }
 
     public void shutdown() {

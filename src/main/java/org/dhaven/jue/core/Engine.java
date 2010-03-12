@@ -41,7 +41,7 @@ public class Engine {
     public static void main(String... arguments) throws Exception {
         // Set up the test engine
         Engine engine = new Engine();
-        engine.setThreadsPerProcessor(10);
+        engine.setThreadsPerProcessor(2);
 
         // Initialize the test environment
         Request request = new Request(arguments);
