@@ -141,7 +141,7 @@ public class TestSummary implements Describable, Comparable<TestSummary> {
     protected float threeDigitMS(long time) {
         float value = time / 1000000f;
 
-        value = Math.round(value * 1000) / 1000;
+        value = Math.round(value * 1000f) / 1000f;
 
         return value;
     }

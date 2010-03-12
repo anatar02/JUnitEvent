@@ -95,7 +95,13 @@ public class TestCaseSummary extends TestSummary {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder(SEPARATOR);
+        StringBuilder builder = new StringBuilder();
+
+        for (TestSummary summary : children) {
+            builder.append(summary);
+        }
+
+        builder.append(SEPARATOR);
         builder.append(getDescription()).append("\t");
 
         appendStatus(builder);
@@ -105,10 +111,6 @@ public class TestCaseSummary extends TestSummary {
         builder.append("clock time: ").append(clock);
         builder.append("ms\tprocessor time: ").append(processor);
         builder.append("ms\n\n");
-
-        for (TestSummary summary : children) {
-            builder.append(summary);
-        }
 
         return builder.toString();
     }
