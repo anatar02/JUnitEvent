@@ -21,10 +21,7 @@ package org.dhaven.jue.api;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.dhaven.jue.api.event.EventClass;
 import org.dhaven.jue.api.event.Status;
@@ -38,10 +35,10 @@ import org.dhaven.jue.api.event.TestEventListener;
  * are designed to be run in parallel, this is useful information.  If any
  * test was run multiple times, you will be able to find the average processor
  * times for those tests.
- * <p/>
- * TODO: test case/test summary as well
  */
 public class Results implements TestEventListener {
+    private TestCaseSummary runSummary;
+    private Set<TestCaseSummary> testCases = new TreeSet<TestCaseSummary>();
     private Map<Description, TestSummary> collectedResults = new HashMap<Description, TestSummary>();
 
     /**
@@ -105,12 +102,41 @@ public class Results implements TestEventListener {
         TestSummary summary = collectedResults.get(event.getDescription());
 
         if (null == summary) {
-            summary = new TestSummary(event);
+            summary = TestSummary.create(event);
         } else {
             summary.setEvent(event);
         }
 
+        switch (summary.getEventClass()) {
+            case System:
+                runSummary = TestCaseSummary.class.cast(summary);
+                break;
+
+            case TestCase:
+                testCases.add(TestCaseSummary.class.cast(summary));
+                runSummary.addChild(summary);
+                break;
+
+            case Test:
+                for (TestCaseSummary caseSummary : testCases) {
+                    Description testCase = caseSummary.getDescription();
+                    Description test = summary.getDescription();
+                    if (testCase.relatedTo(test)) {
+                        caseSummary.addChild(summary);
+                    }
+                }
+
+                break;
+
+            default:
+                throw new IllegalStateException("test summary event class is not handled: " + summary.getEventClass());
+        }
+
         collectedResults.put(event.getDescription(), summary);
+    }
+
+    public TestCaseSummary getRunSummary() {
+        return runSummary;
     }
 
     public long getProcessorTime(EventClass type) {
@@ -145,72 +171,5 @@ public class Results implements TestEventListener {
 
     public int numberOfTests() {
         return filterResults(EventClass.Test).size();
-    }
-
-    private static final class TestSummary implements Describable, Comparable<TestSummary> {
-        private static final int START = 0;
-        private static final int END = 1;
-        private TestEvent[] events = new TestEvent[2];
-        private Description description;
-
-        public TestSummary(TestEvent event) {
-            description = event.getDescription();
-            setEvent(event);
-        }
-
-        public void setEvent(TestEvent event) {
-            events[Status.Running == event.getStatus() ? START : END] = event;
-        }
-
-        public EventClass getEventClass() {
-            int index = events[START] == null ? END : START;
-
-            return events[index].getType().getType();
-        }
-
-        public boolean isComplete() {
-            return events[START] != null && events[END] != null;
-        }
-
-        public boolean passed() {
-            return isComplete() && events[END].getStatus() == Status.Passed;
-        }
-
-        public boolean failed() {
-            return isComplete() && events[END].getStatus() == Status.Failed;
-        }
-
-        public boolean terminated() {
-            return isComplete() && events[END].getStatus() == Status.Terminated;
-        }
-
-        @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-        public Throwable getFailure() {
-            return isComplete() ? events[END].getFailure() : null;
-        }
-
-        public long elapsedTime() {
-            return isComplete() ? events[END].getNanoseconds() - events[START].getNanoseconds() : 0;
-        }
-
-        @Override
-        public Description getDescription() {
-            return description;
-        }
-
-        @Override
-        public int compareTo(TestSummary other) {
-            return description.compareTo(other.getDescription());
-        }
-
-        @Override
-        public boolean equals(Object object) {
-            return (object instanceof TestSummary) && description.equals(TestSummary.class.cast(object).getDescription());
-        }
-
-        @Override
-        public int hashCode() {
-            return description.hashCode();
-        }
     }
 }

@@ -36,9 +36,8 @@ import org.dhaven.jue.core.internal.node.TestNode;
  */
 public class TestPlan {
     private List<TestNode> testQueue = new LinkedList<TestNode>();
-    private static final Description FRAMEWORK_NAME = new Description("JUE:Test Run");
-    private EventNode start = new EventNode(FRAMEWORK_NAME, EventType.StartRun, Status.Running);
-    private EventNode end = new EventNode(FRAMEWORK_NAME, EventType.EndRun, Status.Terminated);
+    private EventNode start = new EventNode(Description.JUEName, EventType.StartRun, Status.Running);
+    private EventNode end = new EventNode(Description.JUEName, EventType.EndRun, Status.Terminated);
 
     // should only be created locally;
 

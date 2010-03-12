@@ -155,9 +155,27 @@ public class TestDescription {
     }
 
     @Test
+    public void descriptionsAreRelatedWhenMultiDotNotationIsUsed() {
+        Description one = new Description("org.Test");
+        Description two = new Description("org.Test.foo");
+
+        assertThat(one.relatedTo(two), equalTo(true));
+        assertThat(two.relatedTo(one), equalTo(true));
+    }
+
+    @Test
     public void descriptionsAreNotRelatedWhenDotNotationDiffers() {
         Description one = new Description("Test.bar");
         Description two = new Description("Test.foo");
+
+        assertThat(one.relatedTo(two), equalTo(false));
+        assertThat(two.relatedTo(one), equalTo(false));
+    }
+
+    @Test
+    public void descriptionsAreNotRelatedWhenMultiDotNotationDiffers() {
+        Description one = new Description("org.Test.bar");
+        Description two = new Description("org.Test.foo");
 
         assertThat(one.relatedTo(two), equalTo(false));
         assertThat(two.relatedTo(one), equalTo(false));

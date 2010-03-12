@@ -42,7 +42,6 @@ public class Engine {
         // Set up the test engine
         Engine engine = new Engine();
         engine.setThreadsPerProcessor(10);
-        engine.addTestListener(new CommandLineListener());
 
         // Initialize the test environment
         Request request = new Request(arguments);
@@ -51,6 +50,8 @@ public class Engine {
         Results results = engine.process(request);
 
         System.out.println(results.passed() ? "All tests passed." : "Tests did not pass");
+
+        System.out.println(results.getRunSummary());
     }
 
     public Results process(Request request) throws Exception {

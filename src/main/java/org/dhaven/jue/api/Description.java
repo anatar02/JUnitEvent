@@ -25,6 +25,8 @@ package org.dhaven.jue.api;
  * are provided.
  */
 public class Description implements Comparable<Description> {
+    private static final String PREFIX = "JUE: ";
+    public static final Description JUEName = new Description(PREFIX + "Version 0.5");
     private final String name;
     private final int run;
     private final int ofRuns;
@@ -113,18 +115,19 @@ public class Description implements Comparable<Description> {
      * @return <code>true</code> if the descriptions are related
      */
     public boolean relatedTo(Description other) {
-        if (name.indexOf('.') > 0 && other.name.indexOf('.') > 0) {
-            return name.equals(other.name);
-        }
-
         String thisBase = extractBase(name);
         String otherBase = extractBase(other.name);
-        return thisBase.equals(otherBase);
+
+        boolean compareTestCase = thisBase.equals(name) || otherBase.equals(other.name);
+        return compareTestCase ? thisBase.equals(otherBase) : name.equals(other.name);
     }
 
     private String extractBase(String name) {
-        int index = name.indexOf('.');
+        int index = name.lastIndexOf('.');
         if (index < 0) return name;
+
+        String firstLetter = name.substring(index + 1, index + 2);
+        if (firstLetter.equals(firstLetter.toUpperCase())) return name;
 
         return name.substring(0, index);
     }
