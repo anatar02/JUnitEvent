@@ -99,6 +99,18 @@ public class TestSemantics {
         assertThat(results.numberOfTests(), is(2));
     }
 
+    @Test
+    public void testsAreInheritedFromSuperClassesCheck2() throws Exception {
+        testsToRun = new Request(InheritanceTest.class, InternalTest.class);
+
+        Results results = engine.process(testsToRun);
+
+        assertThat(results.passed(), is(true));
+
+        assertThat(results.numberOfTestCases(), is(2));
+        assertThat(results.numberOfTests(), is(3));
+    }
+
     /**
      * Internal test to ensure the order of @Before, @Test, and @After work OK.
      */

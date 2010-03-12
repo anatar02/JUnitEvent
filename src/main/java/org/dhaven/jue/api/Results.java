@@ -140,26 +140,14 @@ public class Results implements TestEventListener {
     }
 
     public int numberOfTestCases() {
-        return countForEventClass(EventClass.TestCase);
+        return filterResults(EventClass.TestCase).size();
     }
 
     public int numberOfTests() {
-        return countForEventClass(EventClass.Test);
+        return filterResults(EventClass.Test).size();
     }
 
-    private int countForEventClass(EventClass eventClass) {
-        int numTests = 0;
-
-        for (TestSummary summary : collectedResults.values()) {
-            if (summary.getEventClass() == eventClass) {
-                numTests++;
-            }
-        }
-
-        return numTests;
-    }
-
-    private static final class TestSummary implements Describable {
+    private static final class TestSummary implements Describable, Comparable<TestSummary> {
         private static final int START = 0;
         private static final int END = 1;
         private TestEvent[] events = new TestEvent[2];
@@ -208,6 +196,21 @@ public class Results implements TestEventListener {
         @Override
         public Description getDescription() {
             return description;
+        }
+
+        @Override
+        public int compareTo(TestSummary other) {
+            return description.compareTo(other.getDescription());
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            return (object instanceof TestSummary) && description.equals(TestSummary.class.cast(object).getDescription());
+        }
+
+        @Override
+        public int hashCode() {
+            return description.hashCode();
         }
     }
 }
