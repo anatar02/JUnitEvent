@@ -141,7 +141,7 @@ public class ClassCollector {
         Class<?> classToCheck;
 
         try {
-            classToCheck = getClassLoader().loadClass(className);
+            classToCheck = Class.forName(className, true, getClassLoader());
         } catch (ClassNotFoundException cnfe) {
             System.out.println("Could not find class: " + className);
             return;
