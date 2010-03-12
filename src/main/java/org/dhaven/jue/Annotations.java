@@ -22,6 +22,7 @@ package org.dhaven.jue;
 import java.lang.annotation.*;
 
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
@@ -85,7 +86,7 @@ public class Annotations {
      * Mark a test as ignored.
      */
     @Retention(RUNTIME)
-    @Target(METHOD)
+    @Target({METHOD, TYPE})
     @Documented
     @Inherited
     public static @interface Ignore {

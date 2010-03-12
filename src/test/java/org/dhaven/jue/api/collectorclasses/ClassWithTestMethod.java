@@ -19,10 +19,12 @@
 
 package org.dhaven.jue.api.collectorclasses;
 
-import org.dhaven.jue.Annotations;
+import static org.dhaven.jue.Annotations.Ignore;
+import static org.dhaven.jue.Annotations.Test;
 
+@Ignore
 public class ClassWithTestMethod {
-    @Annotations.Test
+    @Test
     public void test() {
     }
 }

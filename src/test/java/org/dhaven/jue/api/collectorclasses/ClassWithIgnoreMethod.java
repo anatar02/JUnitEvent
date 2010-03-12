@@ -19,10 +19,11 @@
 
 package org.dhaven.jue.api.collectorclasses;
 
-import org.dhaven.jue.Annotations;
+import static org.dhaven.jue.Annotations.Ignore;
 
+@Ignore
 public class ClassWithIgnoreMethod {
-    @Annotations.Ignore
+    @Ignore
     public void ignore() {
     }
 }

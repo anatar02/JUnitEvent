@@ -22,10 +22,7 @@ package org.dhaven.jue.api;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.dhaven.jue.Annotations;
 
@@ -66,6 +63,19 @@ public class Request {
     }
 
     public Collection<Class<?>> getTestClasses() {
+        filterClasses();
         return testClasses;
+    }
+
+    private void filterClasses() {
+        Iterator<Class<?>> it = testClasses.iterator();
+
+        while (it.hasNext()) {
+            Class<?> classToVerify = it.next();
+
+            if (classToVerify.getAnnotation(Annotations.Ignore.class) != null) {
+                it.remove();
+            }
+        }
     }
 }

@@ -69,6 +69,10 @@ public class DefaultRunner implements Runner {
             }
         }
 
+        if (tests.isEmpty()) {
+            throw new AssertionError("Test class does not have any tests: " + testCase.getName());
+        }
+
         List<TestNode> nodeList = new ArrayList<TestNode>(tests.size() + 2);
         nodeList.add(start);
 

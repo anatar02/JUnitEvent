@@ -19,10 +19,12 @@
 
 package org.dhaven.jue.api.collectorclasses;
 
-import org.dhaven.jue.Annotations;
+import static org.dhaven.jue.Annotations.Before;
+import static org.dhaven.jue.Annotations.Ignore;
 
+@Ignore
 public class ClassWithBeforeMethod {
-    @Annotations.Before
+    @Before
     public void before() {
     }
 }
