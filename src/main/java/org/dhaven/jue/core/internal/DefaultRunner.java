@@ -27,8 +27,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.dhaven.jue.Annotations;
-import org.dhaven.jue.api.Description;
-import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.description.Description;
+import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.core.internal.node.EventNode;
 import org.dhaven.jue.core.internal.node.TestNode;
@@ -40,9 +40,9 @@ import org.dhaven.jue.core.internal.node.Testlet;
 public class DefaultRunner implements Runner {
     @Override
     public Collection<? extends TestNode> defineTests(Class<?> testCase) throws Exception {
-        Description caseDescription = new Description(testCase.getName());
-        EventNode start = new EventNode(caseDescription, EventType.StartTestCase, Status.Running);
-        EventNode end = new EventNode(caseDescription, EventType.EndTestCase, Status.Terminated);
+        Description caseDescription = new Description(testCase.getName(), Type.TestCase);
+        EventNode start = new EventNode(caseDescription, Status.Started);
+        EventNode end = new EventNode(caseDescription, Status.Terminated);
         start.addSuccessor(end);
 
         List<Testlet> tests = new LinkedList<Testlet>();

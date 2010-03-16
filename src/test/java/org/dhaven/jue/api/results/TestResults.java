@@ -17,10 +17,11 @@
  * under the License.
  */
 
-package org.dhaven.jue.api;
+package org.dhaven.jue.api.results;
 
 import org.dhaven.jue.Annotations.Test;
-import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.description.Description;
+import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 
@@ -39,15 +40,15 @@ public class TestResults {
 
     @Test
     public void completeWithARunningEvent() {
-        results.handleEvent(new TestEvent(new Description("test"), EventType.StartTest, Status.Running));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Started));
 
         assertThat(results.complete(), is(false));
     }
 
     @Test
     public void completeWithPassedEvent() {
-        results.handleEvent(new TestEvent(new Description("test"), EventType.StartTest, Status.Running));
-        results.handleEvent(new TestEvent(new Description("test"), EventType.EndTest, Status.Passed));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Started));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Passed));
 
         assertThat(results.complete(), is(true));
     }
@@ -59,16 +60,16 @@ public class TestResults {
 
     @Test
     public void passedWithPassedEvent() {
-        results.handleEvent(new TestEvent(new Description("test"), EventType.StartTest, Status.Running));
-        results.handleEvent(new TestEvent(new Description("test"), EventType.EndTest, Status.Passed));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Started));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Passed));
 
         assertThat(results.passed(), is(true));
     }
 
     @Test
     public void passedWithFailedEvent() {
-        results.handleEvent(new TestEvent(new Description("test"), EventType.StartTest, Status.Running));
-        results.handleEvent(new TestEvent(new Description("test"), EventType.EndTest, Status.Failed, new IllegalArgumentException("just kidding")));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Started));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Failed, new IllegalArgumentException("just kidding")));
 
         assertThat(results.passed(), is(false));
     }
@@ -80,8 +81,8 @@ public class TestResults {
 
     @Test
     public void failuresToStringWithOneFailure() {
-        results.handleEvent(new TestEvent(new Description("test"), EventType.StartTest, Status.Running));
-        results.handleEvent(new TestEvent(new Description("test"), EventType.EndTest, Status.Failed, new IllegalArgumentException("just kidding")));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Started));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Failed, new IllegalArgumentException("just kidding")));
 
         assertThat(results.failuresToString(), startsWith("test... Failed\njava.lang.IllegalArgumentException: just kidding"));
     }

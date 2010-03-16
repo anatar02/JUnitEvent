@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.dhaven.jue.api;
+package org.dhaven.jue.api.description;
 
 /**
  * Describes a specific instance of a test.  If the test was run multiple times,
@@ -26,46 +26,51 @@ package org.dhaven.jue.api;
  */
 public class Description implements Comparable<Description> {
     private static final String PREFIX = "JUE: ";
-    public static final Description JUEName = new Description(PREFIX + "Version 0.5");
+    public static final Description JUEName = new Description(PREFIX + "Version 0.5", Type.System);
     private final String name;
     private final int run;
     private final int ofRuns;
     private final Object[] parameters;
+    private final Type type;
 
     /**
      * Create a description with just a name.  By default, there is one run
      * out of one runs for this description.
      *
      * @param name the name of the test
+     * @param type the event class of the description
      */
-    public Description(String name) {
-        this(name, 1, 1);
+    public Description(String name, Type type) {
+        this(name, type, 1, 1);
     }
 
     /**
      * Create a description with a name and run information.
      *
      * @param name   the name of the test
+     * @param type   the event class of the description
      * @param run    the number of the run
      * @param ofRuns the total number of runs expected
      */
-    public Description(String name, int run, int ofRuns) {
-        this(name, run, ofRuns, new Object[0]);
+    public Description(String name, Type type, int run, int ofRuns) {
+        this(name, type, run, ofRuns, new Object[0]);
     }
 
     /**
      * Create a description with name, run info, and parameters.
      *
      * @param name       the name of the test
+     * @param type       the event class of the description
      * @param run        the number of the run
      * @param ofRuns     the total number of runs expected
      * @param parameters the number of parameters
      */
-    public Description(String name, int run, int ofRuns, Object... parameters) {
+    public Description(String name, Type type, int run, int ofRuns, Object... parameters) {
         this.name = name;
         this.run = run;
         this.ofRuns = ofRuns;
         this.parameters = parameters;
+        this.type = type;
     }
 
     /**
@@ -76,6 +81,10 @@ public class Description implements Comparable<Description> {
      */
     public String getName() {
         return name;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     /**
@@ -115,6 +124,10 @@ public class Description implements Comparable<Description> {
      * @return <code>true</code> if the descriptions are related
      */
     public boolean relatedTo(Description other) {
+        if (type == Type.Test && other.getType() == Type.Test) {
+            return name.equals(other.name);
+        }
+
         String thisBase = extractBase(name);
         String otherBase = extractBase(other.name);
 

@@ -24,9 +24,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dhaven.jue.api.Description;
 import org.dhaven.jue.api.Request;
-import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.core.internal.node.EventNode;
 import org.dhaven.jue.core.internal.node.TestNode;
@@ -36,8 +35,8 @@ import org.dhaven.jue.core.internal.node.TestNode;
  */
 public class TestPlan {
     private List<TestNode> testQueue = new LinkedList<TestNode>();
-    private EventNode start = new EventNode(Description.JUEName, EventType.StartRun, Status.Running);
-    private EventNode end = new EventNode(Description.JUEName, EventType.EndRun, Status.Terminated);
+    private EventNode start = new EventNode(Description.JUEName, Status.Started);
+    private EventNode end = new EventNode(Description.JUEName, Status.Terminated);
 
     // should only be created locally;
 

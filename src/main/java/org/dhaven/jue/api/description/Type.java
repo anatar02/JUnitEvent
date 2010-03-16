@@ -17,23 +17,17 @@
  * under the License.
  */
 
-package org.dhaven.jue.api.event;
+package org.dhaven.jue.api.description;
 
 /**
- * Determine if an event type is for the whole system, a test case, or an
- * individual test.
+ * The Type identifies where an event is in the test cycle.  The event
+ * types are listed in the logical order of how they are sent.
  */
-public enum EventClass {
+public enum Type {
     /**
-     * This is a global event.
+     * Event is sent at the beginning of all testing.
      */
     System,
-    /**
-     * This is a test case event.
-     */
     TestCase,
-    /**
-     * This is an individual test event.
-     */
     Test
 }

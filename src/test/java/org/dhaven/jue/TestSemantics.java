@@ -22,14 +22,13 @@ package org.dhaven.jue;
 import java.io.IOException;
 
 import org.dhaven.jue.api.Request;
-import org.dhaven.jue.api.Results;
-import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.description.Type;
+import org.dhaven.jue.api.results.Results;
 import org.dhaven.jue.core.Engine;
 
 import static org.dhaven.jue.Annotations.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Make sure the tests are run in order
@@ -57,7 +56,21 @@ public class TestSemantics {
 
         engine.process(testsToRun);
 
-        assertThat(listenerTester.getEventTypeOrder(), equalTo(EventType.values()));
+        Type[] expected = expectedEventOrder();
+        assertThat(listenerTester.getEventTypeOrder(), equalTo(expected));
+    }
+
+    private Type[] expectedEventOrder() {
+        Type[] raw = Type.values();
+        Type[] expected = new Type[raw.length * 2];
+
+        System.arraycopy(raw, 0, expected, 0, raw.length);
+
+        for (int i = 0; i < raw.length; i++) {
+            expected[expected.length - i - 1] = raw[i];
+        }
+
+        return expected;
     }
 
     @Test
@@ -96,7 +109,19 @@ public class TestSemantics {
         assertThat(results.passed(), is(true));
 
         assertThat(results.numberOfTestCases(), is(1));
-        assertThat(results.numberOfTests(), is(2));
+        assertThat(results.numberOfTestsRun(), is(2));
+    }
+
+    @Test
+    public void ignoreTestsMarkedWithIgnoreAnnotation() throws Exception {
+        testsToRun = new Request(IgnoreTest.class);
+
+        Results results = engine.process(testsToRun);
+
+        assertThat(results.getRunSummary().toString(), results.passed(), is(true));
+
+        assertThat(results.numberOfTestCases(), is(1));
+        assertThat(results.numberOfTestsRun(), is(1));
     }
 
     @Test
@@ -108,7 +133,20 @@ public class TestSemantics {
         assertThat(results.passed(), is(true));
 
         assertThat(results.numberOfTestCases(), is(2));
-        assertThat(results.numberOfTests(), is(3));
+        assertThat(results.numberOfTestsRun(), is(3));
+    }
+
+    @Ignore
+    @Test
+    public void timeoutTestsAreCanceledInTime() throws Exception {
+        testsToRun = new Request(TimeoutTest.class);
+
+        long start = System.currentTimeMillis();
+        Results results = engine.process(testsToRun);
+        long end = System.currentTimeMillis();
+
+        assertThat(results.passed(), is(false));
+        assertThat((end - start) / 100.0, closeTo(5, .2)); // 4% margin of error
     }
 
     /**
@@ -144,6 +182,19 @@ public class TestSemantics {
         }
     }
 
+    public static class IgnoreTest {
+        @Ignore
+        @Test
+        public void ignoredTest() {
+            throw new AssertionError("This should never be executed as a test");
+        }
+
+        @Test
+        public void notIgnoredTest() {
+            assertThat(true, equalTo(true));
+        }
+    }
+
     public static class ExceptionTest {
         @Test(expected = IllegalArgumentException.class)
         public void throwsExceptionOnPurpose() {
@@ -168,6 +219,17 @@ public class TestSemantics {
         @Test
         public void secondTest() {
             assertThat(true, is(true));
+        }
+    }
+
+    public static class TimeoutTest {
+        @Test(timeout = 500)
+        public void timeout() {
+            // never ends voluntarily
+            while (true) {
+                assertThat(true, is(false));
+                if (Thread.currentThread().isInterrupted()) break;
+            }
         }
     }
 }

@@ -26,7 +26,7 @@ public enum Status {
     /**
      * The status at any start event, the event type is currently running.
      */
-    Running,
+    Started,
     /**
      * The status when a non-test event ends or when a test ends early due
      * to being terminated by the user.

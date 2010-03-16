@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.dhaven.jue.api;
+package org.dhaven.jue.api.results;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +32,7 @@ import org.dhaven.jue.api.event.TestEvent;
  */
 public class TestCaseSummary extends TestSummary {
     private List<TestSummary> children = new ArrayList<TestSummary>(10);
-    private Status summaryStatus = Status.Passed;
+    private Status summaryStatus = Status.Started;
 
     public TestCaseSummary(TestEvent event) {
         super(event);
@@ -51,6 +51,11 @@ public class TestCaseSummary extends TestSummary {
     @Override
     public boolean terminated() {
         return summaryStatus == Status.Terminated;
+    }
+
+    @Override
+    public boolean ignored() {
+        return summaryStatus == Status.Ignored;
     }
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
@@ -84,10 +89,24 @@ public class TestCaseSummary extends TestSummary {
     public void addChild(TestSummary child) {
         children.add(child);
 
-        if (summaryStatus == Status.Passed && child.terminated()) {
-            summaryStatus = Status.Terminated;
-        } else if (child.failed()) {
-            summaryStatus = Status.Failed;
+        if (summaryStatus == Status.Started) {
+            summaryStatus = child.getStatus();
+        }
+
+        switch (child.getStatus()) {
+            case Passed:
+                if (summaryStatus != Status.Terminated && summaryStatus != Status.Failed) {
+                    summaryStatus = Status.Passed;
+                }
+                break;
+
+            case Terminated:
+                summaryStatus = Status.Terminated;
+                break;
+
+            case Failed:
+                summaryStatus = Status.Failed;
+                break;
         }
     }
 

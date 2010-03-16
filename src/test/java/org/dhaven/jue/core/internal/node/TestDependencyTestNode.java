@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.dhaven.jue.api.Description;
+import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.core.TestEventListenerSupport;
 
 import static org.dhaven.jue.Annotations.Test;

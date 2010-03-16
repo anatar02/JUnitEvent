@@ -24,8 +24,7 @@ import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.dhaven.jue.api.Describable;
-import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.description.Describable;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
@@ -87,7 +86,7 @@ public class TestEventListenerSupport {
      * @param test the test that started
      */
     public void fireTestStarted(Describable test) {
-        fireTestEvent(new TestEvent(test.getDescription(), EventType.StartTest, Status.Running));
+        fireTestEvent(new TestEvent(test.getDescription(), Status.Started));
     }
 
     /**
@@ -96,7 +95,7 @@ public class TestEventListenerSupport {
      * @param test the test that was ignored
      */
     public void fireTestIgnored(Describable test) {
-        fireTestEvent(new TestEvent(test.getDescription(), EventType.EndTest, Status.Ignored));
+        fireTestEvent(new TestEvent(test.getDescription(), Status.Ignored));
     }
 
     /**
@@ -105,7 +104,7 @@ public class TestEventListenerSupport {
      * @param test the test that passed.
      */
     public void fireTestPassed(Describable test) {
-        fireTestEvent(new TestEvent(test.getDescription(), EventType.EndTest, Status.Passed));
+        fireTestEvent(new TestEvent(test.getDescription(), Status.Passed));
     }
 
     /**
@@ -115,11 +114,11 @@ public class TestEventListenerSupport {
      * @param failure the cause of the failure
      */
     public void fireTestFailed(Describable test, Throwable failure) {
-        fireTestEvent(new TestEvent(test.getDescription(), EventType.EndTest, Status.Failed, failure));
+        fireTestEvent(new TestEvent(test.getDescription(), Status.Failed, failure));
     }
 
     public void fireTestTerminated(Describable test) {
-        fireTestEvent(new TestEvent(test.getDescription(), EventType.EndTest, Status.Terminated));
+        fireTestEvent(new TestEvent(test.getDescription(), Status.Terminated));
     }
 
     public void shutdown() {

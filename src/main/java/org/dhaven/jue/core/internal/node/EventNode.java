@@ -19,8 +19,7 @@
 
 package org.dhaven.jue.core.internal.node;
 
-import org.dhaven.jue.api.Description;
-import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.core.TestEventListenerSupport;
@@ -30,18 +29,16 @@ import org.dhaven.jue.core.TestEventListenerSupport;
  */
 public class EventNode extends DependencyTestNode {
     private Description description;
-    private EventType type;
     private Status status;
 
-    public EventNode(Description description, EventType type, Status status) {
+    public EventNode(Description description, Status status) {
         this.description = description;
-        this.type = type;
         this.status = status;
     }
 
     @Override
     protected void run(TestEventListenerSupport support) {
-        support.fireTestEvent(new TestEvent(getDescription(), type, status));
+        support.fireTestEvent(new TestEvent(getDescription(), status));
     }
 
     @Override

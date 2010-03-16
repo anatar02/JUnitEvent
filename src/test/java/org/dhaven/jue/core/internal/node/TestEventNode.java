@@ -22,8 +22,8 @@ package org.dhaven.jue.core.internal.node;
 import java.util.List;
 
 import org.dhaven.jue.ListenerTester;
-import org.dhaven.jue.api.Description;
-import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.description.Description;
+import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.core.TestEventListenerSupport;
@@ -38,8 +38,8 @@ public class TestEventNode extends TestDependencyTestNode {
 
     @Override
     protected EventNode createNode(int i) {
-        Description description = new Description("DependencyTestNode: " + i);
-        return new EventNode(description, EventType.EndTest, Status.Passed);
+        Description description = new Description("DependencyTestNode: " + i, Type.Test);
+        return new EventNode(description, Status.Passed);
     }
 
     @Before
@@ -56,7 +56,7 @@ public class TestEventNode extends TestDependencyTestNode {
 
     @Test
     public void sendStartRun() {
-        EventNode node = new EventNode(new Description("start run"), EventType.StartRun, Status.Running);
+        EventNode node = new EventNode(new Description("start run", Type.System), Status.Started);
 
         node.attemptRun(support);
         support.shutdown();
@@ -65,13 +65,13 @@ public class TestEventNode extends TestDependencyTestNode {
         assertThat(events.size(), equalTo(1));
 
         TestEvent event = events.get(0);
-        assertThat(event.getType(), equalTo(EventType.StartRun));
-        assertThat(event.getStatus(), equalTo(Status.Running));
+        assertThat(event.getType(), equalTo(Type.System));
+        assertThat(event.getStatus(), equalTo(Status.Started));
     }
 
     @Test
     public void sendEndTestCase() {
-        EventNode node = new EventNode(new Description("start run"), EventType.EndTestCase, Status.Terminated);
+        EventNode node = new EventNode(new Description("start run", Type.TestCase), Status.Terminated);
 
         node.attemptRun(support);
         support.shutdown();
@@ -80,7 +80,7 @@ public class TestEventNode extends TestDependencyTestNode {
         assertThat(events.size(), equalTo(1));
 
         TestEvent event = events.get(0);
-        assertThat(event.getType(), equalTo(EventType.EndTestCase));
+        assertThat(event.getType(), equalTo(Type.TestCase));
         assertThat(event.getStatus(), equalTo(Status.Terminated));
     }
 }

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.dhaven.jue.api;
+package org.dhaven.jue.api.description;
 
 import java.util.TreeSet;
 
@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.not;
 public class TestDescription {
     @Test
     public void testDescriptionWithOnlyName() {
-        Description description = new Description("Test Name");
+        Description description = new Description("Test Name", Type.Test);
 
         assertThat(description.getName(), equalTo("Test Name"));
         assertThat(description.getRun(), equalTo(1));
@@ -40,7 +40,7 @@ public class TestDescription {
 
     @Test
     public void testDescriptionWithMultipleRuns() {
-        Description description = new Description("ThisTest", 3, 45);
+        Description description = new Description("ThisTest", Type.Test, 3, 45);
 
         assertThat(description.getName(), equalTo("ThisTest"));
         assertThat(description.getRun(), equalTo(3));
@@ -51,7 +51,7 @@ public class TestDescription {
 
     @Test
     public void testDescriptionWithParameters() {
-        Description description = new Description("ParamTest", 1, 1, "First", 3);
+        Description description = new Description("ParamTest", Type.Test, 1, 1, "First", 3);
 
         assertThat(description.getName(), equalTo("ParamTest"));
         assertThat(description.getRun(), equalTo(1));
@@ -62,7 +62,7 @@ public class TestDescription {
 
     @Test
     public void testDescriptionWithManyRunsAndParameters() {
-        Description description = new Description("ParamTest", 4, 5, "First", 3);
+        Description description = new Description("ParamTest", Type.Test, 4, 5, "First", 3);
 
         assertThat(description.getName(), equalTo("ParamTest"));
         assertThat(description.getRun(), equalTo(4));
@@ -73,8 +73,8 @@ public class TestDescription {
 
     @Test
     public void makeSureEqualityMatchesHashcode() {
-        Description one = new Description("Test Name");
-        Description two = new Description("Test Name");
+        Description one = new Description("Test Name", Type.Test);
+        Description two = new Description("Test Name", Type.Test);
 
         assertThat(one, equalTo(two));
         assertThat(one.hashCode(), equalTo(two.hashCode()));
@@ -82,8 +82,8 @@ public class TestDescription {
 
     @Test
     public void makeSureInequalityDoesNotMatcheHashcode() {
-        Description one = new Description("Test Foo");
-        Description two = new Description("Test Bar");
+        Description one = new Description("Test Foo", Type.Test);
+        Description two = new Description("Test Bar", Type.Test);
 
         assertThat(one, not(equalTo(two)));
         assertThat(one.hashCode(), not(equalTo(two.hashCode())));
@@ -91,8 +91,8 @@ public class TestDescription {
 
     @Test
     public void inequalityIncludesRunInformation() {
-        Description one = new Description("Test Name", 1, 2);
-        Description two = new Description("Test Name", 2, 2);
+        Description one = new Description("Test Name", Type.Test, 1, 2);
+        Description two = new Description("Test Name", Type.Test, 2, 2);
 
         assertThat(one, not(equalTo(two)));
         assertThat(one.hashCode(), not(equalTo(two.hashCode())));
@@ -100,8 +100,8 @@ public class TestDescription {
 
     @Test
     public void equalityIncludesRunInformation() {
-        Description one = new Description("Test Name", 2, 2);
-        Description two = new Description("Test Name", 2, 2);
+        Description one = new Description("Test Name", Type.Test, 2, 2);
+        Description two = new Description("Test Name", Type.Test, 2, 2);
 
         assertThat(one, equalTo(two));
         assertThat(one.hashCode(), equalTo(two.hashCode()));
@@ -110,25 +110,25 @@ public class TestDescription {
     @Test
     public void checkNaturalOrder() {
         TreeSet<Description> set = new TreeSet<Description>();
-        set.add(new Description("Test Foo", 2, 2));
-        set.add(new Description("Test Foo", 1, 2));
-        set.add(new Description("Test Foo", 2, 2)); // should filter out this one
-        set.add(new Description("Zed"));
-        set.add(new Description("Bravo"));
+        set.add(new Description("Test Foo", Type.Test, 2, 2));
+        set.add(new Description("Test Foo", Type.Test, 1, 2));
+        set.add(new Description("Test Foo", Type.Test, 2, 2)); // should filter out this one
+        set.add(new Description("Zed", Type.Test));
+        set.add(new Description("Bravo", Type.Test));
 
         assertThat(set.size(), equalTo(4));
         assertThat(set.toArray(), equalTo(new Object[]{
-                new Description("Bravo"),
-                new Description("Test Foo", 1, 2),
-                new Description("Test Foo", 2, 2),
-                new Description("Zed")}));
+                new Description("Bravo", Type.Test),
+                new Description("Test Foo", Type.Test, 1, 2),
+                new Description("Test Foo", Type.Test, 2, 2),
+                new Description("Zed", Type.Test)}));
     }
 
     @Test
     public void descriptionsAreRelatedWhenNamesAreSame() {
-        Description one = new Description("Test Name", 1, 2);
-        Description two = new Description("Test Name", 2, 2);
-        Description three = new Description("Test Name");
+        Description one = new Description("Test Name", Type.Test, 1, 2);
+        Description two = new Description("Test Name", Type.Test, 2, 2);
+        Description three = new Description("Test Name", Type.Test);
 
         assertThat(one.relatedTo(two), equalTo(true));
         assertThat(two.relatedTo(three), equalTo(true));
@@ -138,8 +138,8 @@ public class TestDescription {
 
     @Test
     public void descriptionsAreNotRelatedWhenNamesAreDifferent() {
-        Description one = new Description("Test Foo");
-        Description two = new Description("Test Bar");
+        Description one = new Description("Test Foo", Type.Test);
+        Description two = new Description("Test Bar", Type.Test);
 
         assertThat(one.relatedTo(two), equalTo(false));
         assertThat(one, not(equalTo(two)));
@@ -147,8 +147,8 @@ public class TestDescription {
 
     @Test
     public void descriptionsAreRelatedWhenDotNotationIsUsed() {
-        Description one = new Description("Test");
-        Description two = new Description("Test.foo");
+        Description one = new Description("Test", Type.TestCase);
+        Description two = new Description("Test.foo", Type.Test);
 
         assertThat(one.relatedTo(two), equalTo(true));
         assertThat(two.relatedTo(one), equalTo(true));
@@ -156,8 +156,8 @@ public class TestDescription {
 
     @Test
     public void descriptionsAreRelatedWhenMultiDotNotationIsUsed() {
-        Description one = new Description("org.Test");
-        Description two = new Description("org.Test.foo");
+        Description one = new Description("org.Test", Type.TestCase);
+        Description two = new Description("org.Test.foo", Type.Test);
 
         assertThat(one.relatedTo(two), equalTo(true));
         assertThat(two.relatedTo(one), equalTo(true));
@@ -165,8 +165,8 @@ public class TestDescription {
 
     @Test
     public void descriptionsAreNotRelatedWhenDotNotationDiffers() {
-        Description one = new Description("Test.bar");
-        Description two = new Description("Test.foo");
+        Description one = new Description("Test.bar", Type.Test);
+        Description two = new Description("Test.foo", Type.Test);
 
         assertThat(one.relatedTo(two), equalTo(false));
         assertThat(two.relatedTo(one), equalTo(false));
@@ -174,8 +174,8 @@ public class TestDescription {
 
     @Test
     public void descriptionsAreNotRelatedWhenMultiDotNotationDiffers() {
-        Description one = new Description("org.Test.bar");
-        Description two = new Description("org.Test.foo");
+        Description one = new Description("org.Test.bar", Type.Test);
+        Description two = new Description("org.Test.foo", Type.Test);
 
         assertThat(one.relatedTo(two), equalTo(false));
         assertThat(two.relatedTo(one), equalTo(false));

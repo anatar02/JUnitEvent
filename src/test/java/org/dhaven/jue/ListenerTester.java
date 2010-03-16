@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.dhaven.jue.api.event.EventType;
+import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
 
@@ -33,17 +33,17 @@ import org.dhaven.jue.api.event.TestEventListener;
  */
 public class ListenerTester implements TestEventListener {
     private List<TestEvent> events = new ArrayList<TestEvent>(
-            EventType.values().length);
+            Type.values().length);
 
     @Override
     public void handleEvent(TestEvent event) {
         events.add(event);
     }
 
-    public EventType[] getEventTypeOrder() {
+    public Type[] getEventTypeOrder() {
         List<TestEvent> sortedOrder = getEvents();
 
-        EventType[] eventOrder = new EventType[sortedOrder.size()];
+        Type[] eventOrder = new Type[sortedOrder.size()];
         for (int i = 0; i < eventOrder.length; i++) {
             eventOrder[i] = sortedOrder.get(i).getType();
         }

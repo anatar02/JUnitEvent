@@ -17,13 +17,14 @@
  * under the License.
  */
 
-package org.dhaven.jue.api;
+package org.dhaven.jue.api.results;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
-import org.dhaven.jue.api.event.EventClass;
+import org.dhaven.jue.api.description.Description;
+import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
@@ -44,7 +45,7 @@ public class Results implements TestEventListener {
     /**
      * Check to see if all the results we were expecting came in.
      *
-     * @return <code>true</code> if any pending results have {@link Status#Running}
+     * @return <code>true</code> if any pending results have {@link Status#Started}
      */
     public boolean complete() {
         boolean completed = !collectedResults.isEmpty();
@@ -65,8 +66,8 @@ public class Results implements TestEventListener {
         boolean passed = !collectedResults.isEmpty();
 
         for (TestSummary summary : collectedResults.values()) {
-            if (summary.getEventClass() == EventClass.Test) {
-                passed = passed && summary.passed();
+            if (summary.getType() == Type.Test) {
+                passed = passed && (summary.passed() || summary.ignored());
             }
         }
 
@@ -107,7 +108,7 @@ public class Results implements TestEventListener {
             summary.setEvent(event);
         }
 
-        switch (summary.getEventClass()) {
+        switch (summary.getType()) {
             case System:
                 runSummary = TestCaseSummary.class.cast(summary);
                 break;
@@ -129,7 +130,7 @@ public class Results implements TestEventListener {
                 break;
 
             default:
-                throw new IllegalStateException("test summary event class is not handled: " + summary.getEventClass());
+                throw new IllegalStateException("test summary event class is not handled: " + summary.getType());
         }
 
         collectedResults.put(event.getDescription(), summary);
@@ -139,15 +140,15 @@ public class Results implements TestEventListener {
         return runSummary;
     }
 
-    public long getProcessorTime(EventClass type) {
+    public long getProcessorTime(Type type) {
         return totalTime(filterResults(type));
     }
 
-    private Collection<TestSummary> filterResults(EventClass type) {
+    private Collection<TestSummary> filterResults(Type type) {
         ArrayList<TestSummary> summaries = new ArrayList<TestSummary>(collectedResults.size());
 
         for (TestSummary summary : collectedResults.values()) {
-            if (summary.getEventClass() == type) {
+            if (summary.getType() == type) {
                 summaries.add(summary);
             }
         }
@@ -166,10 +167,16 @@ public class Results implements TestEventListener {
     }
 
     public int numberOfTestCases() {
-        return filterResults(EventClass.TestCase).size();
+        return filterResults(Type.TestCase).size();
     }
 
-    public int numberOfTests() {
-        return filterResults(EventClass.Test).size();
+    public int numberOfTestsRun() {
+        int numRun = 0;
+
+        for (TestSummary summary : filterResults(Type.Test)) {
+            if (!summary.ignored()) numRun++;
+        }
+
+        return numRun;
     }
 }

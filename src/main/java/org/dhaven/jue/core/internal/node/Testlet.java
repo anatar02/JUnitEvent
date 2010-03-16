@@ -24,7 +24,8 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.dhaven.jue.api.Description;
+import org.dhaven.jue.api.description.Description;
+import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.core.TestEventListenerSupport;
 
 import static org.dhaven.jue.Annotations.Ignore;
@@ -50,7 +51,7 @@ public class Testlet extends DependencyTestNode {
 
     public Testlet(Object instance, Method testMethod, String testName) {
         testCase = instance;
-        description = new Description(testName);
+        description = new Description(testName, Type.Test);
         method = testMethod;
         ignored = method.getAnnotation(Ignore.class) != null;
 
@@ -72,6 +73,7 @@ public class Testlet extends DependencyTestNode {
 
         if (isIgnored()) {
             support.fireTestIgnored(this);
+            return;
         }
 
         try {
@@ -108,6 +110,7 @@ public class Testlet extends DependencyTestNode {
             }
         }
     }
+
 
     private void tearDown() throws InvocationTargetException, IllegalAccessException {
         executeMethods(tearDown);

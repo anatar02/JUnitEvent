@@ -19,10 +19,12 @@
 
 package org.dhaven.jue.api.event;
 
-import org.dhaven.jue.api.Describable;
-import org.dhaven.jue.api.Description;
-
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ExecutionException;
+
+import org.dhaven.jue.api.description.Describable;
+import org.dhaven.jue.api.description.Description;
+import org.dhaven.jue.api.description.Type;
 
 /**
  * The test event carries the data necessary for tools to listen to the progress
@@ -32,7 +34,6 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class TestEvent implements Describable {
     private final Description description;
-    private final EventType type;
     private final Status status;
     private final Throwable failure;
     private final long timeStamp;
@@ -41,12 +42,11 @@ public class TestEvent implements Describable {
      * Create a test event with the test name, event type, and status.
      *
      * @param testName   the test name
-     * @param eventType  the {@link EventType}
      * @param testStatus the {@link Status}
      */
-    public TestEvent(Description testName, EventType eventType,
+    public TestEvent(Description testName,
                      Status testStatus) {
-        this(testName, eventType, testStatus, null);
+        this(testName, testStatus, null);
     }
 
     /**
@@ -57,21 +57,19 @@ public class TestEvent implements Describable {
      * exception itself will be recorded as the cause.
      *
      * @param testName   the test name
-     * @param eventType  the {@link EventType}
      * @param testStatus the {@link Status}
      * @param exception  the failure cause, if any
      */
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-    public TestEvent(Description testName, EventType eventType,
+    public TestEvent(Description testName,
                      Status testStatus, Throwable exception) {
         timeStamp = System.nanoTime();
         description = testName;
-        type = eventType;
         status = testStatus;
 
-        if (exception instanceof InvocationTargetException) {
-            Throwable cause = InvocationTargetException.class
-                    .cast(exception).getCause();
+        if (exception instanceof InvocationTargetException
+                || exception instanceof ExecutionException) {
+            Throwable cause = exception.getCause();
 
             failure = (cause != null) ? cause : exception;
         } else {
@@ -92,10 +90,10 @@ public class TestEvent implements Describable {
      * Get the event type.  Essentially, this tells where in the test cycle
      * that this event was thrown.
      *
-     * @return the {@link EventType}
+     * @return the {@link Type}
      */
-    public EventType getType() {
-        return type;
+    public Type getType() {
+        return description.getType();
     }
 
     /**

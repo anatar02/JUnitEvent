@@ -17,12 +17,14 @@
  * under the License.
  */
 
-package org.dhaven.jue.api;
+package org.dhaven.jue.api.results;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.dhaven.jue.api.event.EventClass;
+import org.dhaven.jue.api.description.Describable;
+import org.dhaven.jue.api.description.Description;
+import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 
@@ -42,13 +44,13 @@ public class TestSummary implements Describable, Comparable<TestSummary> {
     }
 
     public void setEvent(TestEvent event) {
-        events[Status.Running == event.getStatus() ? START : END] = event;
+        events[Status.Started == event.getStatus() ? START : END] = event;
     }
 
-    public EventClass getEventClass() {
+    public Type getType() {
         int index = events[START] == null ? END : START;
 
-        return events[index].getType().getType();
+        return events[index].getType();
     }
 
     public boolean isComplete() {
@@ -65,6 +67,10 @@ public class TestSummary implements Describable, Comparable<TestSummary> {
 
     public boolean terminated() {
         return isComplete() && events[END].getStatus() == Status.Terminated;
+    }
+
+    public boolean ignored() {
+        return isComplete() && events[END].getStatus() == Status.Ignored;
     }
 
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
@@ -123,7 +129,7 @@ public class TestSummary implements Describable, Comparable<TestSummary> {
     }
 
     public static TestSummary create(TestEvent event) {
-        return event.getType().getType() != EventClass.Test
+        return event.getType() != Type.Test
                 ? new TestCaseSummary(event)
                 : new TestSummary(event);
     }
@@ -133,6 +139,8 @@ public class TestSummary implements Describable, Comparable<TestSummary> {
             builder.append("Passed\n");
         } else if (terminated()) {
             builder.append("Terminated\n");
+        } else if (ignored()) {
+            builder.append("Ignored\n");
         } else if (failed()) {
             builder.append("FAILED...\n");
         }
@@ -144,5 +152,9 @@ public class TestSummary implements Describable, Comparable<TestSummary> {
         value = Math.round(value * 1000f) / 1000f;
 
         return value;
+    }
+
+    public Status getStatus() {
+        return events[END] == null ? events[START].getStatus() : events[END].getStatus();
     }
 }

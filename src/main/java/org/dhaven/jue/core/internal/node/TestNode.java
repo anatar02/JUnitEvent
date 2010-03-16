@@ -19,7 +19,7 @@
 
 package org.dhaven.jue.core.internal.node;
 
-import org.dhaven.jue.api.Describable;
+import org.dhaven.jue.api.description.Describable;
 import org.dhaven.jue.core.TestEventListenerSupport;
 
 /**
