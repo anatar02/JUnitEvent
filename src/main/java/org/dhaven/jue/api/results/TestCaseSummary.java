@@ -21,7 +21,8 @@ package org.dhaven.jue.api.results;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
@@ -31,7 +32,7 @@ import org.dhaven.jue.api.event.TestEvent;
  * children tests.  For example, a TestCase has many individual tests.
  */
 public class TestCaseSummary extends TestSummary {
-    private List<TestSummary> children = new ArrayList<TestSummary>(10);
+    private Set<TestSummary> children = new HashSet<TestSummary>();
     private Status summaryStatus = Status.Started;
 
     public TestCaseSummary(TestEvent event) {
