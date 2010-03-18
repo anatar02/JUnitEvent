@@ -27,7 +27,7 @@ import static org.hamcrest.Matchers.not;
 
 public class TestRelatedDescriptions {
     @Test
-    public void descriptionsAreRelatedWhenNamesAreSame() {
+    public void descriptionsAreRelatedWhenNamesAndTypesAreSame() {
         Description one = new Description("Test Name", Type.Test, 1, 2);
         Description two = new Description("Test Name", Type.Test, 2, 2);
         Description three = new Description("Test Name", Type.Test);
@@ -48,7 +48,7 @@ public class TestRelatedDescriptions {
     }
 
     @Test
-    public void descriptionsAreRelatedWhenDotNotationIsUsed() {
+    public void descriptionsAreRelatedWhenTestCaseIsRootOfTest() {
         Description one = new Description("Test", Type.TestCase);
         Description two = new Description("Test.foo", Type.Test);
 
@@ -63,6 +63,15 @@ public class TestRelatedDescriptions {
 
         assertThat(one.relatedTo(two), equalTo(true));
         assertThat(two.relatedTo(one), equalTo(true));
+    }
+
+    @Test
+    public void descriptionsAreNotRelatedWhenMultiDotNotationIsUsedAndBothAreTests() {
+        Description one = new Description("org.Test", Type.Test);
+        Description two = new Description("org.Test.foo", Type.Test);
+
+        assertThat(one.relatedTo(two), equalTo(false));
+        assertThat(two.relatedTo(one), equalTo(false));
     }
 
     @Test
@@ -81,5 +90,17 @@ public class TestRelatedDescriptions {
 
         assertThat(one.relatedTo(two), equalTo(false));
         assertThat(two.relatedTo(one), equalTo(false));
+    }
+
+    @Test
+    public void systemDescriptionRelatedToAllTypes() {
+        Description one = Description.JUEName;
+        Description two = new Description("com.mycom.TestCase", Type.TestCase);
+        Description three = new Description("org.yourorg.Test", Type.Test);
+
+        assertThat(one.relatedTo(two), equalTo(true));
+        assertThat(one.relatedTo(three), equalTo(true));
+        assertThat(two.relatedTo(one), equalTo(true));
+        assertThat(three.relatedTo(one), equalTo(true));
     }
 }

@@ -20,22 +20,35 @@
 package org.dhaven.jue.api.description;
 
 /**
- * Describes a specific instance of a test.  If the test was run multiple times,
- * it includes the run number.  If the test takes parameters, the parameters
- * are provided.
+ * Describes a specific instance of a test.  The description includes whether
+ * the description belongs to a test, a test case, or the framework.  Finally,
+ * the description includes any additional information that pertains to its
+ * associated test.  The full list of information you can find in the
+ * description is:
+ * <p/>
+ * <ul>
+ * <li>The name of the test</li>
+ * <li>The the type of description</li>
+ * <li>The run number for the test</li>
+ * <li>The total number of runs for a test</li>
+ * <li>The set of parameters associated with a test</li>
+ * </ul>
  */
 public class Description implements Comparable<Description> {
-    private static final String PREFIX = "JUE: ";
-    public static final Description JUEName = new Description(PREFIX + "Version 0.5", Type.System);
+    /**
+     * The root description for the all the tests and test cases.
+     */
+    public static final Description JUEName = new Description("JUE: Version 0.5", Type.System);
+
     private final String name;
+    private final Type type;
     private final int run;
     private final int ofRuns;
     private final Object[] parameters;
-    private final Type type;
 
     /**
-     * Create a description with just a name.  By default, there is one run
-     * out of one runs for this description.
+     * Create a description with just a name and type.  By default, there is one
+     * run out of one runs for this description.
      *
      * @param name the name of the test
      * @param type the event class of the description
@@ -45,7 +58,7 @@ public class Description implements Comparable<Description> {
     }
 
     /**
-     * Create a description with a name and run information.
+     * Create a description with a name, type, and run information.
      *
      * @param name   the name of the test
      * @param type   the event class of the description
@@ -57,7 +70,7 @@ public class Description implements Comparable<Description> {
     }
 
     /**
-     * Create a description with name, run info, and parameters.
+     * Create a description with name, type, run info, and parameters.
      *
      * @param name       the name of the test
      * @param type       the event class of the description
@@ -74,8 +87,8 @@ public class Description implements Comparable<Description> {
     }
 
     /**
-     * The name of the test.  The name is the only bit of information needed to
-     * relate descriptions together.
+     * Get the name of the test.  The name is used to relate tests with each
+     * other, as well as for reporting purposes.
      *
      * @return the name of the test
      */
@@ -83,6 +96,12 @@ public class Description implements Comparable<Description> {
         return name;
     }
 
+    /**
+     * Get the type of description.  The type information is used when
+     * determining if two descriptions are related to each other.
+     *
+     * @return the description type
+     */
     public Type getType() {
         return type;
     }
@@ -116,33 +135,33 @@ public class Description implements Comparable<Description> {
 
     /**
      * Determine whether this description is related to another description.
-     * Equality and relationship are different in that equality considers the
-     * run number in addition to the name.  All the runs that correspond to the
-     * same name are related to each other.
+     * Relationship is determined by only considering the type and name
+     * information between two descriptions.  This can be useful when rolling
+     * data up for several runs of a test.  Two descriptions are related when:
+     * <p/>
+     * <ul>
+     * <li>either description is the root description {@link Description#JUEName}</li>
+     * <li>one description is a test case and the other description starts with
+     * the test case name.  (e.g. "org.TestCase.myTest" starts with "org.TestCase").</li>
+     * <li>both test names are the same</li>
+     * </li>
      *
      * @param other the other description object
      * @return <code>true</code> if the descriptions are related
      */
     public boolean relatedTo(Description other) {
+        if (type == Type.System || other.getType() == Type.System) {
+            return true;
+        }
+
         if (type == Type.Test && other.getType() == Type.Test) {
             return name.equals(other.name);
         }
 
-        String thisBase = extractBase(name);
-        String otherBase = extractBase(other.name);
+        Description testCase = (type == Type.TestCase) ? this : other;
+        Description test = (type == Type.TestCase) ? other : this;
 
-        boolean compareTestCase = thisBase.equals(name) || otherBase.equals(other.name);
-        return compareTestCase ? thisBase.equals(otherBase) : name.equals(other.name);
-    }
-
-    private String extractBase(String name) {
-        int index = name.lastIndexOf('.');
-        if (index < 0) return name;
-
-        String firstLetter = name.substring(index + 1, index + 2);
-        if (firstLetter.equals(firstLetter.toUpperCase())) return name;
-
-        return name.substring(0, index);
+        return test.getName().startsWith(testCase.getName());
     }
 
     @Override
@@ -152,6 +171,7 @@ public class Description implements Comparable<Description> {
         if (isEqual) {
             Description other = Description.class.cast(foreign);
             isEqual = name.equals(other.name);
+            isEqual &= type == other.type;
             isEqual &= this.run == other.run;
         }
 
@@ -160,7 +180,7 @@ public class Description implements Comparable<Description> {
 
     @Override
     public int hashCode() {
-        return name.hashCode() << 3 + run;
+        return (name.hashCode() << 3 + run) << 5 + type.hashCode();
     }
 
     @Override
@@ -188,7 +208,11 @@ public class Description implements Comparable<Description> {
 
     @Override
     public int compareTo(Description other) {
-        int direction = name.compareTo(other.name);
+        int direction = type.compareTo(other.type);
+
+        if (direction == 0) {
+            direction = name.compareTo(other.name);
+        }
 
         if (direction == 0) {
             direction = run - other.run;

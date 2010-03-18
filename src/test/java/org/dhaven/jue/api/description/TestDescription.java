@@ -109,16 +109,36 @@ public class TestDescription {
     }
 
     @Test
+    public void inequalityIncludesTypeInformation() {
+        Description one = new Description("Test Name", Type.Test);
+        Description two = new Description("Test Name", Type.TestCase);
+
+        assertThat(one, not(equalTo(two)));
+        assertThat(one.hashCode(), not(equalTo(two.hashCode())));
+    }
+
+    @Test
+    public void equalityIncludesTypeInformation() {
+        Description one = new Description("Test Name", Type.TestCase);
+        Description two = new Description("Test Name", Type.TestCase);
+
+        assertThat(one, equalTo(two));
+        assertThat(one.hashCode(), equalTo(two.hashCode()));
+    }
+
+    @Test
     public void checkNaturalOrder() {
         TreeSet<Description> set = new TreeSet<Description>();
         set.add(new Description("Test Foo", Type.Test, 2, 2));
         set.add(new Description("Test Foo", Type.Test, 1, 2));
         set.add(new Description("Test Foo", Type.Test, 2, 2)); // should filter out this one
         set.add(new Description("Zed", Type.Test));
+        set.add(new Description("Zed", Type.TestCase));
         set.add(new Description("Bravo", Type.Test));
 
-        assertThat(set.size(), equalTo(4));
+        assertThat(set.size(), equalTo(5));
         assertThat(set.toArray(), equalTo(new Object[]{
+                new Description("Zed", Type.TestCase),
                 new Description("Bravo", Type.Test),
                 new Description("Test Foo", Type.Test, 1, 2),
                 new Description("Test Foo", Type.Test, 2, 2),
