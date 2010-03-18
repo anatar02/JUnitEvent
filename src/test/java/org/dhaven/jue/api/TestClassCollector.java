@@ -19,8 +19,9 @@
 
 package org.dhaven.jue.api;
 
-import org.dhaven.jue.Annotations;
+import org.dhaven.jue.After;
 import org.dhaven.jue.Before;
+import org.dhaven.jue.Ignore;
 import org.dhaven.jue.Test;
 import org.dhaven.jue.api.collectorclasses.ClassWithAfterMethod;
 import org.dhaven.jue.api.collectorclasses.ClassWithBeforeMethod;
@@ -57,7 +58,7 @@ public class TestClassCollector {
 
     @Test
     public void canFindClassesWithMultipleAnnotations() throws Exception {
-        collector.methodsHaveAnnotation(Annotations.get());
+        collector.methodsHaveAnnotation(Before.class, Test.class, After.class, Ignore.class);
         Class[] classes = collector.collect();
 
         assertThat(classes.length, equalTo(4));

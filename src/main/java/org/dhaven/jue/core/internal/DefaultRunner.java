@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.dhaven.jue.After;
-import org.dhaven.jue.Annotations;
 import org.dhaven.jue.Before;
 import org.dhaven.jue.Test;
 import org.dhaven.jue.api.description.Description;
@@ -38,7 +37,7 @@ import org.dhaven.jue.core.internal.node.TestNode;
 import org.dhaven.jue.core.internal.node.Testlet;
 
 /**
- * The Default Runner enables the core annotations found in {@link Annotations}.
+ * The Default Runner enables the core annotations found in the root package.
  */
 public class DefaultRunner implements Runner {
     @Override

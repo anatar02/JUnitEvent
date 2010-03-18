@@ -24,8 +24,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 
-import org.dhaven.jue.Annotations;
+import org.dhaven.jue.After;
+import org.dhaven.jue.Before;
 import org.dhaven.jue.Ignore;
+import org.dhaven.jue.Test;
 
 /**
  * Collect, filter and prepare the test classes.
@@ -35,7 +37,7 @@ public class Request {
     ClassCollector collector = new ClassCollector();
 
     public Request(String... arguments) throws Exception {
-        collector.methodsHaveAnnotation(Annotations.get());
+        collector.methodsHaveAnnotation(Before.class, Test.class, After.class, Ignore.class);
         collector.noInternalClasses();
         collector.recursiveSearch();
 
