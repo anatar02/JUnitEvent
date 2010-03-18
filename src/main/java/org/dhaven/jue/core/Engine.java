@@ -30,7 +30,6 @@ import org.dhaven.jue.core.internal.TestThreadPool;
  */
 public class Engine {
     private TestEventListenerSupport listenerSupport = new TestEventListenerSupport();
-    private int threadsPerProcessor = 1;
 
     /**
      * Command line entry point for the test engine.
@@ -41,7 +40,6 @@ public class Engine {
     public static void main(String... arguments) throws Exception {
         // Set up the test engine
         Engine engine = new Engine();
-        engine.setThreadsPerProcessor(2);
 
         // Initialize the test environment
         Request request = new Request(arguments);
@@ -57,7 +55,6 @@ public class Engine {
     public Results process(Request request) throws Exception {
         Thread.currentThread().setContextClassLoader(request.getRequestClassLoader());
         TestThreadPool pool = new TestThreadPool();
-        pool.setMultiplier(threadsPerProcessor);
         pool.startup(listenerSupport);
 
         Results results = new Results();
@@ -71,14 +68,6 @@ public class Engine {
 
         removeTestListener(results);
         return results;
-    }
-
-    public int getThreadsPerProcessor() {
-        return threadsPerProcessor;
-    }
-
-    public void setThreadsPerProcessor(int threads) {
-        threadsPerProcessor = Math.min(Math.max(1, threads), 50);
     }
 
     public void removeTestListener(TestEventListener testListener) {

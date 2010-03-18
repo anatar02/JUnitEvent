@@ -36,19 +36,10 @@ public class TestThreadPool {
     private ThreadPoolExecutor service;
     private TestEventListenerSupport support;
     private CountDownLatch barrier;
-    private int multiplier = 1;
     private ClassLoader classLoader;
 
-    public void setMultiplier(int value) {
-        multiplier = value;
-    }
-
-    public int getMultiplier() {
-        return multiplier;
-    }
-
     public int getNumberOfThreads() {
-        return Runtime.getRuntime().availableProcessors() * multiplier;
+        return Runtime.getRuntime().availableProcessors();
     }
 
     public void execute(TestPlan plan) {
