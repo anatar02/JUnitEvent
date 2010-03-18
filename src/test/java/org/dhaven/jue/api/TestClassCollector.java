@@ -20,13 +20,13 @@
 package org.dhaven.jue.api;
 
 import org.dhaven.jue.Annotations;
+import org.dhaven.jue.Before;
+import org.dhaven.jue.Test;
 import org.dhaven.jue.api.collectorclasses.ClassWithAfterMethod;
 import org.dhaven.jue.api.collectorclasses.ClassWithBeforeMethod;
 import org.dhaven.jue.api.collectorclasses.ClassWithIgnoreMethod;
 import org.dhaven.jue.api.collectorclasses.ClassWithTestMethod;
 
-import static org.dhaven.jue.Annotations.Before;
-import static org.dhaven.jue.Annotations.Test;
 import static org.dhaven.jue.MethodScanner.hasMethodWithAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;

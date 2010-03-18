@@ -19,16 +19,21 @@
 
 package org.dhaven.jue;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItemInArray;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-public class TestAnnotations {
-    @Test
-    public void testAnnotations() {
-        Class[] list = Annotations.get();
-        assertThat(list, hasItemInArray((Class) Test.class));
-        assertThat(list, hasItemInArray((Class) Ignore.class));
-        assertThat(list, hasItemInArray((Class) Before.class));
-        assertThat(list, hasItemInArray((Class) After.class));
-    }
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+/**
+ * Mark a test as ignored.
+ */
+@Retention(RUNTIME)
+@Target({METHOD, TYPE})
+@Documented
+@Inherited
+public @interface Ignore {
 }

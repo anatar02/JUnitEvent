@@ -19,16 +19,33 @@
 
 package org.dhaven.jue;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItemInArray;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-public class TestAnnotations {
-    @Test
-    public void testAnnotations() {
-        Class[] list = Annotations.get();
-        assertThat(list, hasItemInArray((Class) Test.class));
-        assertThat(list, hasItemInArray((Class) Ignore.class));
-        assertThat(list, hasItemInArray((Class) Before.class));
-        assertThat(list, hasItemInArray((Class) After.class));
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+/**
+ * Mark a method as a test.
+ */
+@Retention(RUNTIME)
+@Target(METHOD)
+@Documented
+@Inherited
+public @interface Test {
+    /**
+     * Default empty exception
+     */
+    static class None extends Throwable {
+        private static final long serialVersionUID = 1L;
+
+        private None() {
+        }
     }
+
+    public abstract Class<? extends Throwable> expected() default None.class;
+
+    public abstract long timeout() default 0L;
 }

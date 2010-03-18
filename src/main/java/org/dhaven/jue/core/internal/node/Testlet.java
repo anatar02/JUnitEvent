@@ -24,12 +24,11 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dhaven.jue.Ignore;
+import org.dhaven.jue.Test;
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.core.TestEventListenerSupport;
-
-import static org.dhaven.jue.Annotations.Ignore;
-import static org.dhaven.jue.Annotations.Test;
 
 /**
  * Codifies a discrete test.

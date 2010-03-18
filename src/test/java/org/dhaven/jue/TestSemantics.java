@@ -26,7 +26,6 @@ import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.results.Results;
 import org.dhaven.jue.core.Engine;
 
-import static org.dhaven.jue.Annotations.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 

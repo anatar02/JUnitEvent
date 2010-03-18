@@ -19,8 +19,8 @@
 
 package org.dhaven.jue.api.collectorclasses;
 
-import static org.dhaven.jue.Annotations.After;
-import static org.dhaven.jue.Annotations.Ignore;
+import org.dhaven.jue.After;
+import org.dhaven.jue.Ignore;
 
 @Ignore
 public class ClassWithAfterMethod {

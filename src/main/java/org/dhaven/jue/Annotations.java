@@ -19,11 +19,7 @@
 
 package org.dhaven.jue;
 
-import java.lang.annotation.*;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Annotation;
 
 /**
  * Container class with all the annotations in it.  Allows for very simple
@@ -37,60 +33,8 @@ public class Annotations {
      */
     @SuppressWarnings("unchecked")
     public static Class<? extends Annotation>[] get() {
-        Class<?>[] innerClasses = Annotations.class.getDeclaredClasses();
-        return (Class<? extends Annotation>[]) innerClasses;
-    }
-
-    /**
-     * Designate a method to be used for setup.
-     */
-    @Retention(RUNTIME)
-    @Target(METHOD)
-    @Documented
-    @Inherited
-    public static @interface Before {
-    }
-
-    /**
-     * Designate a method to be used for cleanup.
-     */
-    @Retention(RUNTIME)
-    @Target(METHOD)
-    @Documented
-    @Inherited
-    public static @interface After {
-    }
-
-    /**
-     * Mark a method as a test.
-     */
-    @Retention(RUNTIME)
-    @Target(METHOD)
-    @Documented
-    @Inherited
-    public static @interface Test {
-        /**
-         * Default empty exception
-         */
-        static class None extends Throwable {
-            private static final long serialVersionUID = 1L;
-
-            private None() {
-            }
-        }
-
-        Class<? extends Throwable> expected() default None.class;
-
-        long timeout() default 0L;
-    }
-
-    /**
-     * Mark a test as ignored.
-     */
-    @Retention(RUNTIME)
-    @Target({METHOD, TYPE})
-    @Documented
-    @Inherited
-    public static @interface Ignore {
+        return (Class<? extends Annotation>[])
+                new Class[]{Before.class, Test.class,
+                        After.class, Ignore.class};
     }
 }

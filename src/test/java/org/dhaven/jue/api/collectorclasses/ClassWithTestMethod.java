@@ -19,8 +19,8 @@
 
 package org.dhaven.jue.api.collectorclasses;
 
-import static org.dhaven.jue.Annotations.Ignore;
-import static org.dhaven.jue.Annotations.Test;
+import org.dhaven.jue.Ignore;
+import org.dhaven.jue.Test;
 
 @Ignore
 public class ClassWithTestMethod {

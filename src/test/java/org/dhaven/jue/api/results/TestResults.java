@@ -19,7 +19,7 @@
 
 package org.dhaven.jue.api.results;
 
-import org.dhaven.jue.Annotations.Test;
+import org.dhaven.jue.Test;
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;

@@ -26,7 +26,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.dhaven.jue.After;
 import org.dhaven.jue.Annotations;
+import org.dhaven.jue.Before;
+import org.dhaven.jue.Test;
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
@@ -53,18 +56,18 @@ public class DefaultRunner implements Runner {
             // Ensure new object instance with each testlet
             Object instance = testCase.newInstance();
 
-            if (hasAnnotation(method, Annotations.Test.class)) {
+            if (hasAnnotation(method, Test.class)) {
                 Testlet testlet = new Testlet(instance, method);
                 testlet.addPredecessor(start);
                 testlet.addSuccessor(end);
                 tests.add(testlet);
             }
 
-            if (hasAnnotation(method, Annotations.Before.class)) {
+            if (hasAnnotation(method, Before.class)) {
                 befores.add(method);
             }
 
-            if (hasAnnotation(method, Annotations.After.class)) {
+            if (hasAnnotation(method, After.class)) {
                 afters.add(method);
             }
         }

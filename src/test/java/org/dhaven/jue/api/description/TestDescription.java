@@ -21,7 +21,8 @@ package org.dhaven.jue.api.description;
 
 import java.util.TreeSet;
 
-import static org.dhaven.jue.Annotations.Test;
+import org.dhaven.jue.Test;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -122,62 +123,5 @@ public class TestDescription {
                 new Description("Test Foo", Type.Test, 1, 2),
                 new Description("Test Foo", Type.Test, 2, 2),
                 new Description("Zed", Type.Test)}));
-    }
-
-    @Test
-    public void descriptionsAreRelatedWhenNamesAreSame() {
-        Description one = new Description("Test Name", Type.Test, 1, 2);
-        Description two = new Description("Test Name", Type.Test, 2, 2);
-        Description three = new Description("Test Name", Type.Test);
-
-        assertThat(one.relatedTo(two), equalTo(true));
-        assertThat(two.relatedTo(three), equalTo(true));
-        assertThat(one, not(equalTo(two)));
-        assertThat(two, not(equalTo(three)));
-    }
-
-    @Test
-    public void descriptionsAreNotRelatedWhenNamesAreDifferent() {
-        Description one = new Description("Test Foo", Type.Test);
-        Description two = new Description("Test Bar", Type.Test);
-
-        assertThat(one.relatedTo(two), equalTo(false));
-        assertThat(one, not(equalTo(two)));
-    }
-
-    @Test
-    public void descriptionsAreRelatedWhenDotNotationIsUsed() {
-        Description one = new Description("Test", Type.TestCase);
-        Description two = new Description("Test.foo", Type.Test);
-
-        assertThat(one.relatedTo(two), equalTo(true));
-        assertThat(two.relatedTo(one), equalTo(true));
-    }
-
-    @Test
-    public void descriptionsAreRelatedWhenMultiDotNotationIsUsed() {
-        Description one = new Description("org.Test", Type.TestCase);
-        Description two = new Description("org.Test.foo", Type.Test);
-
-        assertThat(one.relatedTo(two), equalTo(true));
-        assertThat(two.relatedTo(one), equalTo(true));
-    }
-
-    @Test
-    public void descriptionsAreNotRelatedWhenDotNotationDiffers() {
-        Description one = new Description("Test.bar", Type.Test);
-        Description two = new Description("Test.foo", Type.Test);
-
-        assertThat(one.relatedTo(two), equalTo(false));
-        assertThat(two.relatedTo(one), equalTo(false));
-    }
-
-    @Test
-    public void descriptionsAreNotRelatedWhenMultiDotNotationDiffers() {
-        Description one = new Description("org.Test.bar", Type.Test);
-        Description two = new Description("org.Test.foo", Type.Test);
-
-        assertThat(one.relatedTo(two), equalTo(false));
-        assertThat(two.relatedTo(one), equalTo(false));
     }
 }

@@ -25,6 +25,7 @@ import java.net.URLClassLoader;
 import java.util.*;
 
 import org.dhaven.jue.Annotations;
+import org.dhaven.jue.Ignore;
 
 /**
  * Collect, filter and prepare the test classes.
@@ -73,7 +74,7 @@ public class Request {
         while (it.hasNext()) {
             Class<?> classToVerify = it.next();
 
-            if (classToVerify.getAnnotation(Annotations.Ignore.class) != null) {
+            if (classToVerify.getAnnotation(Ignore.class) != null) {
                 it.remove();
             }
         }
