@@ -20,7 +20,7 @@
 package org.dhaven.jue.core.internal.node;
 
 import org.dhaven.jue.api.description.Describable;
-import org.dhaven.jue.core.TestEventListenerSupport;
+import org.dhaven.jue.core.TestListenerSupport;
 
 /**
  * The TestNode represents the smallest executable unit of a test.  Essentially,
@@ -32,10 +32,10 @@ public interface TestNode extends Describable, Comparable<TestNode> {
      * listeners can be notified of the progress of the test as it is executed.
      * Returns false if the node could not be run yet, so it can be re-queued.
      *
-     * @param support the {@link TestEventListenerSupport}
+     * @param support the {@link org.dhaven.jue.core.TestListenerSupport}
      * @return <code>true</code> if the node was run.
      */
-    boolean attemptRun(TestEventListenerSupport support);
+    boolean attemptRun(TestListenerSupport support);
 
     void addSuccessor(TestNode dependencyTestNode);
 

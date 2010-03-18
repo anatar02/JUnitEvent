@@ -28,7 +28,7 @@ import org.dhaven.jue.Ignore;
 import org.dhaven.jue.Test;
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
-import org.dhaven.jue.core.TestEventListenerSupport;
+import org.dhaven.jue.core.TestListenerSupport;
 
 /**
  * Codifies a discrete test.
@@ -67,7 +67,7 @@ public class Testlet extends DependencyTestNode {
 
     @SuppressWarnings({"ThrowableInstanceNeverThrown", "ThrowableResultOfMethodCallIgnored"})
     @Override
-    public void run(TestEventListenerSupport support) {
+    public void run(TestListenerSupport support) {
         support.fireTestStarted(this);
 
         if (isIgnored()) {

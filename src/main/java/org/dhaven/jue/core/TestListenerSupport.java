@@ -33,13 +33,13 @@ import org.dhaven.jue.api.event.TestEventListener;
  * Provide support for the Engine class to fire events as necessary.  Other
  * classes that need to fire tests will have a copy of this class.
  */
-public class TestEventListenerSupport {
+public class TestListenerSupport {
     ExecutorService service;
     private Queue<TestEventListener> listeners = new LinkedList<TestEventListener>();
     int numToProcess = 0;
     int numProcessed = 0;
 
-    public TestEventListenerSupport() {
+    public TestListenerSupport() {
         service = Executors.newSingleThreadExecutor();
     }
 

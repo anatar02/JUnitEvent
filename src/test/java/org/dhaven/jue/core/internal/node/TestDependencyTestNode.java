@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.dhaven.jue.Test;
 import org.dhaven.jue.api.description.Description;
-import org.dhaven.jue.core.TestEventListenerSupport;
+import org.dhaven.jue.core.TestListenerSupport;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -97,7 +97,7 @@ public class TestDependencyTestNode {
         }
 
         @Override
-        protected void run(TestEventListenerSupport support) {
+        protected void run(TestListenerSupport support) {
             //unneeded for tests
         }
 

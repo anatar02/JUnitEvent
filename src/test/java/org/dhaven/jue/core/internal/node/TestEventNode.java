@@ -29,13 +29,13 @@ import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
-import org.dhaven.jue.core.TestEventListenerSupport;
+import org.dhaven.jue.core.TestListenerSupport;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class TestEventNode extends TestDependencyTestNode {
-    private TestEventListenerSupport support;
+    private TestListenerSupport support;
     private ListenerTester listener;
 
     @Override
@@ -46,7 +46,7 @@ public class TestEventNode extends TestDependencyTestNode {
 
     @Before
     public void setUpListener() {
-        support = new TestEventListenerSupport();
+        support = new TestListenerSupport();
         listener = new ListenerTester();
         support.addTestListener(listener);
     }

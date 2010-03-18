@@ -25,7 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.dhaven.jue.core.TestEventListenerSupport;
+import org.dhaven.jue.core.TestListenerSupport;
 import org.dhaven.jue.core.internal.node.TestNode;
 
 /**
@@ -34,7 +34,7 @@ import org.dhaven.jue.core.internal.node.TestNode;
 public class TestThreadPool {
     private ThreadGroup group = new ThreadGroup("JUE:ThreadPool");
     private ThreadPoolExecutor service;
-    private TestEventListenerSupport support;
+    private TestListenerSupport support;
     private CountDownLatch barrier;
     private ClassLoader classLoader;
 
@@ -51,7 +51,7 @@ public class TestThreadPool {
         }
     }
 
-    public void startup(TestEventListenerSupport support) {
+    public void startup(TestListenerSupport support) {
         this.classLoader = Thread.currentThread().getContextClassLoader();
         this.support = support;
         service = ThreadPoolExecutor.class.cast(
@@ -83,10 +83,10 @@ public class TestThreadPool {
 
     private class NodeRunner implements Runnable {
         private final TestNode node;
-        private final TestEventListenerSupport support;
+        private final TestListenerSupport support;
         private final CountDownLatch barrier;
 
-        public NodeRunner(TestNode node, CountDownLatch barrier, TestEventListenerSupport support) {
+        public NodeRunner(TestNode node, CountDownLatch barrier, TestListenerSupport support) {
             this.node = node;
             this.support = support;
             this.barrier = barrier;

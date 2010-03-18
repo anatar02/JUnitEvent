@@ -22,7 +22,7 @@ package org.dhaven.jue.core.internal.node;
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
-import org.dhaven.jue.core.TestEventListenerSupport;
+import org.dhaven.jue.core.TestListenerSupport;
 
 /**
  * An EventNode simply sends an event when it is time.
@@ -37,7 +37,7 @@ public class EventNode extends DependencyTestNode {
     }
 
     @Override
-    protected void run(TestEventListenerSupport support) {
+    protected void run(TestListenerSupport support) {
         support.fireTestEvent(new TestEvent(getDescription(), status));
     }
 

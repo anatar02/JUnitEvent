@@ -22,7 +22,7 @@ package org.dhaven.jue.core.internal.node;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.dhaven.jue.core.TestEventListenerSupport;
+import org.dhaven.jue.core.TestListenerSupport;
 
 /**
  * Contains the logic necessary for blocking/ordering the test nodes.  Will also
@@ -57,7 +57,7 @@ public abstract class DependencyTestNode implements TestNode {
     }
 
     @Override
-    public boolean attemptRun(TestEventListenerSupport support) {
+    public boolean attemptRun(TestListenerSupport support) {
         if (!predecessors.isEmpty()) {
             return false;
         }
@@ -73,7 +73,7 @@ public abstract class DependencyTestNode implements TestNode {
         return true;
     }
 
-    protected abstract void run(TestEventListenerSupport support);
+    protected abstract void run(TestListenerSupport support);
 
     @Override
     public int compareTo(TestNode node) {

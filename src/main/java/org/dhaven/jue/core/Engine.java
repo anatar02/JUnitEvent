@@ -29,7 +29,7 @@ import org.dhaven.jue.core.internal.TestThreadPool;
  * Central class for JUnit Events.  This runs the tests as they are.
  */
 public class Engine {
-    private TestEventListenerSupport listenerSupport = new TestEventListenerSupport();
+    private TestListenerSupport listenerSupport = new TestListenerSupport();
 
     /**
      * Command line entry point for the test engine.
