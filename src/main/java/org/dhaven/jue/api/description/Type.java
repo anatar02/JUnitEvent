@@ -25,9 +25,15 @@ package org.dhaven.jue.api.description;
  */
 public enum Type {
     /**
-     * Event is sent at the beginning of all testing.
+     * Root level type.  This should strictly be used by {@link Description#JUEName}.
      */
     System,
+    /**
+     * Test case type.  A test case is a group of related tests.
+     */
     TestCase,
+    /**
+     * Test type.  Represents an individual test.
+     */
     Test
 }
