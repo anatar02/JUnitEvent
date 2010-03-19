@@ -48,7 +48,7 @@ public class Testlet extends DependencyTestNode {
                 testMethod.getName()));
     }
 
-    public Testlet(Object instance, Method testMethod, String testName) {
+    private Testlet(Object instance, Method testMethod, String testName) {
         testCase = instance;
         description = new Description(testName, Type.Test);
         method = testMethod;
@@ -125,7 +125,7 @@ public class Testlet extends DependencyTestNode {
         }
     }
 
-    public boolean isIgnored() {
+    boolean isIgnored() {
         return ignored;
     }
 

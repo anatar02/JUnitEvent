@@ -37,6 +37,7 @@ import static org.hamcrest.Matchers.hasItemInArray;
  * Test the behavior of the class collector, so that we can easily create
  * suites of tests.
  */
+@SuppressWarnings({"WeakerAccess"})
 public class TestClassCollector {
     private ClassCollector collector;
 

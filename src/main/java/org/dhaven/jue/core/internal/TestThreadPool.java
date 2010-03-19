@@ -32,13 +32,13 @@ import org.dhaven.jue.core.internal.node.TestNode;
  * Provides the execution model for running the tests.
  */
 public class TestThreadPool {
-    private ThreadGroup group = new ThreadGroup("JUE:ThreadPool");
+    private final ThreadGroup group = new ThreadGroup("JUE:ThreadPool");
     private ThreadPoolExecutor service;
     private TestListenerSupport support;
     private CountDownLatch barrier;
     private ClassLoader classLoader;
 
-    public int getNumberOfThreads() {
+    private int getNumberOfThreads() {
         return Runtime.getRuntime().availableProcessors();
     }
 
@@ -51,7 +51,7 @@ public class TestThreadPool {
         }
     }
 
-    public void startup(TestListenerSupport support) {
+    public void start(TestListenerSupport support) {
         this.classLoader = Thread.currentThread().getContextClassLoader();
         this.support = support;
         service = ThreadPoolExecutor.class.cast(

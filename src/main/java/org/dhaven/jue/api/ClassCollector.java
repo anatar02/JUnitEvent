@@ -20,7 +20,6 @@
 package org.dhaven.jue.api;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -121,7 +120,7 @@ public class ClassCollector {
         }
     }
 
-    private void handleJar(ArrayList<Class<?>> classes, JarFile file) throws IOException {
+    private void handleJar(ArrayList<Class<?>> classes, JarFile file) {
         for (JarEntry entry : Collections.list(file.entries())) {
             String className = entry.getName();
             className = className.substring(0, className.length() - ".class".length());
@@ -142,7 +141,7 @@ public class ClassCollector {
 
         try {
             classToCheck = Class.forName(className, true, getClassLoader());
-        } catch (ClassNotFoundException cnfe) {
+        } catch (ClassNotFoundException exception) {
             System.out.println("Could not find class: " + className);
             return;
         }

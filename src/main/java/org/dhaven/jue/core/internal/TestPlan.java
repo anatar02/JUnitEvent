@@ -64,7 +64,7 @@ public class TestPlan {
         return plan;
     }
 
-    public void addTests(Collection<? extends TestNode> tests) {
+    void addTests(Collection<? extends TestNode> tests) {
         for (TestNode node : tests) {
             node.addPredecessor(start);
             node.addSuccessor(end);

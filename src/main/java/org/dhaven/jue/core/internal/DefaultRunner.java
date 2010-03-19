@@ -48,8 +48,8 @@ public class DefaultRunner implements Runner {
         start.addSuccessor(end);
 
         List<Testlet> tests = new LinkedList<Testlet>();
-        List<Method> befores = new LinkedList<Method>();
-        List<Method> afters = new LinkedList<Method>();
+        List<Method> setUpMethods = new LinkedList<Method>();
+        List<Method> tearDownMethods = new LinkedList<Method>();
 
         for (Method method : testCase.getMethods()) {
             // Ensure new object instance with each testlet
@@ -63,11 +63,11 @@ public class DefaultRunner implements Runner {
             }
 
             if (hasAnnotation(method, Before.class)) {
-                befores.add(method);
+                setUpMethods.add(method);
             }
 
             if (hasAnnotation(method, After.class)) {
-                afters.add(method);
+                tearDownMethods.add(method);
             }
         }
 
@@ -79,8 +79,8 @@ public class DefaultRunner implements Runner {
         nodeList.add(start);
 
         for (Testlet testlet : tests) {
-            testlet.addSetup(befores);
-            testlet.addTearDown(afters);
+            testlet.addSetup(setUpMethods);
+            testlet.addTearDown(tearDownMethods);
             nodeList.add(testlet);
         }
 

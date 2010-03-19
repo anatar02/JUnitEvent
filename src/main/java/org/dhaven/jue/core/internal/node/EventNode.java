@@ -28,8 +28,8 @@ import org.dhaven.jue.core.TestListenerSupport;
  * An EventNode simply sends an event when it is time.
  */
 public class EventNode extends DependencyTestNode {
-    private Description description;
-    private Status status;
+    private final Description description;
+    private final Status status;
 
     public EventNode(Description description, Status status) {
         this.description = description;

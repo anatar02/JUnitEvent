@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
+@SuppressWarnings({"WeakerAccess"})
 public class TestDescription {
     @Test
     public void testDescriptionWithOnlyName() {
@@ -52,28 +53,28 @@ public class TestDescription {
 
     @Test
     public void testDescriptionWithParameters() {
-        Description description = new Description("ParamTest", Type.Test, 1, 1, "First", 3);
+        Description description = new Description("ParameterTest", Type.Test, 1, 1, "First", 3);
 
-        assertThat(description.getName(), equalTo("ParamTest"));
+        assertThat(description.getName(), equalTo("ParameterTest"));
         assertThat(description.getRun(), equalTo(1));
         assertThat(description.getTotalRuns(), equalTo(1));
         assertThat(description.getParameters(), equalTo(new Object[]{"First", 3}));
-        assertThat(description.toString(), equalTo("ParamTest(First,3)"));
+        assertThat(description.toString(), equalTo("ParameterTest(First,3)"));
     }
 
     @Test
     public void testDescriptionWithManyRunsAndParameters() {
-        Description description = new Description("ParamTest", Type.Test, 4, 5, "First", 3);
+        Description description = new Description("ParameterTest", Type.Test, 4, 5, "First", 3);
 
-        assertThat(description.getName(), equalTo("ParamTest"));
+        assertThat(description.getName(), equalTo("ParameterTest"));
         assertThat(description.getRun(), equalTo(4));
         assertThat(description.getTotalRuns(), equalTo(5));
         assertThat(description.getParameters(), equalTo(new Object[]{"First", 3}));
-        assertThat(description.toString(), equalTo("ParamTest:4-5(First,3)"));
+        assertThat(description.toString(), equalTo("ParameterTest:4-5(First,3)"));
     }
 
     @Test
-    public void makeSureEqualityMatchesHashcode() {
+    public void makeSureEqualityMatchesHashCode() {
         Description one = new Description("Test Name", Type.Test);
         Description two = new Description("Test Name", Type.Test);
 
@@ -82,7 +83,7 @@ public class TestDescription {
     }
 
     @Test
-    public void makeSureInequalityDoesNotMatcheHashcode() {
+    public void makeSureInequalityDoesNotMatchHashCode() {
         Description one = new Description("Test Foo", Type.Test);
         Description two = new Description("Test Bar", Type.Test);
 

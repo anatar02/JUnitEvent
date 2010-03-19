@@ -90,7 +90,7 @@ public class TestDependencyTestNode {
     }
 
     private final static class TestNode extends DependencyTestNode {
-        int num;
+        final int num;
 
         public TestNode(int i) {
             num = i;

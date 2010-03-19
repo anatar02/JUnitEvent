@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.is;
 
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class TestResults {
-    private Results results = new Results();
+    private final Results results = new Results();
 
     @Test
     public void completeWithNoEvents() {
@@ -62,14 +62,30 @@ public class TestResults {
         results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Started));
         results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Passed));
 
-        assertThat(results.passed(), is(true));
+        assertThat(results.getStatus(), is(Status.Passed));
     }
 
     @Test
-    public void passedWithFailedEvent() {
+    public void failedWithFailedEvent() {
         results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Started));
         results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Failed, new IllegalArgumentException("just kidding")));
 
-        assertThat(results.passed(), is(false));
+        assertThat(results.getStatus(), is(Status.Failed));
+    }
+
+    @Test
+    public void ignoredWithIgnoredEvent() {
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Started));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Ignored));
+
+        assertThat(results.getStatus(), is(Status.Ignored));
+    }
+
+    @Test
+    public void terminatedWithTerminatedEvent() {
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Started));
+        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Terminated));
+
+        assertThat(results.getStatus(), is(Status.Terminated));
     }
 }

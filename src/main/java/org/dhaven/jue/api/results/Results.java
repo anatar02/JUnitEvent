@@ -19,13 +19,16 @@
 
 package org.dhaven.jue.api.results;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
-
-import java.util.*;
 
 /**
  * Collects the results from the tests as they are run.  The results object
@@ -36,14 +39,18 @@ import java.util.*;
  * times for those tests.
  */
 public class Results extends TestCaseSummary implements TestEventListener {
-    private Set<ParentSummary> testCases = new TreeSet<ParentSummary>();
-    private Map<Description, TestSummary> collectedResults = new HashMap<Description, TestSummary>();
+    private final Map<Description, TestSummary> collectedResults = new HashMap<Description, TestSummary>();
 
     /**
      * Create the results object.
      */
     public Results() {
         super(null);
+    }
+
+    @Override
+    public Status getStatus() {
+        return evaluateStatus(collectedResults.values());
     }
 
     /**
@@ -63,19 +70,6 @@ public class Results extends TestCaseSummary implements TestEventListener {
     }
 
     @Override
-    public boolean passed() {
-        boolean passed = !collectedResults.isEmpty();
-
-        for (Summary summary : collectedResults.values()) {
-            if (summary.getType() == Type.Test) {
-                passed = passed && (summary.passed() || summary.ignored());
-            }
-        }
-
-        return passed;
-    }
-
-    @Override
     public void handleEvent(TestEvent event) {
         TestSummary summary = collectedResults.get(event.getDescription());
 
@@ -91,15 +85,14 @@ public class Results extends TestCaseSummary implements TestEventListener {
                 break;
 
             case TestCase:
-                testCases.add(TestCaseSummary.class.cast(summary));
                 this.addChild(summary);
                 break;
 
             case Test:
-                for (ParentSummary caseSummary : testCases) {
+                for (Summary caseSummary : this.getChildren()) {
                     Description testCase = caseSummary.getDescription();
                     if (testCase.relatedTo(summary.getDescription())) {
-                        caseSummary.addChild(summary);
+                        ParentSummary.class.cast(caseSummary).addChild(summary);
                     }
                 }
                 break;

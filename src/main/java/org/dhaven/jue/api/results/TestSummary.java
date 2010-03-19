@@ -19,16 +19,16 @@
 
 package org.dhaven.jue.api.results;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * A test summary instance will provide the end results of a test, and any
@@ -37,7 +37,7 @@ import java.util.Collection;
 public class TestSummary implements Summary, TestEventListener {
     private static final int START = 0;
     private static final int END = 1;
-    private TestEvent[] events = new TestEvent[2];
+    private final TestEvent[] events = new TestEvent[2];
     private Description description;
 
     /**
@@ -74,22 +74,22 @@ public class TestSummary implements Summary, TestEventListener {
 
     @Override
     public boolean passed() {
-        return complete() && events[END].getStatus() == Status.Passed;
+        return getStatus() == Status.Passed;
     }
 
     @Override
     public boolean failed() {
-        return complete() && events[END].getStatus() == Status.Failed;
+        return getStatus() == Status.Failed;
     }
 
     @Override
     public boolean terminated() {
-        return complete() && events[END].getStatus() == Status.Terminated;
+        return getStatus() == Status.Terminated;
     }
 
     @Override
     public boolean ignored() {
-        return complete() && events[END].getStatus() == Status.Ignored;
+        return getStatus() == Status.Ignored;
     }
 
     @Override
@@ -158,7 +158,7 @@ public class TestSummary implements Summary, TestEventListener {
         return builder.toString();
     }
 
-    public static TestSummary create(TestEvent event) {
+    static TestSummary create(TestEvent event) {
         return event.getType() != Type.Test
                 ? new TestCaseSummary(event)
                 : new TestSummary(event);

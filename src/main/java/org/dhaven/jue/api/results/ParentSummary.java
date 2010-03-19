@@ -34,6 +34,13 @@ public interface ParentSummary extends Summary {
     void addChild(Summary child);
 
     /**
+     * Get the set of children for this parent summary.
+     *
+     * @return the children
+     */
+    Iterable<Summary> getChildren();
+
+    /**
      * The number of children associated with this summary.  This number only
      * reflects the number of direct children, and does not traverse a
      * hierarchy of summaries.

@@ -180,7 +180,7 @@ public class Description implements Comparable<Description> {
 
     @Override
     public int hashCode() {
-        return (name.hashCode() << 3 + run) << 5 + type.hashCode();
+        return (name.hashCode() << 3 + run) << 5 + type.ordinal();
     }
 
     @Override

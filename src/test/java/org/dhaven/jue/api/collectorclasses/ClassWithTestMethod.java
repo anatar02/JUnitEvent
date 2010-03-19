@@ -22,6 +22,7 @@ package org.dhaven.jue.api.collectorclasses;
 import org.dhaven.jue.Ignore;
 import org.dhaven.jue.Test;
 
+@SuppressWarnings({"ALL"})
 @Ignore
 public class ClassWithTestMethod {
     @Test

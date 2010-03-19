@@ -34,7 +34,7 @@ import org.dhaven.jue.Test;
  */
 public class Request {
     private Set<Class<?>> testClasses = new HashSet<Class<?>>();
-    ClassCollector collector = new ClassCollector();
+    private ClassCollector collector = new ClassCollector();
 
     public Request(String... arguments) throws Exception {
         collector.methodsHaveAnnotation(Before.class, Test.class, After.class, Ignore.class);

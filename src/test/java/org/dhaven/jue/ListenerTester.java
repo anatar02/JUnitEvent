@@ -32,8 +32,7 @@ import org.dhaven.jue.api.event.TestEventListener;
  * Helper listener to extract the order of events.
  */
 public class ListenerTester implements TestEventListener {
-    private List<TestEvent> events = new ArrayList<TestEvent>(
-            Type.values().length);
+    private final List<TestEvent> events = new ArrayList<TestEvent>(Type.values().length);
 
     @Override
     public void handleEvent(TestEvent event) {

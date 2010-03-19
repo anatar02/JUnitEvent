@@ -19,12 +19,12 @@
 
 package org.dhaven.jue;
 
+import java.io.IOException;
+
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.results.Results;
 import org.dhaven.jue.core.Engine;
-
-import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -32,6 +32,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * Make sure the tests are run in order
  */
+@SuppressWarnings({"ALL"})
 public class TestSemantics {
     private Engine engine;
     private Request testsToRun;
@@ -209,6 +210,7 @@ public class TestSemantics {
     }
 
     public static class NoExceptionTest {
+        @SuppressWarnings({"EmptyMethod"})
         @Test(expected = IllegalArgumentException.class)
         public void doesNotThrowException() {
         }

@@ -19,18 +19,18 @@
 
 package org.dhaven.jue;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 
 /**
  * Hamcrest matcher for methods in a class.
  */
 public class MethodScanner extends TypeSafeMatcher<Class> {
-    private Class<? extends Annotation> annotation;
+    private final Class<? extends Annotation> annotation;
 
     private MethodScanner(Class<? extends Annotation> marker) {
         annotation = marker;

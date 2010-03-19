@@ -28,8 +28,8 @@ import org.dhaven.jue.api.description.Description;
  * information as possible to pinpoint the cause of the problem.
  */
 public class Failure implements Describable {
-    private Description description;
-    private Throwable cause;
+    private final Description description;
+    private final Throwable cause;
 
     public Failure(Description description, Throwable failure) {
         this.description = description;

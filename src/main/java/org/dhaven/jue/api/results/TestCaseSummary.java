@@ -19,44 +19,54 @@
 
 package org.dhaven.jue.api.results;
 
-import org.dhaven.jue.api.event.Status;
-import org.dhaven.jue.api.event.TestEvent;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.api.event.TestEvent;
 
 /**
  * A test summary instance will provide the end results of a test, and any
  * children tests.  For example, a TestCase has many individual tests.
  */
 public class TestCaseSummary extends TestSummary implements ParentSummary {
-    private Set<Summary> children = new HashSet<Summary>();
-    private Status summaryStatus = Status.Started;
+    private final Set<Summary> children = new HashSet<Summary>();
 
     public TestCaseSummary(TestEvent event) {
         super(event);
     }
 
     @Override
-    public boolean passed() {
-        return summaryStatus == Status.Passed;
+    public Status getStatus() {
+        return evaluateStatus(getChildren());
     }
 
-    @Override
-    public boolean failed() {
-        return summaryStatus == Status.Failed;
-    }
+    protected Status evaluateStatus(Iterable<? extends Summary> children) {
+        Status status = Status.Started;
 
-    @Override
-    public boolean terminated() {
-        return summaryStatus == Status.Terminated;
-    }
+        for (Summary child : children) {
+            if (status == Status.Started) {
+                status = child.getStatus();
+            } else switch (child.getStatus()) {
+                case Passed:
+                    if (status != Status.Terminated && status != Status.Failed) {
+                        status = Status.Passed;
+                    }
+                    break;
 
-    @Override
-    public boolean ignored() {
-        return summaryStatus == Status.Ignored;
+                case Terminated:
+                    status = Status.Terminated;
+                    break;
+
+                case Failed:
+                    status = Status.Failed;
+                    break;
+            }
+        }
+
+        return status;
     }
 
     @Override
@@ -89,26 +99,11 @@ public class TestCaseSummary extends TestSummary implements ParentSummary {
     @Override
     public void addChild(Summary child) {
         children.add(child);
+    }
 
-        if (summaryStatus == Status.Started) {
-            summaryStatus = child.getStatus();
-        }
-
-        switch (child.getStatus()) {
-            case Passed:
-                if (summaryStatus != Status.Terminated && summaryStatus != Status.Failed) {
-                    summaryStatus = Status.Passed;
-                }
-                break;
-
-            case Terminated:
-                summaryStatus = Status.Terminated;
-                break;
-
-            case Failed:
-                summaryStatus = Status.Failed;
-                break;
-        }
+    @Override
+    public Iterable<Summary> getChildren() {
+        return children;
     }
 
     @Override

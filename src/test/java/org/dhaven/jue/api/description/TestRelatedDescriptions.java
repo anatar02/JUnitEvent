@@ -25,6 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
+@SuppressWarnings({"WeakerAccess"})
 public class TestRelatedDescriptions {
     @Test
     public void descriptionsAreRelatedWhenNamesAndTypesAreSame() {
@@ -57,7 +58,7 @@ public class TestRelatedDescriptions {
     }
 
     @Test
-    public void descriptionsAreRelatedWhenMultiDotNotationIsUsed() {
+    public void descriptionsAreRelatedWhenMultipleDotNotationIsUsed() {
         Description one = new Description("org.Test", Type.TestCase);
         Description two = new Description("org.Test.foo", Type.Test);
 
@@ -66,7 +67,7 @@ public class TestRelatedDescriptions {
     }
 
     @Test
-    public void descriptionsAreNotRelatedWhenMultiDotNotationIsUsedAndBothAreTests() {
+    public void descriptionsAreNotRelatedWhenMultipleDotNotationIsUsedAndBothAreTests() {
         Description one = new Description("org.Test", Type.Test);
         Description two = new Description("org.Test.foo", Type.Test);
 
@@ -84,7 +85,7 @@ public class TestRelatedDescriptions {
     }
 
     @Test
-    public void descriptionsAreNotRelatedWhenMultiDotNotationDiffers() {
+    public void descriptionsAreNotRelatedWhenMultipleDotNotationDiffers() {
         Description one = new Description("org.Test.bar", Type.Test);
         Description two = new Description("org.Test.foo", Type.Test);
 
