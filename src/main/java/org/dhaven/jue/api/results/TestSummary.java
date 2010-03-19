@@ -139,7 +139,7 @@ public class TestSummary implements Summary, TestListener {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(description).append("(");
-        builder.append(String.format("%.3f", nanosToMillis(elapsedTime())));
+        builder.append(String.format("%.3f", nanosecondsToMilliseconds(elapsedTime())));
         builder.append("ms):\t");
         appendStatus(builder);
 
@@ -165,18 +165,16 @@ public class TestSummary implements Summary, TestListener {
     }
 
     protected void appendStatus(StringBuilder builder) {
-        if (passed()) {
-            builder.append("Passed\n");
-        } else if (terminated()) {
-            builder.append("Terminated\n");
-        } else if (ignored()) {
-            builder.append("Ignored\n");
-        } else if (failed()) {
-            builder.append("FAILED...\n");
+        if (failed()) {
+            builder.append("FAILED...");
+        } else {
+            builder.append(getStatus().name());
         }
+
+        builder.append('\n');
     }
 
-    protected float nanosToMillis(long time) {
+    protected float nanosecondsToMilliseconds(long time) {
         return time / 1000000f;
     }
 

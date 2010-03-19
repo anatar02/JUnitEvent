@@ -186,6 +186,13 @@ public class TestTestSummary {
     }
 
     @Test
+    public void incompleteToString() {
+        TestSummary summary = new TestSummary(started);
+
+        assertThat(summary.toString(), equalTo("My Test(0.000ms):\tStarted\n"));
+    }
+
+    @Test
     public void passedToString() {
         TestSummary summary = new TestSummary(started);
         summary.handleEvent(passed);
