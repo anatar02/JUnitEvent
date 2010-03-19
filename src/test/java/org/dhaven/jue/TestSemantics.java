@@ -27,7 +27,8 @@ import org.dhaven.jue.api.results.Results;
 import org.dhaven.jue.core.Engine;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Make sure the tests are run in order
@@ -136,19 +137,6 @@ public class TestSemantics {
         assertThat(results.numberOfTestsRun(), is(3));
     }
 
-    @Ignore
-    @Test
-    public void timeoutTestsAreCanceledInTime() throws Exception {
-        testsToRun = new Request(TimeoutTest.class);
-
-        long start = System.currentTimeMillis();
-        Results results = engine.process(testsToRun);
-        long end = System.currentTimeMillis();
-
-        assertThat(results.passed(), is(false));
-        assertThat((end - start) / 100.0, closeTo(5, .2)); // 4% margin of error
-    }
-
     /**
      * Internal test to ensure the order of @Before, @Test, and @After work OK.
      */
@@ -220,17 +208,6 @@ public class TestSemantics {
         @Test
         public void secondTest() {
             assertThat(true, is(true));
-        }
-    }
-
-    public static class TimeoutTest {
-        @Test(timeout = 500)
-        public void timeout() {
-            // never ends voluntarily
-            while (true) {
-                assertThat(true, is(false));
-                if (Thread.currentThread().isInterrupted()) break;
-            }
         }
     }
 }

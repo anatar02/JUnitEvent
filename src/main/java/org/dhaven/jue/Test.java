@@ -46,6 +46,4 @@ public @interface Test {
     }
 
     public abstract Class<? extends Throwable> expected() default None.class;
-
-    public abstract long timeout() default 0L;
 }
