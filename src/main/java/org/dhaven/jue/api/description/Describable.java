@@ -20,8 +20,14 @@
 package org.dhaven.jue.api.description;
 
 /**
- * An object that can be described.
+ * Any object that can be described.  Generally refers to the test nodes that
+ * the particular run.
  */
 public interface Describable {
+    /**
+     * Get the description for this object.
+     *
+     * @return the description
+     */
     Description getDescription();
 }
