@@ -23,6 +23,7 @@ import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
+import org.dhaven.jue.api.event.TestEventListener;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -33,7 +34,7 @@ import java.util.Collection;
  * A test summary instance will provide the end results of a test, and any
  * children tests.  For example, a TestCase has many individual tests.
  */
-public class TestSummary implements Summary {
+public class TestSummary implements Summary, TestEventListener {
     private static final int START = 0;
     private static final int END = 1;
     private TestEvent[] events = new TestEvent[2];
@@ -46,11 +47,12 @@ public class TestSummary implements Summary {
      */
     protected TestSummary(TestEvent event) {
         if (null != event) {
-            setEvent(event);
+            handleEvent(event);
         }
     }
 
-    public void setEvent(TestEvent event) {
+    @Override
+    public void handleEvent(TestEvent event) {
         if (null == description) {
             description = event.getDescription();
         }

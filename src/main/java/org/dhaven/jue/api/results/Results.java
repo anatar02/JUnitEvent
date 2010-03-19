@@ -82,12 +82,12 @@ public class Results extends TestCaseSummary implements TestEventListener {
         if (null == summary) {
             summary = TestSummary.create(event);
         } else {
-            summary.setEvent(event);
+            summary.handleEvent(event);
         }
 
         switch (summary.getType()) {
             case System:
-                setEvent(event);
+                super.handleEvent(event);
                 break;
 
             case TestCase:
