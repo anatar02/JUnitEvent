@@ -49,7 +49,7 @@ public class Engine {
 
         System.out.println(results.passed() ? "All tests passed." : "Tests did not pass");
 
-        System.out.println(results.getRunSummary());
+        System.out.println(results);
     }
 
     public Results process(Request request) throws Exception {

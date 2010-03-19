@@ -19,20 +19,20 @@
 
 package org.dhaven.jue.api.results;
 
+import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.api.event.TestEvent;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.dhaven.jue.api.event.Status;
-import org.dhaven.jue.api.event.TestEvent;
 
 /**
  * A test summary instance will provide the end results of a test, and any
  * children tests.  For example, a TestCase has many individual tests.
  */
 public class TestCaseSummary extends TestSummary {
-    private Set<TestSummary> children = new HashSet<TestSummary>();
+    private Set<Summary> children = new HashSet<Summary>();
     private Status summaryStatus = Status.Started;
 
     public TestCaseSummary(TestEvent event) {
@@ -59,28 +59,27 @@ public class TestCaseSummary extends TestSummary {
         return summaryStatus == Status.Ignored;
     }
 
+    @Override
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-    public Throwable[] getFailures() {
-        Collection<Throwable> failures = new ArrayList<Throwable>(children.size());
+    public Iterable<Failure> getFailures() {
+        Collection<Failure> failures = new ArrayList<Failure>(children.size());
 
-        if (isComplete()) {
-            for (TestSummary child : children) {
-                Throwable failure = child.getFailure();
-
-                if (null != failure) {
+        if (complete()) {
+            for (Summary child : children) {
+                for (Failure failure : child.getFailures()) {
                     failures.add(failure);
                 }
             }
         }
 
-        return failures.toArray(new Throwable[failures.size()]);
+        return failures;
     }
 
     @Override
     public long processorTime() {
         long time = 0;
 
-        for (TestSummary child : children) {
+        for (Summary child : children) {
             time += child.processorTime();
         }
 
@@ -117,7 +116,7 @@ public class TestCaseSummary extends TestSummary {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        for (TestSummary summary : children) {
+        for (Summary summary : children) {
             builder.append(summary);
         }
 

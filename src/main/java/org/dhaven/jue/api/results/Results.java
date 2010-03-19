@@ -19,15 +19,13 @@
 
 package org.dhaven.jue.api.results;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.*;
-
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.api.event.TestEventListener;
+
+import java.util.*;
 
 /**
  * Collects the results from the tests as they are run.  The results object
@@ -37,65 +35,44 @@ import org.dhaven.jue.api.event.TestEventListener;
  * test was run multiple times, you will be able to find the average processor
  * times for those tests.
  */
-public class Results implements TestEventListener {
-    private TestCaseSummary runSummary;
+public class Results extends TestCaseSummary implements TestEventListener {
     private Set<TestCaseSummary> testCases = new TreeSet<TestCaseSummary>();
     private Map<Description, TestSummary> collectedResults = new HashMap<Description, TestSummary>();
+
+    /**
+     * Create the results object.
+     */
+    public Results() {
+        super(null);
+    }
 
     /**
      * Check to see if all the results we were expecting came in.
      *
      * @return <code>true</code> if any pending results have {@link Status#Started}
      */
+    @Override
     public boolean complete() {
         boolean completed = !collectedResults.isEmpty();
 
-        for (TestSummary summary : collectedResults.values()) {
-            completed = completed && summary.isComplete();
+        for (Summary summary : collectedResults.values()) {
+            completed = completed && summary.complete();
         }
 
         return completed;
     }
 
-    /**
-     * Check to see if all the tests returned passing results.
-     *
-     * @return <code>true</code> if all tests have {@link Status#Passed}
-     */
+    @Override
     public boolean passed() {
         boolean passed = !collectedResults.isEmpty();
 
-        for (TestSummary summary : collectedResults.values()) {
+        for (Summary summary : collectedResults.values()) {
             if (summary.getType() == Type.Test) {
                 passed = passed && (summary.passed() || summary.ignored());
             }
         }
 
         return passed;
-    }
-
-    /**
-     * List all failures as one big string.  Provides easy summary of what
-     * needs to be fixed.
-     *
-     * @return The string of every failure, and its cause
-     */
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-    public String failuresToString() {
-        StringBuilder builder = new StringBuilder();
-
-        for (TestSummary summary : collectedResults.values()) {
-            if (summary.failed()) {
-                builder.append(summary.getDescription());
-                builder.append("... Failed\n");
-
-                StringWriter writer = new StringWriter();
-                summary.getFailure().printStackTrace(new PrintWriter(writer));
-                builder.append(writer.toString());
-            }
-        }
-
-        return builder.toString();
     }
 
     @Override
@@ -110,23 +87,21 @@ public class Results implements TestEventListener {
 
         switch (summary.getType()) {
             case System:
-                runSummary = TestCaseSummary.class.cast(summary);
+                setEvent(event);
                 break;
 
             case TestCase:
                 testCases.add(TestCaseSummary.class.cast(summary));
-                runSummary.addChild(summary);
+                this.addChild(summary);
                 break;
 
             case Test:
                 for (TestCaseSummary caseSummary : testCases) {
                     Description testCase = caseSummary.getDescription();
-                    Description test = summary.getDescription();
-                    if (testCase.relatedTo(test)) {
+                    if (testCase.relatedTo(summary.getDescription())) {
                         caseSummary.addChild(summary);
                     }
                 }
-
                 break;
 
             default:
@@ -136,16 +111,8 @@ public class Results implements TestEventListener {
         collectedResults.put(event.getDescription(), summary);
     }
 
-    public TestCaseSummary getRunSummary() {
-        return runSummary;
-    }
-
-    public long getProcessorTime(Type type) {
-        return totalTime(filterResults(type));
-    }
-
-    private Collection<TestSummary> filterResults(Type type) {
-        ArrayList<TestSummary> summaries = new ArrayList<TestSummary>(collectedResults.size());
+    private Collection<Summary> filterResults(Type type) {
+        ArrayList<Summary> summaries = new ArrayList<Summary>(collectedResults.size());
 
         for (TestSummary summary : collectedResults.values()) {
             if (summary.getType() == type) {
@@ -156,24 +123,25 @@ public class Results implements TestEventListener {
         return summaries;
     }
 
-    private static long totalTime(Collection<TestSummary> summaries) {
-        int runningTime = 0;
-
-        for (TestSummary summary : summaries) {
-            runningTime += summary.elapsedTime();
-        }
-
-        return runningTime;
-    }
-
+    /**
+     * Total number of test cases in this test run.
+     *
+     * @return the number of test cases executed
+     */
     public int numberOfTestCases() {
         return filterResults(Type.TestCase).size();
     }
 
+    /**
+     * Total number of tests in this test run from all test cases.  Does not
+     * count ignored tests.
+     *
+     * @return the total number of tests
+     */
     public int numberOfTestsRun() {
         int numRun = 0;
 
-        for (TestSummary summary : filterResults(Type.Test)) {
+        for (Summary summary : filterResults(Type.Test)) {
             if (!summary.ignored()) numRun++;
         }
 

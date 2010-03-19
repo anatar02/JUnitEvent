@@ -19,69 +19,95 @@
 
 package org.dhaven.jue.api.results;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
-import org.dhaven.jue.api.description.Describable;
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * A test summary instance will provide the end results of a test, and any
  * children tests.  For example, a TestCase has many individual tests.
  */
-public class TestSummary implements Describable, Comparable<TestSummary> {
+public class TestSummary implements Summary {
     private static final int START = 0;
     private static final int END = 1;
     private TestEvent[] events = new TestEvent[2];
     private Description description;
 
+    /**
+     * Constructor used to initialize the summary with the first event.
+     *
+     * @param event the test event used to initialize the summary.
+     */
     protected TestSummary(TestEvent event) {
-        description = event.getDescription();
-        setEvent(event);
+        if (null != event) {
+            setEvent(event);
+        }
     }
 
     public void setEvent(TestEvent event) {
+        if (null == description) {
+            description = event.getDescription();
+        }
+
         events[Status.Started == event.getStatus() ? START : END] = event;
     }
 
+    @Override
     public Type getType() {
         int index = events[START] == null ? END : START;
 
         return events[index].getType();
     }
 
-    public boolean isComplete() {
+    @Override
+    public boolean complete() {
         return events[START] != null && events[END] != null;
     }
 
+    @Override
     public boolean passed() {
-        return isComplete() && events[END].getStatus() == Status.Passed;
+        return complete() && events[END].getStatus() == Status.Passed;
     }
 
+    @Override
     public boolean failed() {
-        return isComplete() && events[END].getStatus() == Status.Failed;
+        return complete() && events[END].getStatus() == Status.Failed;
     }
 
+    @Override
     public boolean terminated() {
-        return isComplete() && events[END].getStatus() == Status.Terminated;
+        return complete() && events[END].getStatus() == Status.Terminated;
     }
 
+    @Override
     public boolean ignored() {
-        return isComplete() && events[END].getStatus() == Status.Ignored;
+        return complete() && events[END].getStatus() == Status.Ignored;
     }
 
+    @Override
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-    public Throwable getFailure() {
-        return isComplete() ? events[END].getFailure() : null;
+    public Iterable<Failure> getFailures() {
+        Collection<Failure> failures = new ArrayList<Failure>(1);
+
+        if (failed()) {
+            failures.add(new Failure(getDescription(), events[END].getFailure()));
+        }
+
+        return failures;
     }
 
+    @Override
     public long elapsedTime() {
-        return isComplete() ? events[END].getNanoseconds() - events[START].getNanoseconds() : 0;
+        return complete() ? events[END].getNanoseconds() - events[START].getNanoseconds() : 0;
     }
 
+    @Override
     public long processorTime() {
         return elapsedTime();
     }
@@ -92,13 +118,13 @@ public class TestSummary implements Describable, Comparable<TestSummary> {
     }
 
     @Override
-    public int compareTo(TestSummary other) {
+    public int compareTo(Summary other) {
         return description.compareTo(other.getDescription());
     }
 
     @Override
     public boolean equals(Object object) {
-        return (object instanceof TestSummary) && description.equals(TestSummary.class.cast(object).getDescription());
+        return (object instanceof Summary) && description.equals(TestSummary.class.cast(object).getDescription());
     }
 
     @Override
@@ -119,7 +145,9 @@ public class TestSummary implements Describable, Comparable<TestSummary> {
             builder.append("\n");
 
             StringWriter stackTrace = new StringWriter();
-            getFailure().printStackTrace(new PrintWriter(stackTrace));
+            for (Failure failure : getFailures()) {
+                failure.getCause().printStackTrace(new PrintWriter(stackTrace));
+            }
             builder.append(stackTrace);
 
             builder.append("\n");
@@ -154,6 +182,7 @@ public class TestSummary implements Describable, Comparable<TestSummary> {
         return value;
     }
 
+    @Override
     public Status getStatus() {
         return events[END] == null ? events[START].getStatus() : events[END].getStatus();
     }

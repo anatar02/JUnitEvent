@@ -27,7 +27,6 @@ import org.dhaven.jue.api.event.TestEvent;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
 
 @SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class TestResults {
@@ -72,18 +71,5 @@ public class TestResults {
         results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Failed, new IllegalArgumentException("just kidding")));
 
         assertThat(results.passed(), is(false));
-    }
-
-    @Test
-    public void failuresToStringWithNoFailures() {
-        assertThat(results.failuresToString(), is(""));
-    }
-
-    @Test
-    public void failuresToStringWithOneFailure() {
-        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Started));
-        results.handleEvent(new TestEvent(new Description("test", Type.Test), Status.Failed, new IllegalArgumentException("just kidding")));
-
-        assertThat(results.failuresToString(), startsWith("test... Failed\njava.lang.IllegalArgumentException: just kidding"));
     }
 }

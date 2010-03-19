@@ -19,12 +19,12 @@
 
 package org.dhaven.jue;
 
-import java.io.IOException;
-
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.results.Results;
 import org.dhaven.jue.core.Engine;
+
+import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -45,7 +45,7 @@ public class TestSemantics {
     @Test
     public void checkMethodOrder() throws Exception {
         Results results = engine.process(testsToRun);
-        assertThat(results.failuresToString(), results.passed(), equalTo(true));
+        assertThat("unexpected failure", results.passed(), equalTo(true));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class TestSemantics {
 
         Results results = engine.process(testsToRun);
 
-        assertThat(results.failuresToString(), results.passed(), equalTo(true));
+        assertThat("unexpected failure", results.passed(), equalTo(true));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class TestSemantics {
 
         Results results = engine.process(testsToRun);
 
-        assertThat(results.getRunSummary().toString(), results.passed(), is(true));
+        assertThat(results.toString(), results.passed(), is(true));
 
         assertThat(results.numberOfTestCases(), is(1));
         assertThat(results.numberOfTestsRun(), is(1));
