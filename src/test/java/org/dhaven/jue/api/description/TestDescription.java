@@ -74,6 +74,15 @@ public class TestDescription {
     }
 
     @Test
+    public void ensureNotEqualWithOtherTypeOfObject() {
+        Description one = new Description("test", Type.Test);
+        Object two = "test";
+
+        assertThat(one, not(equalTo(two)));
+        assertThat(two, not(equalTo((Object) one)));
+    }
+
+    @Test
     public void makeSureEqualityMatchesHashCode() {
         Description one = new Description("Test Name", Type.Test);
         Description two = new Description("Test Name", Type.Test);

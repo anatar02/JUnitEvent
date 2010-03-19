@@ -56,16 +56,21 @@ public class TestEvent implements Describable {
      * event that the InvocationTargetException does not have a cause, the
      * exception itself will be recorded as the cause.
      *
-     * @param testName   the test name
-     * @param testStatus the {@link Status}
-     * @param exception  the failure cause, if any
+     * @param description the test name
+     * @param status      the {@link Status}
+     * @param exception   the failure cause, if any
      */
     @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-    public TestEvent(Description testName,
-                     Status testStatus, Throwable exception) {
+    public TestEvent(Description description,
+                     Status status, Throwable exception) {
+        if (null == description)
+            throw new IllegalArgumentException("description was null");
+        if (null == status)
+            throw new IllegalArgumentException("status was null");
+
         timeStamp = System.nanoTime();
-        description = testName;
-        status = testStatus;
+        this.description = description;
+        this.status = status;
 
         if (exception instanceof InvocationTargetException
                 || exception instanceof ExecutionException) {
