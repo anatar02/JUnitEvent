@@ -32,6 +32,10 @@ public class Failure implements Describable {
     private final Throwable cause;
 
     public Failure(Description description, Throwable failure) {
+        if (null == description)
+            throw new IllegalArgumentException("description must not be null");
+        if (null == failure)
+            throw new IllegalArgumentException("cause must not be null");
         this.description = description;
         this.cause = failure;
     }

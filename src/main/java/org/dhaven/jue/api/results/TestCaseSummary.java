@@ -126,10 +126,10 @@ public class TestCaseSummary extends TestSummary implements ParentSummary {
 
         appendStatus(builder);
 
-        float clock = threeDigitMS(elapsedTime());
-        float processor = threeDigitMS(processorTime());
-        builder.append("clock time: ").append(clock);
-        builder.append("ms\tprocessor time: ").append(processor);
+        float clock = nanosToMillis(elapsedTime());
+        float processor = nanosToMillis(processorTime());
+        builder.append("clock time: ").append(String.format("%.3f", clock));
+        builder.append("ms\tprocessor time: ").append(String.format("%.3f", processor));
         builder.append("ms\n\n");
 
         return builder.toString();

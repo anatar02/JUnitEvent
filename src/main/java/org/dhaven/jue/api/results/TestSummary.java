@@ -45,7 +45,7 @@ public class TestSummary implements Summary, TestListener {
      *
      * @param event the test event used to initialize the summary.
      */
-    protected TestSummary(TestEvent event) {
+    public TestSummary(TestEvent event) {
         if (null != event) {
             handleEvent(event);
         }
@@ -139,7 +139,7 @@ public class TestSummary implements Summary, TestListener {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(description).append("(");
-        builder.append(threeDigitMS(elapsedTime()));
+        builder.append(String.format("%.3f", nanosToMillis(elapsedTime())));
         builder.append("ms):\t");
         appendStatus(builder);
 
@@ -176,12 +176,8 @@ public class TestSummary implements Summary, TestListener {
         }
     }
 
-    protected float threeDigitMS(long time) {
-        float value = time / 1000000f;
-
-        value = Math.round(value * 1000f) / 1000f;
-
-        return value;
+    protected float nanosToMillis(long time) {
+        return time / 1000000f;
     }
 
     @Override

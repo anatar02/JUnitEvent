@@ -20,7 +20,6 @@
 package org.dhaven.jue;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.description.Type;
@@ -64,8 +63,6 @@ public class TestSemantics {
 
     private Type[] expectedEventOrder() {
         Type[] raw = Type.values();
-        // when instrumented Type.values() is reversed.
-        Arrays.sort(raw);
         Type[] expected = new Type[raw.length * 2];
 
         System.arraycopy(raw, 0, expected, 0, raw.length);
