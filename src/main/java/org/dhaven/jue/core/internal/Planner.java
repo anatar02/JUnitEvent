@@ -19,15 +19,15 @@
 
 package org.dhaven.jue.core.internal;
 
-import org.dhaven.jue.core.internal.node.TestNode;
-
 import java.util.Collection;
 
+import org.dhaven.jue.core.internal.node.TestNode;
+
 /**
- * A runner controls the behavior of a test class.  A runner can enable new
+ * A planner controls the behavior of a test class.  A planner can enable new
  * annotations, as well as change the number of times your tests are called.
  */
-public interface Runner {
+public interface Planner {
     /**
      * Define the set of tests for a test case.  This method generates a set
      * of test nodes from the test case, all of which will be popped on to the

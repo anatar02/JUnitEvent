@@ -18,8 +18,9 @@
  */
 
 /**
- * Internal classes for JUE use.  These classes are free
- * to change from release to release.  There is no
- * guarantee of the internal API consistency.
+ * Internal classes for JUE use.  These classes are free to change from release
+ * to release.  There is no guarantee that internal classes will behave the same
+ * or even exist between releases.  The internal structure of how tests are
+ * run and organized is continually being re-evaluated.
  */
 package org.dhaven.jue.core.internal;

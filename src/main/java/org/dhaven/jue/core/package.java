@@ -18,6 +18,9 @@
  */
 
 /**
- * Core classes for JUE.
+ * Represents the core classes for JUnit Events.  The core classes are not
+ * designed to be modified or extended by third parties.  The Engine is designed
+ * to be <em>used</em> by third parties.  The public API on that class will
+ * remain compatible between releases.
  */
 package org.dhaven.jue.core;

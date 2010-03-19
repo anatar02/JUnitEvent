@@ -18,6 +18,14 @@
  */
 
 /**
- * Client classes that you can use for testing.
+ * This base package includes the default annotations that are available to use
+ * for your tests out of the box.  The core set of functionality supported is:
+ *
+ * <uL>
+ * <li>{@link Before}: set up objects for a test method</li>
+ * <li>{@link Test}: mark a method as a test method</li>
+ * <li>{@link Ignore}: ignore a test in a test case</li>
+ * <li>{@link After}: tear down objects for a test method</li>
+ * </ul>
  */
 package org.dhaven.jue;

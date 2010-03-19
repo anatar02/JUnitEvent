@@ -57,8 +57,8 @@ public class TestPlan {
         TestPlan plan = new TestPlan();
 
         for (Class<?> testCase : request.getTestClasses()) {
-            Runner runner = new DefaultRunner();
-            plan.addTests(runner.defineTests(testCase));
+            Planner planner = new DefaultPlanner();
+            plan.addTests(planner.defineTests(testCase));
         }
 
         return plan;

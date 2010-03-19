@@ -37,9 +37,9 @@ import org.dhaven.jue.core.internal.node.TestNode;
 import org.dhaven.jue.core.internal.node.Testlet;
 
 /**
- * The Default Runner enables the core annotations found in the root package.
+ * The Default Planner enables the core annotations found in the root package.
  */
-public class DefaultRunner implements Runner {
+public class DefaultPlanner implements Planner {
     @Override
     public Collection<? extends TestNode> defineTests(Class<?> testCase) throws Exception {
         Description caseDescription = new Description(testCase.getName(), Type.TestCase);
