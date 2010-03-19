@@ -36,7 +36,7 @@ import java.util.*;
  * times for those tests.
  */
 public class Results extends TestCaseSummary implements TestEventListener {
-    private Set<TestCaseSummary> testCases = new TreeSet<TestCaseSummary>();
+    private Set<ParentSummary> testCases = new TreeSet<ParentSummary>();
     private Map<Description, TestSummary> collectedResults = new HashMap<Description, TestSummary>();
 
     /**
@@ -96,7 +96,7 @@ public class Results extends TestCaseSummary implements TestEventListener {
                 break;
 
             case Test:
-                for (TestCaseSummary caseSummary : testCases) {
+                for (ParentSummary caseSummary : testCases) {
                     Description testCase = caseSummary.getDescription();
                     if (testCase.relatedTo(summary.getDescription())) {
                         caseSummary.addChild(summary);

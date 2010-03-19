@@ -31,7 +31,7 @@ import java.util.Set;
  * A test summary instance will provide the end results of a test, and any
  * children tests.  For example, a TestCase has many individual tests.
  */
-public class TestCaseSummary extends TestSummary {
+public class TestCaseSummary extends TestSummary implements ParentSummary {
     private Set<Summary> children = new HashSet<Summary>();
     private Status summaryStatus = Status.Started;
 
@@ -86,7 +86,8 @@ public class TestCaseSummary extends TestSummary {
         return time;
     }
 
-    public void addChild(TestSummary child) {
+    @Override
+    public void addChild(Summary child) {
         children.add(child);
 
         if (summaryStatus == Status.Started) {
@@ -108,6 +109,11 @@ public class TestCaseSummary extends TestSummary {
                 summaryStatus = Status.Failed;
                 break;
         }
+    }
+
+    @Override
+    public int size() {
+        return children.size();
     }
 
     private static final String SEPARATOR = "------------------------------------------------------------------\n";
