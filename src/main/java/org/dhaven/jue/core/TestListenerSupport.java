@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 import org.dhaven.jue.api.description.Describable;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
-import org.dhaven.jue.api.event.TestEventListener;
+import org.dhaven.jue.api.event.TestListener;
 
 /**
  * Provide support for the Engine class to fire events as necessary.  Other
@@ -35,7 +35,7 @@ import org.dhaven.jue.api.event.TestEventListener;
  */
 public class TestListenerSupport {
     final ExecutorService service;
-    private final Queue<TestEventListener> listeners = new LinkedList<TestEventListener>();
+    private final Queue<TestListener> listeners = new LinkedList<TestListener>();
     int numToProcess = 0;
     int numProcessed = 0;
 
@@ -48,7 +48,7 @@ public class TestListenerSupport {
      *
      * @param listener the listener to add
      */
-    public void addTestListener(TestEventListener listener) {
+    public void addTestListener(TestListener listener) {
         listeners.add(listener);
     }
 
@@ -57,7 +57,7 @@ public class TestListenerSupport {
      *
      * @param listener the listener to remove
      */
-    public void removeTestListener(TestEventListener listener) {
+    public void removeTestListener(TestListener listener) {
         listeners.remove(listener);
     }
 
@@ -71,7 +71,7 @@ public class TestListenerSupport {
         service.execute(new Runnable() {
             @Override
             public void run() {
-                for (TestEventListener listener : listeners) {
+                for (TestListener listener : listeners) {
                     listener.handleEvent(testEvent);
                 }
 

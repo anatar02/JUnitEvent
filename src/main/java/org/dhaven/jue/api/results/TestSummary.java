@@ -28,13 +28,13 @@ import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
-import org.dhaven.jue.api.event.TestEventListener;
+import org.dhaven.jue.api.event.TestListener;
 
 /**
  * A test summary instance will provide the end results of a test, and any
  * children tests.  For example, a TestCase has many individual tests.
  */
-public class TestSummary implements Summary, TestEventListener {
+public class TestSummary implements Summary, TestListener {
     private static final int START = 0;
     private static final int END = 1;
     private final TestEvent[] events = new TestEvent[2];

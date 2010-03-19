@@ -28,7 +28,7 @@ import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.api.event.TestEvent;
-import org.dhaven.jue.api.event.TestEventListener;
+import org.dhaven.jue.api.event.TestListener;
 
 /**
  * Collects the results from the tests as they are run.  The results object
@@ -38,7 +38,7 @@ import org.dhaven.jue.api.event.TestEventListener;
  * test was run multiple times, you will be able to find the average processor
  * times for those tests.
  */
-public class Results extends TestCaseSummary implements TestEventListener {
+public class Results extends TestCaseSummary implements TestListener {
     private final Map<Description, TestSummary> collectedResults = new HashMap<Description, TestSummary>();
 
     /**

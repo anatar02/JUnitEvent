@@ -17,9 +17,19 @@
  * under the License.
  */
 
+package org.dhaven.jue.api.event;
+
 /**
- * The API package represents the public facing API for tool vendors.  The API
- * is designed to be compatible between releases.  New features may be added,
- * but existing features will not be taken away.
+ * Implement this class if you want to consume test events.  Register your
+ * custom listener with the test engine.
+ *
+ * @see org.dhaven.jue.core.Engine#addTestListener(TestListener)
  */
-package org.dhaven.jue.api;
+public interface TestListener {
+    /**
+     * Consume a test event.  Events are sent one at a time.
+     *
+     * @param event the test event
+     */
+    void handleEvent(TestEvent event);
+}

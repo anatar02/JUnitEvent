@@ -18,8 +18,6 @@
  */
 
 /**
- * The API package represents the public facing API for tool vendors.  The API
- * is designed to be compatible between releases.  New features may be added,
- * but existing features will not be taken away.
+ * Includes all the information needed to describe a specific test that was run.
  */
-package org.dhaven.jue.api;
+package org.dhaven.api.description;

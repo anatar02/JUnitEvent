@@ -17,19 +17,13 @@
  * under the License.
  */
 
-package org.dhaven.jue.api.event;
-
 /**
- * Implement this class if you want to consume test events.  Register your
- * custom listener with the test engine.
- *
- * @see org.dhaven.jue.core.Engine#addTestListener(TestEventListener)
+ * JUnit Events is an event driven framework, and the results are communicated
+ * using these events.  If you want to provide status on the set of tests that
+ * are being run as they are received, you will need to implement the test
+ * listener.
+ * <p/>
+ * Each test event has an associated status, description, and the cause of a
+ * failure if it exists.
  */
-public interface TestEventListener {
-    /**
-     * Consume a test event.  Events are sent one at a time.
-     *
-     * @param event the test event
-     */
-    void handleEvent(TestEvent event);
-}
+package org.dhaven.jue.api.event;

@@ -20,7 +20,7 @@
 package org.dhaven.jue.core;
 
 import org.dhaven.jue.api.Request;
-import org.dhaven.jue.api.event.TestEventListener;
+import org.dhaven.jue.api.event.TestListener;
 import org.dhaven.jue.api.results.Results;
 import org.dhaven.jue.core.internal.TestPlan;
 import org.dhaven.jue.core.internal.TestThreadPool;
@@ -70,11 +70,11 @@ public class Engine {
         return results;
     }
 
-    public void removeTestListener(TestEventListener testListener) {
+    public void removeTestListener(TestListener testListener) {
         listenerSupport.removeTestListener(testListener);
     }
 
-    public void addTestListener(TestEventListener testListener) {
+    public void addTestListener(TestListener testListener) {
         listenerSupport.addTestListener(testListener);
     }
 }

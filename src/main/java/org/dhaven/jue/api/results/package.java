@@ -18,8 +18,12 @@
  */
 
 /**
- * The API package represents the public facing API for tool vendors.  The API
- * is designed to be compatible between releases.  New features may be added,
- * but existing features will not be taken away.
+ * The results package provides a way to drill down to all the results once
+ * they have been collected.  If your reporting needs are less demanding, you
+ * can inspect the {@link Results} object returned from the test {@link Engine}.
+ * <p/>
+ * You will be able to drill down to a specific test instance, whether the
+ * instance is one of several runs of the same test, or a specific set of
+ * parameters.
  */
-package org.dhaven.jue.api;
+package org.dhaven.jue.api.results;

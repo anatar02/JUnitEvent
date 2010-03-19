@@ -26,12 +26,12 @@ import java.util.List;
 
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.api.event.TestEvent;
-import org.dhaven.jue.api.event.TestEventListener;
+import org.dhaven.jue.api.event.TestListener;
 
 /**
  * Helper listener to extract the order of events.
  */
-public class ListenerTester implements TestEventListener {
+public class ListenerTester implements TestListener {
     private final List<TestEvent> events = new ArrayList<TestEvent>(Type.values().length);
 
     @Override
