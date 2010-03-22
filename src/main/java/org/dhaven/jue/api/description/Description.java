@@ -79,6 +79,11 @@ public class Description implements Comparable<Description> {
      * @param parameters the number of parameters
      */
     public Description(String name, Type type, int run, int ofRuns, Object... parameters) {
+        if (null == name)
+            throw new IllegalArgumentException("Description name is required");
+        if (null == type)
+            throw new IllegalArgumentException("Description type is required");
+
         this.name = name;
         this.run = run;
         this.ofRuns = ofRuns;

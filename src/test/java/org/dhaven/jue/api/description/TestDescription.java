@@ -29,6 +29,16 @@ import static org.hamcrest.Matchers.not;
 
 @SuppressWarnings({"WeakerAccess"})
 public class TestDescription {
+    @Test(expected = IllegalArgumentException.class)
+    public void nameRequired() {
+        new Description(null, Type.System);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void typeRequired() {
+        new Description("name", null);
+    }
+
     @Test
     public void testDescriptionWithOnlyName() {
         Description description = new Description("Test Name", Type.Test);

@@ -57,7 +57,9 @@ public class TestCaseSummary extends TestSummary implements ParentSummary {
                     break;
 
                 case Terminated:
-                    status = Status.Terminated;
+                    if (status != Status.Failed) {
+                        status = Status.Terminated;
+                    }
                     break;
 
                 case Failed:

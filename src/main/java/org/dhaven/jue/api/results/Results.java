@@ -96,9 +96,6 @@ public class Results extends TestCaseSummary implements TestListener {
                     }
                 }
                 break;
-
-            default:
-                throw new IllegalStateException("test summary event class is not handled: " + summary.getType());
         }
 
         collectedResults.put(event.getDescription(), summary);
