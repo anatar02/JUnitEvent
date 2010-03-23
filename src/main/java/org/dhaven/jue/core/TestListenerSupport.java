@@ -122,7 +122,7 @@ public final class TestListenerSupport {
     }
 
     public void shutdown() {
-        while (numToProcess != numProcessed) {
+        while (numToProcess > numProcessed) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {

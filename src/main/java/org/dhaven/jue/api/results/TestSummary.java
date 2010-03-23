@@ -97,7 +97,7 @@ public class TestSummary implements Summary, TestListener {
     public Iterable<Failure> getFailures() {
         Collection<Failure> failures = new ArrayList<Failure>(1);
 
-        if (failed()) {
+        if (complete() && events[END].getFailure() != null) {
             failures.add(new Failure(getDescription(), events[END].getFailure()));
         }
 
@@ -180,6 +180,8 @@ public class TestSummary implements Summary, TestListener {
 
     @Override
     public Status getStatus() {
-        return events[END] == null ? events[START].getStatus() : events[END].getStatus();
+        return events[END] == null ?
+                events[START] == null ? null : events[START].getStatus()
+                : events[END].getStatus();
     }
 }

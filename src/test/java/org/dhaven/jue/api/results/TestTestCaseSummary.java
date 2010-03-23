@@ -30,6 +30,7 @@ import org.dhaven.jue.api.event.TestEvent;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 
 public class TestTestCaseSummary {
     @Test
@@ -169,6 +170,26 @@ public class TestTestCaseSummary {
 
         assertThat(summary.elapsedTime(), equalTo(0L));
         assertThat(summary.processorTime(), equalTo(600L));
+    }
+
+    @SuppressWarnings({"ThrowableInstanceNeverThrown", "ThrowableResultOfMethodCallIgnored"})
+    @Test
+    public void failIfTestCaseFailedItself() {
+        Description description = new Description("My Test", Type.TestCase);
+        TestEvent started = new TestEvent(description, Status.Started);
+        TestCaseSummary summary = new TestCaseSummary(started);
+        TestEvent ended = new TestEvent(description, Status.Failed, new AssertionError("answer"));
+        summary.handleEvent(ended);
+
+        assertThat(summary.getStatus(), equalTo(Status.Failed));
+
+        int numberOfFailures = 0;
+        for (Failure failure : summary.getFailures()) {
+            numberOfFailures++;
+            assertThat(failure.getCause(), instanceOf(AssertionError.class));
+            assertThat(failure.getCause().getMessage(), equalTo("answer"));
+        }
+        assertThat(numberOfFailures, equalTo(1));
     }
 
     protected static class ChildSummary implements Summary {

@@ -45,20 +45,16 @@ public class DefaultPlanner implements Planner {
         Description caseDescription = new Description(testCase.getName(), Type.TestCase);
         EventNode start = new EventNode(caseDescription, Status.Started);
         EventNode end = new EventNode(caseDescription, Status.Terminated);
-        start.addSuccessor(end);
 
         List<Testlet> tests = new LinkedList<Testlet>();
         List<Method> setUpMethods = new LinkedList<Method>();
         List<Method> tearDownMethods = new LinkedList<Method>();
 
         for (Method method : testCase.getMethods()) {
-            // Ensure new object instance with each testlet
-            Object instance = testCase.newInstance();
-
             if (hasAnnotation(method, Test.class)) {
+                // Ensure new object instance with each testlet
+                Object instance = testCase.newInstance();
                 Testlet testlet = new Testlet(instance, method);
-                testlet.addPredecessor(start);
-                testlet.addSuccessor(end);
                 tests.add(testlet);
             }
 
@@ -72,7 +68,10 @@ public class DefaultPlanner implements Planner {
         }
 
         if (tests.isEmpty()) {
-            throw new AssertionError("Test class does not have any tests: " + testCase.getName());
+            //noinspection ThrowableInstanceNeverThrown
+            end = new EventNode(caseDescription, Status.Failed,
+                    new AssertionError("Test class does not have any tests: "
+                            + testCase.getName()));
         }
 
         List<TestNode> nodeList = new ArrayList<TestNode>(tests.size() + 2);
@@ -82,8 +81,11 @@ public class DefaultPlanner implements Planner {
             testlet.addSetup(setUpMethods);
             testlet.addTearDown(tearDownMethods);
             nodeList.add(testlet);
+            testlet.addPredecessor(start);
+            testlet.addSuccessor(end);
         }
 
+        start.addSuccessor(end);
         nodeList.add(end);
 
         return nodeList;

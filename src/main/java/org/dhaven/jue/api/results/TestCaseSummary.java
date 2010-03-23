@@ -40,6 +40,11 @@ public class TestCaseSummary extends TestSummary implements ParentSummary {
 
     @Override
     public Status getStatus() {
+        Status status = super.getStatus();
+        if (null != status && Status.Started != status && Status.Terminated != status) {
+            return status;
+        }
+
         return evaluateStatus(getChildren());
     }
 
@@ -77,6 +82,12 @@ public class TestCaseSummary extends TestSummary implements ParentSummary {
         Collection<Failure> failures = new ArrayList<Failure>(children.size());
 
         if (complete()) {
+            // If the TestCase itself failed, get it's failures here
+            for (Failure failure : super.getFailures()) {
+                failures.add(failure);
+            }
+
+            // Next collect all failures from the children
             for (Summary child : children) {
                 for (Failure failure : child.getFailures()) {
                     failures.add(failure);

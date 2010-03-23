@@ -30,15 +30,21 @@ import org.dhaven.jue.core.TestListenerSupport;
 public class EventNode extends DependencyTestNode {
     private final Description description;
     private final Status status;
+    private final Throwable failure;
 
     public EventNode(Description description, Status status) {
+        this(description, status, null);
+    }
+
+    public EventNode(Description description, Status status, Throwable failure) {
         this.description = description;
         this.status = status;
+        this.failure = failure;
     }
 
     @Override
     protected void run(TestListenerSupport support) {
-        support.fireTestEvent(new TestEvent(getDescription(), status));
+        support.fireTestEvent(new TestEvent(getDescription(), status, failure));
     }
 
     @Override

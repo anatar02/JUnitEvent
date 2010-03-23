@@ -85,7 +85,9 @@ public class Testlet extends DependencyTestNode {
                 support.fireTestFailed(this, failure);
             }
         } catch (Throwable throwable) {
-            if (null != expected) {
+            if (null == expected) {
+                support.fireTestFailed(this, throwable);
+            } else {
                 Throwable check = throwable;
 
                 if (check instanceof InvocationTargetException) {
@@ -97,8 +99,6 @@ public class Testlet extends DependencyTestNode {
                 } else {
                     support.fireTestFailed(this, check);
                 }
-            } else {
-                support.fireTestFailed(this, throwable);
             }
         } finally {
             try {

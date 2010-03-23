@@ -23,12 +23,12 @@ import java.io.IOException;
 
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.description.Type;
+import org.dhaven.jue.api.results.Failure;
 import org.dhaven.jue.api.results.Results;
 import org.dhaven.jue.core.Engine;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Make sure the tests are run in order
@@ -89,7 +89,7 @@ public class TestSemantics {
 
         Results results = engine.process(testsToRun);
 
-        assertThat("Did not fail test as expected", results.passed(), is(false));
+        assertThat("Did not fail test as expected", results.failed(), is(true));
     }
 
     @Test
@@ -98,7 +98,25 @@ public class TestSemantics {
 
         Results results = engine.process(testsToRun);
 
-        assertThat("Did not fail test as expected", results.passed(), is(false));
+        assertThat("Did not fail test as expected", results.failed(), is(true));
+    }
+
+    @Test
+    public void exceptionWhenUnexpectedIsThrown() throws Exception {
+        testsToRun = new Request(UnexpectedExceptionTest.class);
+
+        Results results = engine.process(testsToRun);
+
+        assertThat("Did not fail test as expected", results.failed(), is(true));
+
+        int numberOfFailures = 0;
+        for (Failure failure : results.getFailures()) {
+            numberOfFailures++;
+            assertThat(failure.getCause(), instanceOf(IllegalStateException.class));
+            assertThat(failure.getCause().getMessage(), equalTo("invoked on purpose"));
+        }
+
+        assertThat(numberOfFailures, equalTo(1));
     }
 
     @Test
@@ -137,6 +155,27 @@ public class TestSemantics {
         assertThat(results.numberOfTestsRun(), is(3));
     }
 
+    @Test
+    public void testCaseFailsIfNoTestsExist() throws Exception {
+        testsToRun = new Request(EmptyTest.class);
+
+        Results results = engine.process(testsToRun);
+
+        assertThat(results.passed(), is(false));
+
+        assertThat(results.numberOfTestCases(), is(1));
+        assertThat(results.numberOfTestsRun(), is(0));
+
+        int numberOfFailures = 0;
+        for (Failure failure : results.getFailures()) {
+            numberOfFailures++;
+            assertThat(failure.getCause(), instanceOf(AssertionError.class));
+            assertThat(failure.getCause().getMessage(), startsWith("Test class does not have any tests: "));
+        }
+
+        assertThat(numberOfFailures, equalTo(1));
+    }
+
     /**
      * Internal test to ensure the order of @Before, @Test, and @After work OK.
      */
@@ -170,6 +209,9 @@ public class TestSemantics {
         }
     }
 
+    public static class EmptyTest {
+    }
+
     public static class IgnoreTest {
         @Ignore
         @Test
@@ -201,6 +243,13 @@ public class TestSemantics {
         @SuppressWarnings({"EmptyMethod"})
         @Test(expected = IllegalArgumentException.class)
         public void doesNotThrowException() {
+        }
+    }
+
+    public static class UnexpectedExceptionTest {
+        @Test
+        public void notExpectingThis() {
+            throw new IllegalStateException("invoked on purpose");
         }
     }
 
