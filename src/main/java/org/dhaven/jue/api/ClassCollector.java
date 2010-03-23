@@ -89,15 +89,11 @@ public class ClassCollector implements CallBack<String> {
 
         for (URL base : paths) {
             if ("file".equals(base.getProtocol())) {
-                File path = new File(URLDecoder.decode(base.getFile(), "utf-8"));
-
-                // shouldn't be anything else, but better safe than
-                // sorry.
-                if (path.exists() && path.isDirectory()) {
-                    scanners.add(new FileScanner(path, this));
-                }
+                String path = URLDecoder.decode(base.getFile(), "utf-8");
+                scanners.add(new FileScanner(new File(path), this));
             } else if ("jar".equals(base.getProtocol())) {
                 String jarName = base.getFile().substring(0, base.getFile().indexOf("!"));
+                jarName = URLDecoder.decode(jarName, "utf-8");
                 scanners.add(new JarScanner(new JarFile(jarName), this));
             }
         }
@@ -167,10 +163,19 @@ public class ClassCollector implements CallBack<String> {
         }
     }
 
+    /**
+     * Scan a URL protocol for classes within the path.
+     */
     private interface Scanner {
+        /**
+         * Perform the scan.
+         */
         void scan();
     }
 
+    /**
+     * Handle "file://" URLs
+     */
     private final static class FileScanner implements Scanner {
         private final File root;
         private final CallBack<String> handler;
@@ -193,11 +198,7 @@ public class ClassCollector implements CallBack<String> {
                 if (file.getName().endsWith(".class")) {
                     String className = file.getPath();
 
-                    // should always be true...
-                    if (className.startsWith(root.getPath())) {
-                        className = className.substring(root.getPath().length() + 1);
-                    }
-
+                    className = className.substring(root.getPath().length() + 1);
                     className = className.substring(0, className.length() - ".class".length());
                     className = className.replace(File.separatorChar, '.');
 
@@ -224,6 +225,9 @@ public class ClassCollector implements CallBack<String> {
         }
     }
 
+    /**
+     * Handle "jar" URLs
+     */
     private final static class JarScanner implements Scanner {
         private final JarFile jar;
         private final CallBack<String> handler;

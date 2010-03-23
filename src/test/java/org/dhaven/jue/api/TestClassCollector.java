@@ -19,6 +19,7 @@
 
 package org.dhaven.jue.api;
 
+import java.io.File;
 import java.util.Arrays;
 
 import org.dhaven.jue.After;
@@ -96,5 +97,17 @@ public class TestClassCollector {
         assertThat(classes, hasItemInArray((Class) ClassWithTestMethod.class));
         assertThat(classes, hasItemInArray((Class) TestClass.class));
         assertThat(classes, hasItemInArray((Class) AnotherClass.class));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void badPathIsAnIllegalState() throws Exception {
+        collector.setBasePath(new File("Does not exist!"));
+        collector.collect();
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void goodPathButNotDirectory() throws Exception {
+        collector.setBasePath(new File("NOTICE.txt"));
+        collector.collect();
     }
 }
