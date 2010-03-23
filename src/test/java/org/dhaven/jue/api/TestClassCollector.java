@@ -19,14 +19,15 @@
 
 package org.dhaven.jue.api;
 
+import java.util.Arrays;
+
 import org.dhaven.jue.After;
 import org.dhaven.jue.Before;
 import org.dhaven.jue.Ignore;
 import org.dhaven.jue.Test;
-import org.dhaven.jue.api.collectorclasses.ClassWithAfterMethod;
-import org.dhaven.jue.api.collectorclasses.ClassWithBeforeMethod;
-import org.dhaven.jue.api.collectorclasses.ClassWithIgnoreMethod;
-import org.dhaven.jue.api.collectorclasses.ClassWithTestMethod;
+import org.dhaven.jue.api.collectorclasses.*;
+import org.dhaven.jue.api.collectorclasses.recurse.TestClass;
+import org.dhaven.jue.api.collectorclasses.recurse.again.AnotherClass;
 
 import static org.dhaven.jue.MethodScanner.hasMethodWithAnnotation;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -67,5 +68,33 @@ public class TestClassCollector {
         assertThat(classes, hasItemInArray((Class) ClassWithBeforeMethod.class));
         assertThat(classes, hasItemInArray((Class) ClassWithIgnoreMethod.class));
         assertThat(classes, hasItemInArray((Class) ClassWithTestMethod.class));
+    }
+
+    @Test
+    public void canFindAllClasssesRegardlessOfAnnotations() throws Exception {
+        // there shouldn't be internal classes, but code coverage tools generate
+        // them for you :/
+        collector.noInternalClasses();
+        Class[] classes = collector.collect();
+
+        assertThat(Arrays.toString(classes), classes.length, equalTo(5));
+        assertThat(classes, hasItemInArray((Class) ClassWithAfterMethod.class));
+        assertThat(classes, hasItemInArray((Class) ClassWithBeforeMethod.class));
+        assertThat(classes, hasItemInArray((Class) ClassWithIgnoreMethod.class));
+        assertThat(classes, hasItemInArray((Class) ClassWithTestMethod.class));
+        assertThat(classes, hasItemInArray((Class) ClassWithNoAnnotations.class));
+    }
+
+    @Test
+    public void canFindAllClassesRecursively() throws Exception {
+        collector.methodsHaveAnnotation(Test.class);
+        collector.recursiveSearch();
+
+        Class[] classes = collector.collect();
+
+        assertThat(classes.length, equalTo(3));
+        assertThat(classes, hasItemInArray((Class) ClassWithTestMethod.class));
+        assertThat(classes, hasItemInArray((Class) TestClass.class));
+        assertThat(classes, hasItemInArray((Class) AnotherClass.class));
     }
 }

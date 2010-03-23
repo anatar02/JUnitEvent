@@ -20,26 +20,30 @@
 package org.dhaven.jue.api;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * TODO: make it work reliably and test.  Assumes too much.
+ * The class collector is used to look through your classpath for classes that
+ * satisfy your criteria.  The class collector is used by the JUnitEvent
+ * internally to discover all the classes that are marked with the appropriate
+ * annotations.  It can also be used by your tests to find all implementations
+ * of an interface, or classes that extend base classes.
  */
 public class ClassCollector {
-    private Class<? extends Annotation>[] methodAnnotations;
+    private Class<? extends Annotation>[] methodAnnotations = null;
     private String basePackage = "";
     private boolean excludeInnerClasses = false;
     private boolean recurse = false;
     private File basePath;
     private ClassLoader loader = null;
+    private List<File> rootFiles;
 
     public void setClassLoader(ClassLoader loader) {
         this.loader = loader;
@@ -65,12 +69,40 @@ public class ClassCollector {
         ArrayList<Class<?>> classes = new ArrayList<Class<?>>(20);
 
         if (null == basePath) {
+            if (null == rootFiles) {
+                try {
+                    Enumeration<URL> basePaths = getClassLoader().getResources("");
+                    List<URL> paths = Collections.list(basePaths);
+                    rootFiles = new ArrayList<File>(paths.size());
+
+                    for (URL base : paths) {
+                        if ("file".equals(base.getProtocol())) {
+                            File path = new File(URLDecoder.decode(base.getFile(), "utf-8"));
+
+                            // shouldn't be anything else, but making sure.
+                            if (path.exists() && path.isDirectory()) {
+                                rootFiles.add(path);
+                            }
+                        }
+                    }
+                } catch (IOException e) {
+                    // Very unlikely that this would occur here.  Repackage in
+                    // an AssertionError.
+                    throw new AssertionError(e);
+                }
+
+            }
+
             List<URL> paths = Collections.list(getClassLoader().getResources(basePackage.replace('.', '/')));
 
             for (URL path : paths) {
                 addClassesFromPath(classes, path);
             }
         } else {
+            if (null == rootFiles) {
+                rootFiles = Arrays.asList(basePath);
+            }
+
             handleFile(classes, basePath);
         }
 
@@ -94,7 +126,11 @@ public class ClassCollector {
         for (File file : files) {
             if (file.getName().endsWith(".class")) {
                 String className = file.getPath();
-                className = className.substring(className.indexOf("test-classes") + "test-classes".length() + 1);
+                for (File root : rootFiles) {
+                    if (className.startsWith(root.getPath())) {
+                        className = className.substring(root.getPath().length() + 1);
+                    }
+                }
                 className = className.substring(0, className.length() - ".class".length());
                 className = className.replace(File.separatorChar, '.');
 
@@ -145,7 +181,7 @@ public class ClassCollector {
             System.out.println("Could not find class: " + className);
             return;
         }
-        boolean matches = false;
+        boolean matches = true;
 
         if (null != methodAnnotations) {
             matches = checkMethodAnnotations(classToCheck);

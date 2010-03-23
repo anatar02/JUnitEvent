@@ -57,12 +57,12 @@ public class Request {
         testClasses.addAll(Arrays.asList(collector.collect()));
     }
 
-    public ClassLoader getRequestClassLoader() {
-        return collector.getClassLoader();
-    }
-
     public Request(Class<?>... classes) {
         testClasses.addAll(Arrays.asList(classes));
+    }
+
+    public ClassLoader getRequestClassLoader() {
+        return collector.getClassLoader();
     }
 
     public Collection<Class<?>> getTestClasses() {
