@@ -137,4 +137,69 @@ public class Results extends TestCaseSummary implements TestListener {
 
         return numRun;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getDescription()).append("\t");
+        appendStatus(builder);
+
+        builder.append(SEPARATOR);
+        for (Summary child : getChildren()) {
+            builder.append(child);
+        }
+
+        int numPassed = 0;
+        int numFailed = 0;
+        int numIgnored = 0;
+        int numTerminated = 0;
+        for (Summary test : filterResults(Type.Test)) {
+            switch (test.getStatus()) {
+                case Passed:
+                    numPassed++;
+                    break;
+                case Failed:
+                    numFailed++;
+                    break;
+                case Ignored:
+                    numIgnored++;
+                    break;
+                case Terminated:
+                    numTerminated++;
+                    break;
+            }
+        }
+
+        int numTests = numPassed + numFailed + numIgnored + numTerminated;
+
+        builder.append(SEPARATOR);
+        builder.append("Totals:\t");
+        builder.append(numTests).append(" tests\t");
+
+        if (numPassed > 0) {
+            builder.append(numPassed).append(" passed\t");
+        }
+
+        if (numFailed > 0) {
+            builder.append(numFailed).append(" FAILED\t");
+        }
+
+        if (numIgnored > 0) {
+            builder.append(numIgnored).append(" ignored\t");
+        }
+
+        if (numTerminated > 0) {
+            builder.append(numTerminated).append(" terminated");
+        }
+
+        builder.append("\n");
+
+        float clock = nanosecondsToMilliseconds(elapsedTime());
+        float processor = nanosecondsToMilliseconds(processorTime());
+        builder.append("clock time: ").append(String.format("%.3f", clock));
+        builder.append("ms\tprocessor time: ").append(String.format("%.3f", processor));
+        builder.append("ms\n\n");
+
+        return builder.toString();
+    }
 }

@@ -124,20 +124,59 @@ public class TestCaseSummary extends TestSummary implements ParentSummary {
         return children.size();
     }
 
-    private static final String SEPARATOR = "------------------------------------------------------------------\n";
+    protected static final String SEPARATOR = "------------------------------------------------------------------\n";
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
+        int numPassed = 0;
+        int numFailed = 0;
+        int numIgnored = 0;
+        int numTerminated = 0;
 
         for (Summary summary : children) {
             builder.append(summary);
+            switch (summary.getStatus()) {
+                case Passed:
+                    numPassed++;
+                    break;
+                case Failed:
+                    numFailed++;
+                    break;
+                case Ignored:
+                    numIgnored++;
+                    break;
+                case Terminated:
+                    numTerminated++;
+                    break;
+            }
         }
+
+        int numTests = numPassed + numFailed + numIgnored + numTerminated;
 
         builder.append(SEPARATOR);
         builder.append(getDescription()).append("\t");
-
         appendStatus(builder);
+
+        builder.append(numTests).append(" tests ran:\t");
+
+        if (numPassed > 0) {
+            builder.append(numPassed).append(" passed\t");
+        }
+
+        if (numFailed > 0) {
+            builder.append(numFailed).append(" FAILED\t");
+        }
+
+        if (numIgnored > 0) {
+            builder.append(numIgnored).append(" ignored\t");
+        }
+
+        if (numTerminated > 0) {
+            builder.append(numTerminated).append(" terminated");
+        }
+
+        builder.append("\n");
 
         float clock = nanosecondsToMilliseconds(elapsedTime());
         float processor = nanosecondsToMilliseconds(processorTime());
