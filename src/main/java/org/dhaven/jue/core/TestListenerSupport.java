@@ -36,8 +36,8 @@ import org.dhaven.jue.api.event.TestListener;
 public final class TestListenerSupport {
     final ExecutorService service;
     private final Queue<TestListener> listeners = new LinkedList<TestListener>();
-    int numToProcess = 0;
-    int numProcessed = 0;
+    private volatile int numToProcess = 0;
+    private volatile int numProcessed = 0;
 
     public TestListenerSupport() {
         service = Executors.newSingleThreadExecutor();
@@ -121,7 +121,7 @@ public final class TestListenerSupport {
         fireTestEvent(new TestEvent(test.getDescription(), Status.Terminated));
     }
 
-    public void shutdown() {
+    public void await() {
         while (numToProcess > numProcessed) {
             try {
                 Thread.sleep(1);

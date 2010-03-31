@@ -61,7 +61,7 @@ public class TestEventNode extends TestDependencyTestNode {
         EventNode node = new EventNode(new Description("start run", Type.System), Status.Started);
 
         node.attemptRun(support);
-        support.shutdown();
+        support.await();
 
         List<TestEvent> events = listener.getEvents();
         assertThat(events.size(), equalTo(1));
@@ -76,7 +76,7 @@ public class TestEventNode extends TestDependencyTestNode {
         EventNode node = new EventNode(new Description("start run", Type.TestCase), Status.Terminated);
 
         node.attemptRun(support);
-        support.shutdown();
+        support.await();
 
         List<TestEvent> events = listener.getEvents();
         assertThat(events.size(), equalTo(1));

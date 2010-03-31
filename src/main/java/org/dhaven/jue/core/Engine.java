@@ -64,7 +64,7 @@ public final class Engine {
         pool.execute(plan);
 
         pool.shutdown();
-        listenerSupport.shutdown();
+        listenerSupport.await();
 
         removeTestListener(results);
         return results;

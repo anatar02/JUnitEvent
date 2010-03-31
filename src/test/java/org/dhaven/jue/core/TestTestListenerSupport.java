@@ -45,7 +45,7 @@ public class TestTestListenerSupport {
     @Test
     public void eventGetsToListener() {
         support.fireTestEvent(new TestEvent(Description.JUEName, Status.Terminated));
-        support.shutdown();
+        support.await();
 
         assertThat(listener.getEvents().size(), equalTo(1));
         assertThat(listener.getEvents().get(0).getStatus(), equalTo(Status.Terminated));
@@ -55,7 +55,7 @@ public class TestTestListenerSupport {
     public void eventDoesNotGetToRemovedListener() {
         support.removeTestListener(listener);
         support.fireTestEvent(new TestEvent(Description.JUEName, Status.Terminated));
-        support.shutdown();
+        support.await();
 
         assertThat(listener.getEvents().size(), equalTo(0));
     }
@@ -64,7 +64,7 @@ public class TestTestListenerSupport {
     public void testStartedEvent() {
         TestDescribable describable = new TestDescribable("Test Name", Type.Test);
         support.fireTestStarted(describable);
-        support.shutdown();
+        support.await();
 
         TestEvent event = listener.getEvents().get(0);
         assertThat(event.getDescription(), equalTo(describable.getDescription()));
@@ -75,7 +75,7 @@ public class TestTestListenerSupport {
     public void testPassedEvent() {
         TestDescribable describable = new TestDescribable("Test Name", Type.Test);
         support.fireTestPassed(describable);
-        support.shutdown();
+        support.await();
 
         TestEvent event = listener.getEvents().get(0);
         assertThat(event.getDescription(), equalTo(describable.getDescription()));
@@ -86,7 +86,7 @@ public class TestTestListenerSupport {
     public void testIgnoredEvent() {
         TestDescribable describable = new TestDescribable("Test Name", Type.Test);
         support.fireTestIgnored(describable);
-        support.shutdown();
+        support.await();
 
         TestEvent event = listener.getEvents().get(0);
         assertThat(event.getDescription(), equalTo(describable.getDescription()));
@@ -97,7 +97,7 @@ public class TestTestListenerSupport {
     public void testTerminatedEvent() {
         TestDescribable describable = new TestDescribable("Test Name", Type.Test);
         support.fireTestTerminated(describable);
-        support.shutdown();
+        support.await();
 
         TestEvent event = listener.getEvents().get(0);
         assertThat(event.getDescription(), equalTo(describable.getDescription()));
@@ -111,7 +111,7 @@ public class TestTestListenerSupport {
         TestDescribable describable = new TestDescribable("Test Name", Type.Test);
         Throwable failure = new CloneNotSupportedException("Test exception");
         support.fireTestFailed(describable, failure);
-        support.shutdown();
+        support.await();
 
         TestEvent event = listener.getEvents().get(0);
         assertThat(event.getDescription(), equalTo(describable.getDescription()));

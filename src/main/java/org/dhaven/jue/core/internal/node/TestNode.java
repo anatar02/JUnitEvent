@@ -37,9 +37,30 @@ public interface TestNode extends Describable, Comparable<TestNode> {
      */
     boolean attemptRun(TestListenerSupport support);
 
+    /**
+     * Declare a test node that must occur after this node.  This test node
+     * will call {@link #signalComplete(TestNode)} on each of its successors
+     * when it is complete.
+     *
+     * @param dependencyTestNode the subsequent test node
+     */
     void addSuccessor(TestNode dependencyTestNode);
 
+    /**
+     * Declare a test node that must occur before this node.  While there are
+     * still predecessors, {@link #attemptRun(TestListenerSupport)} will always
+     * return false.
+     *
+     * @param dependencyTestNode the previous test node
+     */
     void addPredecessor(TestNode dependencyTestNode);
 
+    /**
+     * Signal to this node that a preceding test node is complete.  When the
+     * test node receives this event, the included previous test node is removed
+     * from the set of predecessors.
+     *
+     * @param dependencyTestNode the preceding test node.
+     */
     void signalComplete(TestNode dependencyTestNode);
 }
