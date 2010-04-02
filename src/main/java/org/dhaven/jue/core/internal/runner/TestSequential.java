@@ -17,15 +17,15 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal;
-
-import java.util.Collection;
+package org.dhaven.jue.core.internal.runner;
 
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.core.TestListenerSupport;
-import org.dhaven.jue.core.internal.node.EventNode;
-import org.dhaven.jue.core.internal.node.TestNode;
+import org.dhaven.jue.core.internal.TestCase;
+import org.dhaven.jue.core.internal.TestNode;
+import org.dhaven.jue.core.internal.TestPlan;
 
 /**
  * Run the tests sequentially, just like would happen with traditional JUnit.
@@ -40,28 +40,30 @@ public class TestSequential implements TestRunner {
 
     @Override
     public void execute(TestPlan plan) {
-        Collection<TestCase> testPlan = plan.export();
+        support.fireTestEvent(new TestEvent(Description.JUEName, Status.Started));
 
-        new EventNode(Description.JUEName, Status.Started).run(support);
-
-        for (TestCase testCase : testPlan) {
-            new EventNode(testCase.getDescription(), Status.Started).run(support);
-
-            if (testCase.isEmpty()) {
-                //noinspection ThrowableInstanceNeverThrown
-                new EventNode(testCase.getDescription(), Status.Failed,
-                        new AssertionError("Test class does not have any tests: "
-                                + testCase.getDescription().getName())).run(support);
-            } else {
-                for (TestNode node : testCase) {
-                    node.run(support);
-                }
-
-                new EventNode(testCase.getDescription(), Status.Terminated).run(support);
-            }
+        for (TestCase testCase : plan.export()) {
+            executeTestCase(testCase);
         }
 
-        new EventNode(Description.JUEName, Status.Terminated).run(support);
+        support.fireTestEvent(new TestEvent(Description.JUEName, Status.Terminated));
+    }
+
+    private void executeTestCase(TestCase testCase) {
+        support.fireTestEvent(new TestEvent(testCase.getDescription(), Status.Started));
+
+        if (testCase.isEmpty()) {
+            //noinspection ThrowableInstanceNeverThrown
+            support.fireTestEvent(new TestEvent(testCase.getDescription(), Status.Failed,
+                    new AssertionError("Test class does not have any tests: "
+                            + testCase.getDescription().getName())));
+        } else {
+            for (TestNode node : testCase) {
+                node.run(support);
+            }
+
+            support.fireTestEvent(new TestEvent(testCase.getDescription(), Status.Terminated));
+        }
     }
 
     @Override

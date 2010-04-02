@@ -17,16 +17,18 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal;
+package org.dhaven.jue.core.internal.runner;
 
 import java.util.Collection;
 import java.util.concurrent.*;
 
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.core.TestListenerSupport;
-import org.dhaven.jue.core.internal.node.EventNode;
-import org.dhaven.jue.core.internal.node.TestNode;
+import org.dhaven.jue.core.internal.TestCase;
+import org.dhaven.jue.core.internal.TestNode;
+import org.dhaven.jue.core.internal.TestPlan;
 
 /**
  * Provides the execution model for running the tests.
@@ -45,7 +47,7 @@ public class TestThreadPool implements TestRunner {
         Collection<TestCase> testPlan = plan.export();
         CountDownLatch latch = new CountDownLatch(testPlan.size());
 
-        new EventNode(Description.JUEName, Status.Started).run(support);
+        support.fireTestEvent(new TestEvent(Description.JUEName, Status.Started));
 
         for (TestCase node : testPlan) {
             service.execute(new TestCaseRunner(node, latch, support));
@@ -57,7 +59,7 @@ public class TestThreadPool implements TestRunner {
             // do nothing, we are interrupting the run
         }
 
-        new EventNode(Description.JUEName, Status.Terminated).run(support);
+        support.fireTestEvent(new TestEvent(Description.JUEName, Status.Terminated));
     }
 
     public void start(TestListenerSupport support) {
@@ -116,13 +118,13 @@ public class TestThreadPool implements TestRunner {
 
         @Override
         public void run() {
-            new EventNode(testCase.getDescription(), Status.Started).run(support);
+            support.fireTestEvent(new TestEvent(testCase.getDescription(), Status.Started));
 
             if (testCase.isEmpty()) {
                 //noinspection ThrowableInstanceNeverThrown
-                new EventNode(testCase.getDescription(), Status.Failed,
+                support.fireTestEvent(new TestEvent(testCase.getDescription(), Status.Failed,
                         new AssertionError("Test class does not have any tests: "
-                                + testCase.getDescription().getName())).run(support);
+                                + testCase.getDescription().getName())));
             } else {
                 CountDownLatch latch = new CountDownLatch(testCase.size());
 
@@ -136,7 +138,7 @@ public class TestThreadPool implements TestRunner {
                     // do nothing, it was interrupted
                 }
 
-                new EventNode(testCase.getDescription(), Status.Terminated).run(support);
+                support.fireTestEvent(new TestEvent(testCase.getDescription(), Status.Terminated));
             }
 
             barrier.countDown();

@@ -17,23 +17,32 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal.node;
+package org.dhaven.jue.core.internal.runner;
 
-import org.dhaven.jue.api.description.Describable;
 import org.dhaven.jue.core.TestListenerSupport;
+import org.dhaven.jue.core.internal.TestPlan;
 
 /**
- * The TestNode represents the smallest executable unit of a test.  Essentially,
- * test nodes can be prioritized and run concurrently.
+ * The test runner performs the scheduling and execution of the test plan.
  */
-public interface TestNode extends Describable {
+public interface TestRunner {
     /**
-     * Run the test code, passing in the listener support so that all the
-     * listeners can be notified of the progress of the test as it is executed.
-     * Returns false if the node could not be run yet, so it can be re-queued.
+     * Initialize any thread pools, etc. using the configured TestListenerSupport.
      *
-     * @param support the {@link org.dhaven.jue.core.TestListenerSupport}
-     * @return <code>true</code> if the node was run.
+     * @param support the test listener support to use for every node
      */
-    void run(TestListenerSupport support);
+    void start(TestListenerSupport support);
+
+    /**
+     * Execute the test plan as provided.
+     *
+     * @param plan the test plan
+     */
+    void execute(TestPlan plan);
+
+    /**
+     * Shutdown the test runner, waiting for any running tests to complete,
+     * clean up any background threads, etc.
+     */
+    void shutdown();
 }

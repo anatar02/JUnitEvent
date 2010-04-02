@@ -29,7 +29,6 @@ import org.dhaven.jue.Before;
 import org.dhaven.jue.Test;
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
-import org.dhaven.jue.core.internal.node.Testlet;
 
 /**
  * The Default Planner enables the core annotations found in the root package.
@@ -40,7 +39,7 @@ public class DefaultPlanner implements Planner {
         Description caseDescription = new Description(testCase.getName(), Type.TestCase);
         TestCase testcase = new TestCase(caseDescription);
 
-        List<Testlet> tests = new LinkedList<Testlet>();
+        List<TestNode> tests = new LinkedList<TestNode>();
         List<Method> setUpMethods = new LinkedList<Method>();
         List<Method> tearDownMethods = new LinkedList<Method>();
 
@@ -48,7 +47,7 @@ public class DefaultPlanner implements Planner {
             if (hasAnnotation(method, Test.class)) {
                 // Ensure new object instance with each testlet
                 Object instance = testCase.newInstance();
-                Testlet testlet = new Testlet(instance, method);
+                TestNode testlet = new TestNode(instance, method);
                 tests.add(testlet);
             }
 
@@ -61,10 +60,10 @@ public class DefaultPlanner implements Planner {
             }
         }
 
-        for (Testlet testlet : tests) {
-            testlet.addSetup(setUpMethods);
-            testlet.addTearDown(tearDownMethods);
-            testcase.addTest(testlet);
+        for (TestNode node : tests) {
+            node.addSetup(setUpMethods);
+            node.addTearDown(tearDownMethods);
+            testcase.addTest(node);
         }
 
         return testcase;

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal;
+package org.dhaven.jue.core.internal.runner;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,21 +26,21 @@ import java.util.concurrent.RecursiveAction;
 
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.event.Status;
+import org.dhaven.jue.api.event.TestEvent;
 import org.dhaven.jue.core.TestListenerSupport;
-import org.dhaven.jue.core.internal.node.EventNode;
-import org.dhaven.jue.core.internal.node.TestNode;
+import org.dhaven.jue.core.internal.TestCase;
+import org.dhaven.jue.core.internal.TestNode;
+import org.dhaven.jue.core.internal.TestPlan;
 
 /**
  * Implementation using Java 5's Fork/Join Pool.
  */
 public class TestForkJoinPool implements TestRunner {
     private TestListenerSupport support;
-    private ClassLoader classLoader;
     private ForkJoinPool service;
 
     @Override
     public void start(TestListenerSupport support) {
-        this.classLoader = Thread.currentThread().getContextClassLoader();
         this.support = support;
         this.service = new ForkJoinPool();
     }
@@ -73,7 +73,7 @@ public class TestForkJoinPool implements TestRunner {
             int threshold = plan.size() / TestForkJoinPool.getNumberOfProcessors();
             boolean runParallel = threshold > 2;
 
-            new EventNode(Description.JUEName, Status.Started).run(support);
+            support.fireTestEvent(new TestEvent(Description.JUEName, Status.Started));
 
             Collection<RecursiveAction> actions = new ArrayList<RecursiveAction>(plan.size());
             for (TestCase testCase : plan) {
@@ -89,7 +89,7 @@ public class TestForkJoinPool implements TestRunner {
                 invokeAll(actions);
             }
 
-            new EventNode(Description.JUEName, Status.Terminated).run(support);
+            support.fireTestEvent(new TestEvent(Description.JUEName, Status.Terminated));
         }
     }
 
@@ -107,13 +107,13 @@ public class TestForkJoinPool implements TestRunner {
             int threshold = testCase.size() / TestForkJoinPool.getNumberOfProcessors();
             boolean runParallel = threshold > 2;
 
-            new EventNode(testCase.getDescription(), Status.Started).run(support);
+            support.fireTestEvent(new TestEvent(testCase.getDescription(), Status.Started));
 
             if (testCase.isEmpty()) {
                 //noinspection ThrowableInstanceNeverThrown
-                new EventNode(testCase.getDescription(), Status.Failed,
+                support.fireTestEvent(new TestEvent(testCase.getDescription(), Status.Failed,
                         new AssertionError("Test class does not have any tests: "
-                                + testCase.getDescription().getName())).run(support);
+                                + testCase.getDescription().getName())));
             } else {
                 Collection<RecursiveAction> actions = new ArrayList<RecursiveAction>(testCase.size());
                 for (TestNode node : testCase) {
@@ -130,7 +130,7 @@ public class TestForkJoinPool implements TestRunner {
                     invokeAll(actions);
                 }
 
-                new EventNode(testCase.getDescription(), Status.Terminated).run(support);
+                support.fireTestEvent(new TestEvent(testCase.getDescription(), Status.Terminated));
             }
         }
     }

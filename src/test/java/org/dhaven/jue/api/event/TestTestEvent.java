@@ -98,6 +98,6 @@ public class TestTestEvent {
     public void stringFormattedProperly() {
         TestEvent event = new TestEvent(Description.JUEName, Status.Terminated);
 
-        assertThat(event.toString(), equalTo("{JUE: Version 0.5 [System] [Terminated]: " + event.getNanoseconds() + "}"));
+        assertThat(event.toString(), equalTo("{JUE: Version 0.6 [System] [Terminated]: " + event.getNanoseconds() + "}"));
     }
 }

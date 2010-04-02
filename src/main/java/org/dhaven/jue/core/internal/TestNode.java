@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal.node;
+package org.dhaven.jue.core.internal;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.dhaven.jue.Ignore;
 import org.dhaven.jue.Test;
+import org.dhaven.jue.api.description.Describable;
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
 import org.dhaven.jue.core.TestListenerSupport;
@@ -33,7 +34,7 @@ import org.dhaven.jue.core.TestListenerSupport;
 /**
  * Codifies a discrete test.
  */
-public class Testlet implements TestNode {
+public class TestNode implements Describable {
     private Description description;
     private boolean ignored;
     private Method method;
@@ -42,13 +43,13 @@ public class Testlet implements TestNode {
     private List<Method> tearDown = new LinkedList<Method>();
     private Class<? extends Throwable> expected;
 
-    public Testlet(Object instance, Method testMethod) {
+    public TestNode(Object instance, Method testMethod) {
         this(instance, testMethod, String.format("%s.%s",
                 testMethod.getDeclaringClass().getName(),
                 testMethod.getName()));
     }
 
-    private Testlet(Object instance, Method testMethod, String testName) {
+    private TestNode(Object instance, Method testMethod, String testName) {
         testCase = instance;
         description = new Description(testName, Type.Test);
         method = testMethod;
@@ -66,7 +67,6 @@ public class Testlet implements TestNode {
     }
 
     @SuppressWarnings({"ThrowableInstanceNeverThrown", "ThrowableResultOfMethodCallIgnored"})
-    @Override
     public void run(TestListenerSupport support) {
         support.fireTestStarted(this);
 

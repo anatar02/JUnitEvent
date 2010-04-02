@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.dhaven.jue.api.description.Describable;
 import org.dhaven.jue.api.description.Description;
-import org.dhaven.jue.core.internal.node.TestNode;
 
 /**
  * Represent a test case with its set of tests built up inside.

@@ -22,9 +22,9 @@ package org.dhaven.jue.core;
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.event.TestListener;
 import org.dhaven.jue.api.results.Results;
-import org.dhaven.jue.core.internal.TestForkJoinPool;
 import org.dhaven.jue.core.internal.TestPlan;
-import org.dhaven.jue.core.internal.TestRunner;
+import org.dhaven.jue.core.internal.runner.TestForkJoinPool;
+import org.dhaven.jue.core.internal.runner.TestRunner;
 
 /**
  * Central class for JUnit Events.  This runs the tests as they are.
