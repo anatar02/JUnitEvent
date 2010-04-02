@@ -20,7 +20,10 @@
 package org.dhaven.jue.core.internal.runner;
 
 import java.util.Collection;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.event.Status;
@@ -34,10 +37,8 @@ import org.dhaven.jue.core.internal.TestPlan;
  * Provides the execution model for running the tests.
  */
 public class TestThreadPool implements TestRunner {
-    private final ThreadGroup group = new ThreadGroup("JUE:ThreadPool");
     private ThreadPoolExecutor service;
     private TestListenerSupport support;
-    private ClassLoader classLoader;
 
     private int getNumberOfThreads() {
         return Runtime.getRuntime().availableProcessors();
@@ -63,28 +64,14 @@ public class TestThreadPool implements TestRunner {
     }
 
     public void start(TestListenerSupport support) {
-        this.classLoader = Thread.currentThread().getContextClassLoader();
         this.support = support;
         service = new ThreadPoolExecutor(getNumberOfThreads(), Short.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(),
-                new TestThreadFactory());
+                new SynchronousQueue<Runnable>());
     }
 
     public void shutdown() {
         service.shutdown();
-    }
-
-    private class TestThreadFactory implements ThreadFactory {
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread thread = new Thread(group, r);
-            thread.setDaemon(true);
-            thread.setPriority(Thread.NORM_PRIORITY);
-            thread.setContextClassLoader(classLoader);
-
-            return thread;
-        }
     }
 
     private class NodeRunner implements Runnable {

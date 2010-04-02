@@ -31,6 +31,7 @@ import org.dhaven.jue.core.internal.runner.TestRunner;
  */
 public final class Engine {
     private final TestListenerSupport listenerSupport = new TestListenerSupport();
+    private TestRunner testRunner = new TestForkJoinPool();
 
     /**
      * Command line entry point for the test engine.
@@ -55,20 +56,30 @@ public final class Engine {
 
     public Results process(Request request) throws Exception {
         Thread.currentThread().setContextClassLoader(request.getRequestClassLoader());
-        TestRunner pool = new TestForkJoinPool();
-        pool.start(listenerSupport);
+        testRunner.start(listenerSupport);
 
         Results results = new Results();
         addTestListener(results);
         TestPlan plan = TestPlan.from(request);
 
-        pool.execute(plan);
+        testRunner.execute(plan);
 
-        pool.shutdown();
+        testRunner.shutdown();
         listenerSupport.await();
 
         removeTestListener(results);
         return results;
+    }
+
+    public TestRunner getTestRunner() {
+        return testRunner;
+    }
+
+    public void setTestRunner(TestRunner testRunner) {
+        if (null == testRunner)
+            throw new IllegalArgumentException("Must have a test runner");
+
+        this.testRunner = testRunner;
     }
 
     public void removeTestListener(TestListener testListener) {

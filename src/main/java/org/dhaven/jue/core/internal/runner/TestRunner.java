@@ -23,7 +23,7 @@ import org.dhaven.jue.core.TestListenerSupport;
 import org.dhaven.jue.core.internal.TestPlan;
 
 /**
- * The test runner performs the scheduling and execution of the test plan.
+ * The test internal performs the scheduling and execution of the test plan.
  */
 public interface TestRunner {
     /**
@@ -41,7 +41,7 @@ public interface TestRunner {
     void execute(TestPlan plan);
 
     /**
-     * Shutdown the test runner, waiting for any running tests to complete,
+     * Shutdown the test internal, waiting for any running tests to complete,
      * clean up any background threads, etc.
      */
     void shutdown();
