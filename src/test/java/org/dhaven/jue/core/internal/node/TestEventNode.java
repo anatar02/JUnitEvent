@@ -34,13 +34,12 @@ import org.dhaven.jue.core.TestListenerSupport;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class TestEventNode extends TestDependencyTestNode {
+public class TestEventNode {
     private TestListenerSupport support;
     private ListenerTester listener;
 
-    @Override
     protected EventNode createNode(int i) {
-        Description description = new Description("DependencyTestNode: " + i, Type.Test);
+        Description description = new Description("EventNode: " + i, Type.Test);
         return new EventNode(description, Status.Passed);
     }
 
@@ -60,7 +59,7 @@ public class TestEventNode extends TestDependencyTestNode {
     public void sendStartRun() {
         EventNode node = new EventNode(new Description("start run", Type.System), Status.Started);
 
-        node.attemptRun(support);
+        node.run(support);
         support.await();
 
         List<TestEvent> events = listener.getEvents();
@@ -75,7 +74,7 @@ public class TestEventNode extends TestDependencyTestNode {
     public void sendEndTestCase() {
         EventNode node = new EventNode(new Description("start run", Type.TestCase), Status.Terminated);
 
-        node.attemptRun(support);
+        node.run(support);
         support.await();
 
         List<TestEvent> events = listener.getEvents();

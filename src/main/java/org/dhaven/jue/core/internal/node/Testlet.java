@@ -33,7 +33,7 @@ import org.dhaven.jue.core.TestListenerSupport;
 /**
  * Codifies a discrete test.
  */
-public class Testlet extends DependencyTestNode {
+public class Testlet implements TestNode {
     private Description description;
     private boolean ignored;
     private Method method;

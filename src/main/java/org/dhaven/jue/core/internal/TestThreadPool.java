@@ -20,22 +20,21 @@
 package org.dhaven.jue.core.internal;
 
 import java.util.Collection;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.*;
 
+import org.dhaven.jue.api.description.Description;
+import org.dhaven.jue.api.event.Status;
 import org.dhaven.jue.core.TestListenerSupport;
+import org.dhaven.jue.core.internal.node.EventNode;
 import org.dhaven.jue.core.internal.node.TestNode;
 
 /**
  * Provides the execution model for running the tests.
  */
-public class TestThreadPool {
+public class TestThreadPool implements TestRunner {
     private final ThreadGroup group = new ThreadGroup("JUE:ThreadPool");
     private ThreadPoolExecutor service;
     private TestListenerSupport support;
-    private CountDownLatch barrier;
     private ClassLoader classLoader;
 
     private int getNumberOfThreads() {
@@ -43,29 +42,34 @@ public class TestThreadPool {
     }
 
     public void execute(TestPlan plan) {
-        Collection<? extends TestNode> testPlan = plan.export();
-        barrier = new CountDownLatch(testPlan.size());
+        Collection<TestCase> testPlan = plan.export();
+        CountDownLatch latch = new CountDownLatch(testPlan.size());
 
-        for (TestNode node : testPlan) {
-            service.execute(new NodeRunner(node, barrier, support));
+        new EventNode(Description.JUEName, Status.Started).run(support);
+
+        for (TestCase node : testPlan) {
+            service.execute(new TestCaseRunner(node, latch, support));
         }
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            // do nothing, we are interrupting the run
+        }
+
+        new EventNode(Description.JUEName, Status.Terminated).run(support);
     }
 
     public void start(TestListenerSupport support) {
         this.classLoader = Thread.currentThread().getContextClassLoader();
         this.support = support;
-        service = ThreadPoolExecutor.class.cast(
-                Executors.newFixedThreadPool(getNumberOfThreads(),
-                        new TestThreadFactory()));
+        service = new ThreadPoolExecutor(getNumberOfThreads(), Short.MAX_VALUE,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(),
+                new TestThreadFactory());
     }
 
     public void shutdown() {
-        try {
-            barrier.await();
-        } catch (InterruptedException e) {
-            // do nothing
-        }
-
         service.shutdown();
     }
 
@@ -94,11 +98,48 @@ public class TestThreadPool {
 
         @Override
         public void run() {
-            if (node.attemptRun(support)) {
-                barrier.countDown();
+            node.run(support);
+            barrier.countDown();
+        }
+    }
+
+    private class TestCaseRunner implements Runnable {
+        private final TestListenerSupport support;
+        private final CountDownLatch barrier;
+        private final TestCase testCase;
+
+        public TestCaseRunner(TestCase testCase, CountDownLatch barrier, TestListenerSupport support) {
+            this.testCase = testCase;
+            this.barrier = barrier;
+            this.support = support;
+        }
+
+        @Override
+        public void run() {
+            new EventNode(testCase.getDescription(), Status.Started).run(support);
+
+            if (testCase.isEmpty()) {
+                //noinspection ThrowableInstanceNeverThrown
+                new EventNode(testCase.getDescription(), Status.Failed,
+                        new AssertionError("Test class does not have any tests: "
+                                + testCase.getDescription().getName())).run(support);
             } else {
-                service.execute(NodeRunner.this);
+                CountDownLatch latch = new CountDownLatch(testCase.size());
+
+                for (TestNode node : testCase) {
+                    service.execute(new NodeRunner(node, latch, support));
+                }
+
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    // do nothing, it was interrupted
+                }
+
+                new EventNode(testCase.getDescription(), Status.Terminated).run(support);
             }
+
+            barrier.countDown();
         }
     }
 }

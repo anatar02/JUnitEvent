@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Phaser;
 
 import org.dhaven.jue.api.description.Describable;
 import org.dhaven.jue.api.event.Status;
@@ -36,8 +37,7 @@ import org.dhaven.jue.api.event.TestListener;
 public final class TestListenerSupport {
     final ExecutorService service;
     private final Queue<TestListener> listeners = new LinkedList<TestListener>();
-    private volatile int numToProcess = 0;
-    private volatile int numProcessed = 0;
+    private Phaser phaser = new Phaser(1);
 
     public TestListenerSupport() {
         service = Executors.newSingleThreadExecutor();
@@ -67,7 +67,7 @@ public final class TestListenerSupport {
      * @param testEvent the test event to send
      */
     public void fireTestEvent(final TestEvent testEvent) {
-        numToProcess++;
+        phaser.register();
         service.execute(new Runnable() {
             @Override
             public void run() {
@@ -75,7 +75,7 @@ public final class TestListenerSupport {
                     listener.handleEvent(testEvent);
                 }
 
-                numProcessed++;
+                phaser.arriveAndDeregister();
             }
         });
     }
@@ -122,15 +122,7 @@ public final class TestListenerSupport {
     }
 
     public void await() {
-        while (numToProcess > numProcessed) {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                break;
-            }
-        }
-
+        phaser.arriveAndAwaitAdvance();
         service.shutdown();
-        assert numToProcess == numProcessed : String.format("%d != %d", numToProcess, numProcessed);
     }
 }

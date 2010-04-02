@@ -19,10 +19,6 @@
 
 package org.dhaven.jue.core.internal;
 
-import java.util.Collection;
-
-import org.dhaven.jue.core.internal.node.TestNode;
-
 /**
  * A planner controls the behavior of a test class.  A planner can enable new
  * annotations, as well as change the number of times your tests are called.
@@ -34,8 +30,8 @@ public interface Planner {
      * test queue and run by the test threads.
      *
      * @param testCase the test class to read
-     * @return a set of test nodes read from that class
+     * @return the test case derived from the class
      * @throws Exception if there is a problem defining the tests
      */
-    Collection<? extends TestNode> defineTests(Class<?> testCase) throws Exception;
+    TestCase defineTests(Class<?> testCase) throws Exception;
 }

@@ -21,8 +21,6 @@ package org.dhaven.jue.core.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,9 +29,6 @@ import org.dhaven.jue.Before;
 import org.dhaven.jue.Test;
 import org.dhaven.jue.api.description.Description;
 import org.dhaven.jue.api.description.Type;
-import org.dhaven.jue.api.event.Status;
-import org.dhaven.jue.core.internal.node.EventNode;
-import org.dhaven.jue.core.internal.node.TestNode;
 import org.dhaven.jue.core.internal.node.Testlet;
 
 /**
@@ -41,10 +36,9 @@ import org.dhaven.jue.core.internal.node.Testlet;
  */
 public class DefaultPlanner implements Planner {
     @Override
-    public Collection<? extends TestNode> defineTests(Class<?> testCase) throws Exception {
+    public TestCase defineTests(Class<?> testCase) throws Exception {
         Description caseDescription = new Description(testCase.getName(), Type.TestCase);
-        EventNode start = new EventNode(caseDescription, Status.Started);
-        EventNode end = new EventNode(caseDescription, Status.Terminated);
+        TestCase testcase = new TestCase(caseDescription);
 
         List<Testlet> tests = new LinkedList<Testlet>();
         List<Method> setUpMethods = new LinkedList<Method>();
@@ -67,28 +61,13 @@ public class DefaultPlanner implements Planner {
             }
         }
 
-        if (tests.isEmpty()) {
-            //noinspection ThrowableInstanceNeverThrown
-            end = new EventNode(caseDescription, Status.Failed,
-                    new AssertionError("Test class does not have any tests: "
-                            + testCase.getName()));
-        }
-
-        List<TestNode> nodeList = new ArrayList<TestNode>(tests.size() + 2);
-        nodeList.add(start);
-
         for (Testlet testlet : tests) {
             testlet.addSetup(setUpMethods);
             testlet.addTearDown(tearDownMethods);
-            nodeList.add(testlet);
-            testlet.addPredecessor(start);
-            testlet.addSuccessor(end);
+            testcase.addTest(testlet);
         }
 
-        start.addSuccessor(end);
-        nodeList.add(end);
-
-        return nodeList;
+        return testcase;
     }
 
     private static boolean hasAnnotation(Method method, Class<? extends Annotation> annotation) {

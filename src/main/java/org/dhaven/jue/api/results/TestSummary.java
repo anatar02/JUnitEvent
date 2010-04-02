@@ -126,7 +126,7 @@ public class TestSummary implements Summary, TestListener {
 
     @Override
     public boolean equals(Object object) {
-        return (object instanceof Summary) && description.equals(TestSummary.class.cast(object).getDescription());
+        return (object instanceof Summary) && description.equals(Summary.class.cast(object).getDescription());
     }
 
     @Override

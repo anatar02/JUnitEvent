@@ -22,8 +22,9 @@ package org.dhaven.jue.core;
 import org.dhaven.jue.api.Request;
 import org.dhaven.jue.api.event.TestListener;
 import org.dhaven.jue.api.results.Results;
+import org.dhaven.jue.core.internal.TestForkJoinPool;
 import org.dhaven.jue.core.internal.TestPlan;
-import org.dhaven.jue.core.internal.TestThreadPool;
+import org.dhaven.jue.core.internal.TestRunner;
 
 /**
  * Central class for JUnit Events.  This runs the tests as they are.
@@ -54,7 +55,7 @@ public final class Engine {
 
     public Results process(Request request) throws Exception {
         Thread.currentThread().setContextClassLoader(request.getRequestClassLoader());
-        TestThreadPool pool = new TestThreadPool();
+        TestRunner pool = new TestForkJoinPool();
         pool.start(listenerSupport);
 
         Results results = new Results();

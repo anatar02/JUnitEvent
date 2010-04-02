@@ -20,31 +20,16 @@
 package org.dhaven.jue.core.internal;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.dhaven.jue.api.Request;
-import org.dhaven.jue.api.description.Description;
-import org.dhaven.jue.api.event.Status;
-import org.dhaven.jue.core.internal.node.EventNode;
-import org.dhaven.jue.core.internal.node.TestNode;
 
 /**
  * Represents the test plan.
  */
 public class TestPlan {
-    private List<TestNode> testQueue = new LinkedList<TestNode>();
-    private EventNode start = new EventNode(Description.JUEName, Status.Started);
-    private EventNode end = new EventNode(Description.JUEName, Status.Terminated);
-
-    // should only be created locally;
-
-    private TestPlan() {
-        start.addSuccessor(end);
-        testQueue.add(start);
-        testQueue.add(end);
-    }
+    private List<TestCase> testQueue = new LinkedList<TestCase>();
 
     /**
      * Create a test plan from a Request object.
@@ -58,22 +43,17 @@ public class TestPlan {
 
         for (Class<?> testCase : request.getTestClasses()) {
             Planner planner = new DefaultPlanner();
-            plan.addTests(planner.defineTests(testCase));
+            plan.addTestCase(planner.defineTests(testCase));
         }
 
         return plan;
     }
 
-    void addTests(Collection<? extends TestNode> tests) {
-        for (TestNode node : tests) {
-            node.addPredecessor(start);
-            node.addSuccessor(end);
-            testQueue.add(node);
-        }
+    private void addTestCase(TestCase tests) {
+        testQueue.add(tests);
     }
 
-    public Collection<? extends TestNode> export() {
-        Collections.sort(testQueue);
+    public Collection<TestCase> export() {
         return testQueue;
     }
 }

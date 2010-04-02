@@ -17,38 +17,50 @@
  * under the License.
  */
 
-package org.dhaven.jue.core.internal.node;
+package org.dhaven.jue.core.internal;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.dhaven.jue.api.description.Describable;
 import org.dhaven.jue.api.description.Description;
-import org.dhaven.jue.api.event.Status;
-import org.dhaven.jue.api.event.TestEvent;
-import org.dhaven.jue.core.TestListenerSupport;
+import org.dhaven.jue.core.internal.node.TestNode;
 
 /**
- * An EventNode simply sends an event when it is time.
+ * Represent a test case with its set of tests built up inside.
  */
-public class EventNode implements TestNode {
+public class TestCase implements Describable, Iterable<TestNode> {
     private final Description description;
-    private final Status status;
-    private final Throwable failure;
+    private final List<TestNode> tests = new LinkedList<TestNode>();
 
-    public EventNode(Description description, Status status) {
-        this(description, status, null);
-    }
-
-    public EventNode(Description description, Status status, Throwable failure) {
+    public TestCase(Description description) {
         this.description = description;
-        this.status = status;
-        this.failure = failure;
-    }
-
-    @Override
-    public void run(TestListenerSupport support) {
-        support.fireTestEvent(new TestEvent(getDescription(), status, failure));
     }
 
     @Override
     public Description getDescription() {
-        return this.description;
+        return description;
+    }
+
+    public void addTest(TestNode test) {
+        tests.add(test);
+    }
+
+    public void removeTest(TestNode test) {
+        tests.remove(test);
+    }
+
+    @Override
+    public Iterator<TestNode> iterator() {
+        return tests.iterator();
+    }
+
+    public int size() {
+        return tests.size();
+    }
+
+    public boolean isEmpty() {
+        return tests.isEmpty();
     }
 }

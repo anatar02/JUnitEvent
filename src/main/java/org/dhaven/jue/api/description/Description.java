@@ -38,7 +38,7 @@ public class Description implements Comparable<Description> {
     /**
      * The root description for the all the tests and test cases.
      */
-    public static final Description JUEName = new Description("JUE: Version 0.5", Type.System);
+    public static final Description JUEName = new Description("JUE: Version 0.6", Type.System);
 
     private final String name;
     private final Type type;
