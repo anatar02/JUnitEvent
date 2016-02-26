@@ -60,7 +60,8 @@ public class TestForkJoinPool implements TestRunner {
     }
 
     private static class RunSolver extends RecursiveAction {
-        private final Collection<TestCase> plan;
+		private static final long serialVersionUID = -4093751896814113100L;
+		private final Collection<TestCase> plan;
         private final TestListenerSupport support;
 
         public RunSolver(Collection<TestCase> plan, TestListenerSupport support) {
@@ -94,7 +95,8 @@ public class TestForkJoinPool implements TestRunner {
     }
 
     private static class TestCaseRunner extends RecursiveAction {
-        private final TestCase testCase;
+		private static final long serialVersionUID = -6717716230263567796L;
+		private final TestCase testCase;
         private final TestListenerSupport support;
 
         public TestCaseRunner(TestCase testCase, TestListenerSupport support) {
@@ -136,7 +138,8 @@ public class TestForkJoinPool implements TestRunner {
     }
 
     private static class NodeRunner extends RecursiveAction {
-        private TestNode node;
+		private static final long serialVersionUID = 6775236283531536301L;
+		private TestNode node;
         private TestListenerSupport support;
 
         public NodeRunner(TestNode node, TestListenerSupport support) {

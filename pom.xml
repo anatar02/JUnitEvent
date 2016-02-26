@@ -25,7 +25,7 @@
 
     <groupId>org.dhaven</groupId>
     <artifactId>junitevents</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>JUnit Events</name>
     <url>http://junit-events.d-haven.org</url>
     <licenses>
@@ -97,6 +97,6 @@
     </build>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.6</java.version>
+        <java.version>1.8</java.version>
     </properties>
 </project>

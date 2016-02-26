@@ -93,7 +93,6 @@ public class TestSummary implements Summary, TestListener {
     }
 
     @Override
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public Iterable<Failure> getFailures() {
         Collection<Failure> failures = new ArrayList<Failure>(1);
 
@@ -134,7 +133,6 @@ public class TestSummary implements Summary, TestListener {
         return description.hashCode();
     }
 
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();

@@ -25,7 +25,6 @@ import org.dhaven.jue.api.description.Description;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-@SuppressWarnings({"ThrowableInstanceNeverThrown", "ThrowableResultOfMethodCallIgnored"})
 public class TestFailure {
     @Test
     public void failureContainsDescriptionAndThrowable() {

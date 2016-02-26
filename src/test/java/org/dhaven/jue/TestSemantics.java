@@ -33,7 +33,6 @@ import static org.hamcrest.Matchers.*;
 /**
  * Make sure the tests are run in order
  */
-@SuppressWarnings({"ALL"})
 public class TestSemantics {
     private Engine engine;
     private Request testsToRun;
@@ -240,7 +239,6 @@ public class TestSemantics {
     }
 
     public static class NoExceptionTest {
-        @SuppressWarnings({"EmptyMethod"})
         @Test(expected = IllegalArgumentException.class)
         public void doesNotThrowException() {
         }

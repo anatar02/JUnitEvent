@@ -66,7 +66,6 @@ public class TestNode implements Describable {
         return description;
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown", "ThrowableResultOfMethodCallIgnored"})
     public void run(TestListenerSupport support) {
         support.fireTestStarted(this);
 

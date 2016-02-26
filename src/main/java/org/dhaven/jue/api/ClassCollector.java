@@ -47,7 +47,7 @@ public class ClassCollector implements CallBack<String> {
     private boolean recurse = false;
     private File basePath;
     private ClassLoader loader = null;
-    private List<Class> collectedClasses = new ArrayList<Class>(20);
+    private List<Class<?>> collectedClasses = new ArrayList<Class<?>>(20);
 
     public void setClassLoader(ClassLoader loader) {
         this.loader = loader;
@@ -61,7 +61,8 @@ public class ClassCollector implements CallBack<String> {
         return loader;
     }
 
-    public void methodsHaveAnnotation(Class<? extends Annotation>... annotation) {
+    @SafeVarargs
+    public final void methodsHaveAnnotation(Class<? extends Annotation>... annotation) {
         methodAnnotations = annotation;
     }
 

@@ -22,7 +22,6 @@ package org.dhaven.jue.api.collectorclasses;
 import org.dhaven.jue.Before;
 import org.dhaven.jue.Ignore;
 
-@SuppressWarnings({"ALL"})
 @Ignore
 public class ClassWithBeforeMethod {
     @Before

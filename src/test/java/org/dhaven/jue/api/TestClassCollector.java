@@ -39,7 +39,6 @@ import static org.hamcrest.Matchers.hasItemInArray;
  * Test the behavior of the class collector, so that we can easily create
  * suites of tests.
  */
-@SuppressWarnings({"WeakerAccess"})
 public class TestClassCollector {
     private ClassCollector collector;
 
@@ -52,23 +51,23 @@ public class TestClassCollector {
     @Test
     public void canFindClassesWithTestAnnotation() throws Exception {
         collector.methodsHaveAnnotation(Test.class);
-        Class[] classes = collector.collect();
+        Class<?>[] classes = collector.collect();
 
         assertThat(classes.length, equalTo(1));
-        assertThat(classes[0], equalTo((Class) ClassWithTestMethod.class));
+        assertThat(classes[0], equalTo((Class<?>) ClassWithTestMethod.class));
         assertThat(classes[0], hasMethodWithAnnotation(Test.class));
     }
 
     @Test
     public void canFindClassesWithMultipleAnnotations() throws Exception {
         collector.methodsHaveAnnotation(Before.class, Test.class, After.class, Ignore.class);
-        Class[] classes = collector.collect();
+        Class<?>[] classes = collector.collect();
 
         assertThat(classes.length, equalTo(4));
-        assertThat(classes, hasItemInArray((Class) ClassWithAfterMethod.class));
-        assertThat(classes, hasItemInArray((Class) ClassWithBeforeMethod.class));
-        assertThat(classes, hasItemInArray((Class) ClassWithIgnoreMethod.class));
-        assertThat(classes, hasItemInArray((Class) ClassWithTestMethod.class));
+        assertThat(classes, hasItemInArray((Class<?>) ClassWithAfterMethod.class));
+        assertThat(classes, hasItemInArray((Class<?>) ClassWithBeforeMethod.class));
+        assertThat(classes, hasItemInArray((Class<?>) ClassWithIgnoreMethod.class));
+        assertThat(classes, hasItemInArray((Class<?>) ClassWithTestMethod.class));
     }
 
     @Test
@@ -76,14 +75,14 @@ public class TestClassCollector {
         // there shouldn't be internal classes, but code coverage tools generate
         // them for you :/
         collector.noInternalClasses();
-        Class[] classes = collector.collect();
+        Class<?>[] classes = collector.collect();
 
         assertThat(Arrays.toString(classes), classes.length, equalTo(5));
-        assertThat(classes, hasItemInArray((Class) ClassWithAfterMethod.class));
-        assertThat(classes, hasItemInArray((Class) ClassWithBeforeMethod.class));
-        assertThat(classes, hasItemInArray((Class) ClassWithIgnoreMethod.class));
-        assertThat(classes, hasItemInArray((Class) ClassWithTestMethod.class));
-        assertThat(classes, hasItemInArray((Class) ClassWithNoAnnotations.class));
+        assertThat(classes, hasItemInArray((Class<?>) ClassWithAfterMethod.class));
+        assertThat(classes, hasItemInArray((Class<?>) ClassWithBeforeMethod.class));
+        assertThat(classes, hasItemInArray((Class<?>) ClassWithIgnoreMethod.class));
+        assertThat(classes, hasItemInArray((Class<?>) ClassWithTestMethod.class));
+        assertThat(classes, hasItemInArray((Class<?>) ClassWithNoAnnotations.class));
     }
 
     @Test
@@ -91,12 +90,12 @@ public class TestClassCollector {
         collector.methodsHaveAnnotation(Test.class);
         collector.recursiveSearch();
 
-        Class[] classes = collector.collect();
+        Class<?>[] classes = collector.collect();
 
         assertThat(classes.length, equalTo(3));
-        assertThat(classes, hasItemInArray((Class) ClassWithTestMethod.class));
-        assertThat(classes, hasItemInArray((Class) TestClass.class));
-        assertThat(classes, hasItemInArray((Class) AnotherClass.class));
+        assertThat(classes, hasItemInArray((Class<?>) ClassWithTestMethod.class));
+        assertThat(classes, hasItemInArray((Class<?>) TestClass.class));
+        assertThat(classes, hasItemInArray((Class<?>) AnotherClass.class));
     }
 
     @Test(expected = IllegalStateException.class)

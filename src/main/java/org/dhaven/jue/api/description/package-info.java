@@ -20,4 +20,4 @@
 /**
  * Includes all the information needed to describe a specific test that was run.
  */
-package org.dhaven.api.description;
+package org.dhaven.jue.api.description;

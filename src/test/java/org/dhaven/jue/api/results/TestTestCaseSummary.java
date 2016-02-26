@@ -125,7 +125,6 @@ public class TestTestCaseSummary {
         assertThat(summary.getStatus(), equalTo(Status.Failed));
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown", "ThrowableResultOfMethodCallIgnored"})
     @Test
     public void getSummaryOfAllFailures() {
         Description description = new Description("My Test", Type.TestCase);
@@ -172,7 +171,6 @@ public class TestTestCaseSummary {
         assertThat(summary.processorTime(), equalTo(600L));
     }
 
-    @SuppressWarnings({"ThrowableInstanceNeverThrown", "ThrowableResultOfMethodCallIgnored"})
     @Test
     public void failIfTestCaseFailedItself() {
         Description description = new Description("My Test", Type.TestCase);

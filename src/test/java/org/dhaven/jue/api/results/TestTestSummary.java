@@ -35,7 +35,6 @@ import org.dhaven.jue.api.event.TestEvent;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class TestTestSummary {
     private TestEvent started;
     private TestEvent passed;

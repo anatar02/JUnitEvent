@@ -60,7 +60,6 @@ public class TestEvent implements Describable {
      * @param status      the {@link Status}
      * @param exception   the failure cause, if any
      */
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public TestEvent(Description description,
                      Status status, Throwable exception) {
         if (null == description)

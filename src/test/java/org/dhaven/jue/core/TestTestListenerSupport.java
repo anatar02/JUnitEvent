@@ -104,8 +104,6 @@ public class TestTestListenerSupport {
         assertThat(event.getStatus(), equalTo(Status.Terminated));
     }
 
-
-    @SuppressWarnings({"ThrowableInstanceNeverThrown", "ThrowableResultOfMethodCallIgnored"})
     @Test
     public void testFailedEvent() {
         TestDescribable describable = new TestDescribable("Test Name", Type.Test);

@@ -29,7 +29,7 @@ import org.hamcrest.TypeSafeMatcher;
 /**
  * Hamcrest matcher for methods in a class.
  */
-public class MethodScanner extends TypeSafeMatcher<Class> {
+public class MethodScanner extends TypeSafeMatcher<Class<?>> {
     private final Class<? extends Annotation> annotation;
 
     private MethodScanner(Class<? extends Annotation> marker) {
@@ -37,7 +37,7 @@ public class MethodScanner extends TypeSafeMatcher<Class> {
     }
 
     @Override
-    public boolean matchesSafely(Class aClass) {
+    public boolean matchesSafely(Class<?> aClass) {
         boolean matches = false;
 
         for (Method method : aClass.getDeclaredMethods()) {
@@ -57,7 +57,7 @@ public class MethodScanner extends TypeSafeMatcher<Class> {
         description.appendValue(annotation.getName());
     }
 
-    public static Matcher<Class> hasMethodWithAnnotation(Class<? extends Annotation> annotation) {
+    public static Matcher<Class<?>> hasMethodWithAnnotation(Class<? extends Annotation> annotation) {
         return new MethodScanner(annotation);
     }
 }

@@ -21,7 +21,6 @@ package org.dhaven.jue.api.collectorclasses;
 
 import org.dhaven.jue.Ignore;
 
-@SuppressWarnings({"ALL"})
 @Ignore
 public class ClassWithIgnoreMethod {
     @Ignore

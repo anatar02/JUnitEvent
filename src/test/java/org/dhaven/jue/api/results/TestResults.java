@@ -28,7 +28,6 @@ import org.dhaven.jue.api.event.TestEvent;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-@SuppressWarnings({"ThrowableInstanceNeverThrown"})
 public class TestResults {
     private final Results results = new Results();
 

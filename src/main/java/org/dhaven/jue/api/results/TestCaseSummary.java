@@ -70,6 +70,10 @@ public class TestCaseSummary extends TestSummary implements ParentSummary {
                 case Failed:
                     status = Status.Failed;
                     break;
+                    
+                default:
+                	// nothing to do here.
+                	break;
             }
         }
 
@@ -77,7 +81,6 @@ public class TestCaseSummary extends TestSummary implements ParentSummary {
     }
 
     @Override
-    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
     public Iterable<Failure> getFailures() {
         Collection<Failure> failures = new ArrayList<Failure>(children.size());
 
@@ -149,6 +152,9 @@ public class TestCaseSummary extends TestSummary implements ParentSummary {
                 case Terminated:
                     numTerminated++;
                     break;
+                default:
+                	// everything else is a processing state, not an end state
+                	break;
             }
         }
 

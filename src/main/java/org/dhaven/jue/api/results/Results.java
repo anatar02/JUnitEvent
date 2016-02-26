@@ -167,6 +167,10 @@ public class Results extends TestCaseSummary implements TestListener {
                 case Terminated:
                     numTerminated++;
                     break;
+				default:
+					// Keeps the warnings happy, but the only other states
+					// are used during processing.  They aren't end states.
+					break;
             }
         }
 
